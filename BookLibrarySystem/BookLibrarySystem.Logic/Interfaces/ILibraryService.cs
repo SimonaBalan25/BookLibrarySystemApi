@@ -13,8 +13,16 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<Book?> AddBookAsync(Book book);
 
-        Task<Book> UpdateBookAsync(int id, Book book);
+        Task<int> BorrowBookAsync(Book book, string appUserId);
 
-        Task<(bool, string)> DeleteBookAsync(Book book);
+        bool ValidateBorrowAsync(Book selectedBook);
+
+        Task<bool> CheckExistsAsync(int bookId);
+
+        Task<int> ReturnBookAsync(Book book, string appUserId);
+
+        Task<bool> UpdateBookAsync(int bookId, Book updatedBook);
+
+        Task<bool> DeleteBookAsync(int bookId);
     }
 }

@@ -60,36 +60,83 @@ namespace BookLibrarySystem.Web.Controllers
             return CreatedAtAction("GetBook", new { id = book.Id }, book);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateBook(int id, Book book)
+        [HttpPost("borrow")]
+        public async Task<IActionResult> BorrowBookAsync(int bookId, string appUserId)
         {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
-            var dbBook = await _libraryService.UpdateBookAsync(id, book);
+            var exists = await _libraryService.CheckExistsAsync(bookId);
+            if (!exists)
+                return NotFound("Book does not exist");
 
-            if (dbBook == null)
+            var selectedBook = await _libraryService.GetBookAsync(bookId);
+            if (!_libraryService.ValidateBorrowAsync(selectedBook))
+                return BadRequest("Book cannot be borrowed, since all the copies are already borrowed");
+
+            var result = await _libraryService.BorrowBookAsync(selectedBook, appUserId);
+            if (result > 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Book {book.Title} could not be updated.");
+                return Ok(result);
+            }
+            return StatusCode(StatusCodes.Status500InternalServerError, "There was a problem in borrowing the selected book !");
+        }
+
+        [HttpPost("return")]
+        public async Task<IActionResult> ReturnBookAsync(int bookId, string appUserId)
+        {
+            var exists = await _libraryService.CheckExistsAsync(bookId);
+
+            if (!exists)
+                return NotFound("Book does not exist");
+
+            var selectedBook = await _libraryService.GetBookAsync(bookId);
+            var result = await _libraryService.ReturnBookAsync(selectedBook, appUserId);
+            if (result > 0)
+            {
+                return Ok(result);
             }
 
-            return NoContent();
+            return StatusCode(StatusCodes.Status500InternalServerError, "There was a problem in returning that book.");
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBookAsync(int id, [FromBody] Book updatedBook)
+        {
+            if (id == 0 || id != updatedBook.Id)
+                return StatusCode(StatusCodes.Status400BadRequest, "Invalid id");
+
+            var exists = await _libraryService.CheckExistsAsync(id);
+
+            if (!exists)
+                return StatusCode(StatusCodes.Status404NotFound, "The book doesn't exist in the library !");
+
+            var result = await _libraryService.UpdateBookAsync(id, updatedBook);
+
+            if (result)
+            {
+                return Ok("The book was updated successfully !");
+            }
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error happened in the update book process !");
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
+        public async Task<IActionResult> DeleteBookAsync(int id)
         {
-            var book = await _libraryService.GetBookAsync(id);
-            (bool status, string message) = await _libraryService.DeleteBookAsync(book);
+            if (id == 0)
+                return StatusCode(StatusCodes.Status400BadRequest, "Invalid id");
+            var exists = await _libraryService.CheckExistsAsync(id);
 
-            if (status == false)
+            if (!exists)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, message);
+                return StatusCode(StatusCodes.Status404NotFound, "The book selected to be deleted was not found in the library !");
             }
 
-            return StatusCode(StatusCodes.Status200OK, book);
-        }
+            //var selectedBook = await _libraryService.GetBookAsync(id);
+            var result = await _libraryService.DeleteBookAsync(id);
 
+            if (result)
+                return StatusCode(StatusCodes.Status200OK, "Book was deleted successfully");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "The selected book could not be deleted from the library ");
+        }
     }
 }

@@ -2,6 +2,7 @@ using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
 using BookLibrarySystem.Logic.Services;
+using BookLibrarySystem.Web.Middleware;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -67,7 +68,7 @@ internal class Program
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-
+            app.UseMiddleware(typeof(ExceptionHandlingMiddleware));
 
             app.UseAuthentication();
             app.UseIdentityServer();

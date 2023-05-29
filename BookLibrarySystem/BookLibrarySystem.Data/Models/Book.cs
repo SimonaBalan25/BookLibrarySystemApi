@@ -27,16 +27,19 @@ namespace BookLibrarySystem.Data.Models
 
         public int NumberOfPages { get; set; }
 
-        [JsonIgnore]
-        public virtual ICollection<Author> Authors { get; set; }
+        [JsonIgnore, NotMapped]
+        public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
-        [JsonIgnore]
-        public virtual ICollection<BookAuthor> BookAuthors { get; set; }
+        [JsonIgnore, NotMapped]
+        public virtual ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
 
-        public virtual ICollection<BookLoan> Loans { get; set; }
+        [JsonIgnore, NotMapped]
+        public virtual ICollection<BookLoan> Loans { get; set; } = new List<BookLoan>();
 
-        public virtual ICollection<Reservation> Reservations { get; set; }
+        [JsonIgnore, NotMapped]
+        public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
-        public virtual ICollection<WaitingList> WaitingList { get; set; }   
+        [JsonIgnore, NotMapped]
+        public virtual ICollection<WaitingList> WaitingList { get; set; } = new List<WaitingList>();
     }
 }

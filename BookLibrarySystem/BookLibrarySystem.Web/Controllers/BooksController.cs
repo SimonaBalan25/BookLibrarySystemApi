@@ -10,17 +10,17 @@ namespace BookLibrarySystem.Web.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly ILibraryService _libraryService;
+        private readonly IBooksService _booksService;
 
-        public BooksController(ILibraryService libraryService)
+        public BooksController(IBooksService booksService)
         {
-            _libraryService = libraryService;
+            _booksService = booksService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var books = await _libraryService.GetBooksAsync();
+            var books = await _booksService.GetBooksAsync();
             if (books == null)
             {
                 return StatusCode(StatusCodes.Status204NoContent, "No books in the database.");
@@ -32,13 +32,13 @@ namespace BookLibrarySystem.Web.Controllers
         [HttpGet("search")]
         public async Task<IEnumerable<Book>> SearchBooksAsync(string keyword)
         {
-            return await _libraryService.SearchBooksAsync(keyword);
+            return await _booksService.SearchBooksAsync(keyword);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetBook(int id)
         {
-            var book = await _libraryService.GetBookAsync(id);
+            var book = await _booksService.GetBookAsync(id);
             
             if (book == null)
             {
@@ -51,27 +51,27 @@ namespace BookLibrarySystem.Web.Controllers
         public async Task<IActionResult> AddBook(Book book)
         {
 
-            var dbBook = await _libraryService.AddBookAsync(book);
+            var dbBook = await _booksService.AddBookAsync(book);
 
             if (dbBook == null)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"{book.Title} could not be added.");
             }
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+            return CreatedAtAction("AddBook", new { id = book.Id }, book);
         }
 
         [HttpPost("borrow")]
         public async Task<IActionResult> BorrowBookAsync(int bookId, string appUserId)
         {
-            var exists = await _libraryService.CheckExistsAsync(bookId);
+            var exists = await _booksService.CheckExistsAsync(bookId);
             if (!exists)
                 return NotFound("Book does not exist");
 
-            var selectedBook = await _libraryService.GetBookAsync(bookId);
-            if (!_libraryService.ValidateBorrowAsync(selectedBook))
+            var selectedBook = await _booksService.GetBookAsync(bookId);
+            if (!_booksService.ValidateBorrowAsync(selectedBook))
                 return BadRequest("Book cannot be borrowed, since all the copies are already borrowed");
 
-            var result = await _libraryService.BorrowBookAsync(selectedBook, appUserId);
+            var result = await _booksService.BorrowBookAsync(selectedBook, appUserId);
             if (result > 0)
             {
                 return Ok(result);
@@ -82,13 +82,13 @@ namespace BookLibrarySystem.Web.Controllers
         [HttpPost("return")]
         public async Task<IActionResult> ReturnBookAsync(int bookId, string appUserId)
         {
-            var exists = await _libraryService.CheckExistsAsync(bookId);
+            var exists = await _booksService.CheckExistsAsync(bookId);
 
             if (!exists)
                 return NotFound("Book does not exist");
 
-            var selectedBook = await _libraryService.GetBookAsync(bookId);
-            var result = await _libraryService.ReturnBookAsync(selectedBook, appUserId);
+            var selectedBook = await _booksService.GetBookAsync(bookId);
+            var result = await _booksService.ReturnBookAsync(selectedBook, appUserId);
             if (result > 0)
             {
                 return Ok(result);
@@ -103,12 +103,12 @@ namespace BookLibrarySystem.Web.Controllers
             if (id == 0 || id != updatedBook.Id)
                 return StatusCode(StatusCodes.Status400BadRequest, "Invalid id");
 
-            var exists = await _libraryService.CheckExistsAsync(id);
+            var exists = await _booksService.CheckExistsAsync(id);
 
             if (!exists)
                 return StatusCode(StatusCodes.Status404NotFound, "The book doesn't exist in the library !");
 
-            var result = await _libraryService.UpdateBookAsync(id, updatedBook);
+            var result = await _booksService.UpdateBookAsync(id, updatedBook);
 
             if (result)
             {
@@ -123,7 +123,7 @@ namespace BookLibrarySystem.Web.Controllers
         {
             if (id == 0)
                 return StatusCode(StatusCodes.Status400BadRequest, "Invalid id");
-            var exists = await _libraryService.CheckExistsAsync(id);
+            var exists = await _booksService.CheckExistsAsync(id);
 
             if (!exists)
             {
@@ -131,7 +131,7 @@ namespace BookLibrarySystem.Web.Controllers
             }
 
             //var selectedBook = await _libraryService.GetBookAsync(id);
-            var result = await _libraryService.DeleteBookAsync(id);
+            var result = await _booksService.DeleteBookAsync(id);
 
             if (result)
                 return StatusCode(StatusCodes.Status200OK, "Book was deleted successfully");

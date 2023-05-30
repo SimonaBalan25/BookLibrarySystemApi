@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace BookLibrarySystem.Logic.Services
 {
-    public class LibraryService : ILibraryService
+    public class BooksService : IBooksService
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly ILogger<LibraryService> _logger;   
+        private readonly ILogger<BooksService> _logger;   
 
-        public LibraryService(ApplicationDbContext dbContext, ILogger<LibraryService> logger) 
+        public BooksService(ApplicationDbContext dbContext, ILogger<BooksService> logger) 
         { 
             _dbContext = dbContext;
             _logger = logger;

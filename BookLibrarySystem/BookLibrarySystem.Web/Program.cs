@@ -6,7 +6,6 @@ using BookLibrarySystem.Web.Middleware;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NLog;
 using NLog.Web;
 
 internal class Program
@@ -27,7 +26,8 @@ internal class Program
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddScoped<ILibraryService, LibraryService>();
+            builder.Services.AddScoped<IBooksService, BooksService>();
+            builder.Services.AddScoped<IAuthorsService, AuthorsService>();
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();

@@ -1,9 +1,10 @@
 ﻿using BookLibrarySystem.Data.Models;
+using System.Threading.Tasks;
 
 
 namespace BookLibrarySystem.Logic.Interfaces
 {
-    public interface ILibraryService
+    public interface IBooksService
     {
         Task<IEnumerable<Book>> GetBooksAsync();//get all books
 
@@ -24,5 +25,7 @@ namespace BookLibrarySystem.Logic.Interfaces
         Task<bool> UpdateBookAsync(int bookId, Book updatedBook);
 
         Task<bool> DeleteBookAsync(int bookId);
+
+        
     }
 }

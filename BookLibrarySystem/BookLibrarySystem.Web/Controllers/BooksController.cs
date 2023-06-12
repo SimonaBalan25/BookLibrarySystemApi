@@ -18,6 +18,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles ="NormalUser")]
         public async Task<IActionResult> GetAllAsync()
         {
             var books = await _booksService.GetBooksAsync();

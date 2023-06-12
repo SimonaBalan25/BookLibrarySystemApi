@@ -27,10 +27,8 @@ namespace BookLibrarySystem.Data.Models
 
         public int NumberOfPages { get; set; }
 
-        [JsonIgnore, NotMapped]
         public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
-        [JsonIgnore, NotMapped]
         public virtual ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
 
         [JsonIgnore, NotMapped]

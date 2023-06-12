@@ -4,6 +4,7 @@ using BookLibrarySystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookLibrarySystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230608150023_InitialRolesSeed")]
+    partial class InitialRolesSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,6 +49,7 @@ namespace BookLibrarySystem.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("BirthDate")
@@ -69,6 +73,7 @@ namespace BookLibrarySystem.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
@@ -615,13 +620,13 @@ namespace BookLibrarySystem.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b3daaee2-566e-4301-9613-0b07ed9388f1",
+                            Id = "e5a6e4f3-1f88-42c7-9d9f-ec017ab3adde",
                             Name = "NormalUser",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "d73f9e01-3cb4-4eb2-ad64-1bc1b81f9a74",
+                            Id = "b441d624-3857-4e76-8872-30335a230ae9",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -761,7 +766,7 @@ namespace BookLibrarySystem.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("BookLibrarySystem.Data.Models.Book", "Book")
-                        .WithMany("BookAuthors")
+                        .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -883,8 +888,6 @@ namespace BookLibrarySystem.Data.Migrations
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.Book", b =>
                 {
-                    b.Navigation("BookAuthors");
-
                     b.Navigation("Loans");
 
                     b.Navigation("Reservations");

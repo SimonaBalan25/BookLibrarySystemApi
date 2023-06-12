@@ -1,4 +1,5 @@
 ﻿using BookLibrarySystem.Data.Data;
+using BookLibrarySystem.Data.Data.Configuration;
 using BookLibrarySystem.Data.Models;
 using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
@@ -64,6 +65,8 @@ namespace BookLibrarySystem.Data
 
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(a => a.WaitingList);
+
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
 
             //Seed database with data about books and authors
             new DbInitializer(modelBuilder).Seed();

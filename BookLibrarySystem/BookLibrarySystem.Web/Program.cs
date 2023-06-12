@@ -3,6 +3,7 @@ using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
 using BookLibrarySystem.Logic.Services;
 using BookLibrarySystem.Web.Middleware;
+using BookLibrarySystem.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +29,11 @@ internal class Program
 
             builder.Services.AddScoped<IBooksService, BooksService>();
             builder.Services.AddScoped<IAuthorsService, AuthorsService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IClaimsTransformation, AddRolesClaimsTransformation>();
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddIdentityServer()
@@ -69,6 +73,8 @@ internal class Program
             app.UseStaticFiles();
             app.UseRouting();
             app.UseMiddleware(typeof(ExceptionHandlingMiddleware));
+
+            //app.UseClaimsTransformation();
 
             app.UseAuthentication();
             app.UseIdentityServer();

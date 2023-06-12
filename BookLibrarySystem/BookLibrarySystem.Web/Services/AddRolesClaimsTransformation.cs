@@ -44,11 +44,10 @@ namespace BookLibrarySystem.Web.Services
             }
 
             // Add role claims to cloned identity
-            //foreach (var role in user.Roles)
-            var claims = (await _userManager.GetClaimsAsync(user)).Select(c=>c.Value);
-            foreach (var role in claims)
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
             {
-                var claim = new Claim(type: newIdentity.RoleClaimType, value: role);//"NormalUser"
+                var claim = new Claim(type: newIdentity.RoleClaimType, value: role);
                 newIdentity.AddClaim(claim);
             }
             var hasUserRole = clone.IsInRole("NormalUser");

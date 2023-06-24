@@ -611,3 +611,6 @@
 /BookLibrarySystem/BookLibrarySystem.Logic/obj
 /BookLibrarySystem/BookLibrarySystem.Data/obj
 /BookLibrarySystem/BookLibrarySystem.Logic/bin/Debug/net7.0
+/api_key.txt
+/BookLibrarySystem/.vs/ProjectEvaluation/booklibrarysystem.metadata.v7.bin
+/BookLibrarySystem/.vs/ProjectEvaluation/booklibrarysystem.projects.v7.bin

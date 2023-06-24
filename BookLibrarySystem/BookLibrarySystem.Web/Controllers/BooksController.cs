@@ -1,5 +1,7 @@
 ﻿using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,22 +13,22 @@ namespace BookLibrarySystem.Web.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBooksService _booksService;
+        private readonly TelemetryClient _logger;
 
-        public BooksController(IBooksService booksService)
+        public BooksController(IBooksService booksService, TelemetryClient logger)
         {
             _booksService = booksService;
+            _logger = logger;
         }
 
         [HttpGet]
-        [Authorize(Roles ="NormalUser")]
+        [Authorize(Roles ="Administrator,NormalUser")]
         public async Task<IActionResult> GetAllAsync()
         {
+            _logger.TrackTrace("Inside BooksController", SeverityLevel.Information, new Dictionary<string, string>() { });
             var books = await _booksService.GetBooksAsync();
-            if (books == null)
-            {
-                return StatusCode(StatusCodes.Status204NoContent, "No books in the database.");
-            }
-
+            
+            _logger.TrackTrace("Finish BooksController");
             return StatusCode(StatusCodes.Status200OK, books);
         }
 
@@ -40,11 +42,6 @@ namespace BookLibrarySystem.Web.Controllers
         public async Task<IActionResult> GetBook(int id)
         {
             var book = await _booksService.GetBookAsync(id);
-            
-            if (book == null)
-            {
-                return StatusCode(StatusCodes.Status204NoContent, $"No books in the database with the id {id}");
-            }
             return StatusCode(StatusCodes.Status200OK, book);
         }
 
@@ -54,10 +51,6 @@ namespace BookLibrarySystem.Web.Controllers
 
             var dbBook = await _booksService.AddBookAsync(book);
 
-            if (dbBook == null)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{book.Title} could not be added.");
-            }
             return CreatedAtAction("AddBook", new { id = book.Id }, book);
         }
 

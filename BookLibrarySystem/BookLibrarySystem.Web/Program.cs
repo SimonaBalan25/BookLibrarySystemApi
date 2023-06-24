@@ -4,6 +4,10 @@ using BookLibrarySystem.Logic.Interfaces;
 using BookLibrarySystem.Logic.Services;
 using BookLibrarySystem.Web.Middleware;
 using BookLibrarySystem.Web.Services;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -48,12 +52,43 @@ internal class Program
                     options.SignInScheme = IdentityConstants.ExternalScheme;
                 });
 
+            ApplicationInsightsServiceOptions telemetryOptions = new();
+            telemetryOptions.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+            telemetryOptions.EnableRequestTrackingTelemetryModule = true;
+            telemetryOptions.EnableDependencyTrackingTelemetryModule = true;
+            telemetryOptions.EnableDiagnosticsTelemetryModule = true;
+            telemetryOptions.EnableQuickPulseMetricStream = true;
+
+            // Can enable/disable adaptive sampling here.
+            // https://learn.microsoft.com/en-us/azure/azure-monitor/app/sampling
+            telemetryOptions.EnableAdaptiveSampling = false;
+            builder.Services.AddApplicationInsightsTelemetry(telemetryOptions);
+
+            builder.Services.AddLogging(logBuilder =>
+            {
+                var instrumentationKey = builder.Configuration["ApplicationInsights:InstrumentationKey"];
+                logBuilder.AddApplicationInsights(instrumentationKey);
+            });
+
+            // Create a TelemetryConfiguration instance.
+            var apiKey = builder.Configuration["ApplicationInsights:APIKey"];
+           
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                var module = TelemetryModules.Instance.Modules
+                                             .OfType<QuickPulseTelemetryModule>().FirstOrDefault();
+                if (module != null)
+                {
+                    module.AuthenticationApiKey = apiKey;
+                }
+            }
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
             // NLog: Setup NLog for Dependency injection
             builder.Logging.ClearProviders();
-            builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+            builder.Logging.SetMinimumLevel(LogLevel.Trace);
             builder.Host.UseNLog();
 
             var app = builder.Build();
@@ -75,6 +110,7 @@ internal class Program
             app.UseMiddleware(typeof(ExceptionHandlingMiddleware));
 
             //app.UseClaimsTransformation();
+            app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseAuthentication();
             app.UseIdentityServer();

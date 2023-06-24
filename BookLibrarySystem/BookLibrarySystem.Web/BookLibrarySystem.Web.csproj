@@ -9,9 +9,13 @@
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>6de19fbf-60cf-41eb-acee-84450f257447</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/3cf42fad-52da-44ec-bdf5-ebfa07d2eb24/resourceGroups/BlazorResourceGroup/providers/microsoft.insights/components/BooksLibraryAI</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.PerfCounterCollector" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.5" />
@@ -77,6 +81,5 @@
   
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
-    <Folder Include="Entities\Configuration\" />
   </ItemGroup>
 </Project>

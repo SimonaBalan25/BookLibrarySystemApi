@@ -2,6 +2,7 @@
 using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace BookLibrarySystem.Logic.Services
@@ -19,8 +20,9 @@ namespace BookLibrarySystem.Logic.Services
 
         public async Task<IEnumerable<Book>> GetBooksAsync()
         {
+            _logger.LogDebug("Inside BooksService: GetBooksAsync method");
             return await _dbContext.Books.Select(b=> 
-                new Book{ Id = b.Id, 
+                new Book { Id = b.Id, 
                           Title= b.Title, 
                           Genre = b.Genre, 
                           Authors = b.BookAuthors.Select(a => a.Author).ToList()}).ToListAsync();
@@ -34,8 +36,8 @@ namespace BookLibrarySystem.Logic.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return null;
+                _logger.LogError(ex, $"GetBookAsync(id): {ex.Message}");
+                throw;
             }
         }
 
@@ -57,13 +59,14 @@ namespace BookLibrarySystem.Logic.Services
             try
             {
                 await _dbContext.Books.AddAsync(book);
+                _dbContext.Entry(book).State = EntityState.Added;
                 await _dbContext.SaveChangesAsync();
                 return await _dbContext.Books.FindAsync(book.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,$"The book {book.Title} could not be added.");
-                return null;
+                _logger.LogError(ex,$"AddBookAsync method: Exception when trying to add the book {book.Title}: {ex.Message}.");
+                throw;
             }
         }
 
@@ -84,56 +87,111 @@ namespace BookLibrarySystem.Logic.Services
 
         public async Task<int> BorrowBookAsync(Book selectedBook, string userId)
         {
-            selectedBook.LoanedQuantity += 1;
-            _dbContext.Books.Update(selectedBook);
-            _dbContext.Loans.Add(new BookLoan() { ApplicationUserId = userId, BookId = selectedBook.Id, BorrowedDate = DateTime.UtcNow, DueDate = DateTime.Now.AddDays(21), ReturnedDate = null });
+            using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    selectedBook.LoanedQuantity += 1;
+                    _dbContext.Books.Update(selectedBook);
+                    _dbContext.Loans.Add(new BookLoan() { ApplicationUserId = userId, BookId = selectedBook.Id, BorrowedDate = DateTime.UtcNow, DueDate = DateTime.Now.AddDays(21), ReturnedDate = null });
 
-            return await _dbContext.SaveChangesAsync();
+                    var result = await _dbContext.SaveChangesAsync();
+                    await dbTransaction.CommitAsync();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("BorrowBook method: there was a problem in executing the method");
+                    await dbTransaction.RollbackAsync();
+                    throw;
+                }
+            }
         }
 
         public async Task<int> ReturnBookAsync(Book selectedBook, string userId)
         {
-            selectedBook.LoanedQuantity -= 1;
-            var loan = _dbContext.Loans.Where(l => l.ApplicationUserId == userId && l.BookId == selectedBook.Id).FirstOrDefault();
-            if (loan != null)
+            using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync()) 
             {
-                loan.ReturnedDate = DateTime.UtcNow;
-                
+                try
+                {
+                    selectedBook.LoanedQuantity -= 1;
+                    var loan = _dbContext.Loans.Where(l => l.ApplicationUserId == userId && l.BookId == selectedBook.Id).FirstOrDefault();
+                    if (loan != null)
+                    {
+                        loan.ReturnedDate = DateTime.UtcNow;
+                    }
+
+                    //unblock the user if he is already blocked and he has no other loans that he hasn't returned
+
+                    var result = await _dbContext.SaveChangesAsync();
+                    await dbTransaction.CommitAsync();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("ReturnBook: There was a problem in running that method...");
+                    await dbTransaction.RollbackAsync();
+                    throw;
+                }
             }
-
-            //unblock the user if he is already blocked and he has no other loans that he hasn't returned
-
-            return await _dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> UpdateBookAsync(int bookId, Book selectedBook)
         {
-            var dbBook = await GetBookAsync(bookId);
+            //use transactions in EF
+            using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var dbBook = await GetBookAsync(bookId);
+                    dbBook.Genre = selectedBook.Genre;
+                    dbBook.ISBN = selectedBook.ISBN;
+                    dbBook.LoanedQuantity = selectedBook.LoanedQuantity;
+                    dbBook.NumberOfPages = selectedBook.NumberOfPages;
+                    dbBook.NumberOfCopies = selectedBook.NumberOfCopies;
+                    dbBook.Publisher = selectedBook.Publisher;
+                    dbBook.ReleaseYear = selectedBook.ReleaseYear;
+                    dbBook.Title = selectedBook.Title;
+                    dbBook.BookAuthors = selectedBook.BookAuthors;
+                    dbBook.Loans = selectedBook.Loans;
+                    dbBook.Reservations = selectedBook.Reservations;
+                    dbBook.WaitingList = selectedBook.WaitingList;
 
-            dbBook.Genre = selectedBook.Genre;  
-            dbBook.ISBN = selectedBook.ISBN;
-            dbBook.LoanedQuantity = selectedBook.LoanedQuantity;
-            dbBook.NumberOfPages = selectedBook.NumberOfPages;
-            dbBook.NumberOfCopies = selectedBook.NumberOfCopies;    
-            dbBook.Publisher = selectedBook.Publisher;
-            dbBook.ReleaseYear = selectedBook.ReleaseYear;  
-            dbBook.Title = selectedBook.Title;
-            dbBook.BookAuthors = selectedBook.BookAuthors;
-            dbBook.Loans = selectedBook.Loans;
-            dbBook.Reservations = selectedBook.Reservations;    
-            dbBook.WaitingList = selectedBook.WaitingList;
-
-            _dbContext.Entry(dbBook).State = EntityState.Modified;
-            return await _dbContext.SaveChangesAsync() > 0;
+                    _dbContext.Entry(dbBook).State = EntityState.Modified;
+                    var result = await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return result > 0;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("UpdateBook: There was a database problem when trying to update..");
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
         }
 
         public async Task<bool> DeleteBookAsync(int bookId)
         {
-            var dbBook = await GetBookAsync(bookId);
+            using (IDbContextTransaction transaction = _dbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var dbBook = await GetBookAsync(bookId);
+                    var deleted = _dbContext.Books.Remove(dbBook);
 
-            var deleted = _dbContext.Books.Remove(dbBook);
-
-            return await _dbContext.SaveChangesAsync() > 0;
+                    _dbContext.Entry(dbBook).State = EntityState.Deleted;
+                    var result = await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return result > 0;
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError("DeleteBook: There was a problem when trying to delete the book..");
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
         }
     }
 }

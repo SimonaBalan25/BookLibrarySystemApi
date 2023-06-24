@@ -39,7 +39,8 @@ namespace BookLibrarySystem.Logic.Services
             catch (Exception ex) 
             {
                 _logger.LogError($"GetAuthors error: {ex.Message}", ex);
-                return null;
+                //return null;
+                throw;
             }
         }
 

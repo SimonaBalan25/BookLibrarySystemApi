@@ -39,11 +39,12 @@ namespace BookLibrarySystem.Data
             modelBuilder.Entity<WaitingList>().ToTable("WaitingList");
 
             modelBuilder.Entity<Author>()
-                .HasMany<Book>(a=>a.Books)
-                .WithMany(b=>b.Authors)
+                .HasMany<Book>(a => a.Books)
+                .WithMany(b => b.Authors)
                 .UsingEntity("BookAuthor",
             l => l.HasOne(typeof(Book)).WithMany().HasForeignKey("BookId").HasPrincipalKey(nameof(Book.Id)),
-            r => r.HasOne(typeof(Author)).WithMany().HasForeignKey("AuthorId").HasPrincipalKey(nameof(Book.Id)));
+            r => r.HasOne(typeof(Author)).WithMany().HasForeignKey("AuthorId").HasPrincipalKey(nameof(Book.Id))
+            );
 
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.Loans);

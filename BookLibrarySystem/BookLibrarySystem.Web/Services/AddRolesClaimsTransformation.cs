@@ -47,13 +47,14 @@ namespace BookLibrarySystem.Web.Services
             var roles = await _userManager.GetRolesAsync(user);
 
             //check if user is not blocked, his status, and then give him the role
-
-            foreach (var role in roles)
+            if (user.Status != UserStatus.Loaned)
             {
-                var claim = new Claim(type: newIdentity.RoleClaimType, value: role);
-                newIdentity.AddClaim(claim);
+                foreach (var role in roles)
+                {
+                    var claim = new Claim(type: newIdentity.RoleClaimType, value: role);
+                    newIdentity.AddClaim(claim);
+                }
             }
-            
 
             var hasUserRole = clone.IsInRole("NormalUser");
             return clone;

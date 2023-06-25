@@ -7,7 +7,7 @@
 namespace BookLibrarySystem.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialRolesSeed : Migration
+    public partial class SeedRoles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,8 +17,8 @@ namespace BookLibrarySystem.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "b441d624-3857-4e76-8872-30335a230ae9", null, "Administrator", "ADMINISTRATOR" },
-                    { "e5a6e4f3-1f88-42c7-9d9f-ec017ab3adde", null, "NormalUser", "USER" }
+                    { "8224b7ad-39c2-4269-ab01-353f92bae6dc", null, "Administrator", "ADMINISTRATOR" },
+                    { "b25ed80c-fc9e-4ea0-a359-abffb4d84cf2", null, "NormalUser", "USER" }
                 });
         }
 
@@ -28,12 +28,12 @@ namespace BookLibrarySystem.Data.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "b441d624-3857-4e76-8872-30335a230ae9");
+                keyValue: "8224b7ad-39c2-4269-ab01-353f92bae6dc");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "e5a6e4f3-1f88-42c7-9d9f-ec017ab3adde");
+                keyValue: "b25ed80c-fc9e-4ea0-a359-abffb4d84cf2");
         }
     }
 }

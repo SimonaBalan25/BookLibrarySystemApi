@@ -1,9 +1,8 @@
-﻿
-
-using BookLibrarySystem.Data;
+﻿using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace BookLibrarySystem.Logic.Services
@@ -13,9 +12,10 @@ namespace BookLibrarySystem.Logic.Services
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<AuthorsService> _logger;
 
-        public AuthorsService(ApplicationDbContext dbContext) 
+        public AuthorsService(ApplicationDbContext dbContext, ILogger<AuthorsService> logger) 
         { 
             _dbContext = dbContext;
+            _logger = logger;
         }
         
         public async Task<bool> CheckExistsAsync(int id)
@@ -33,13 +33,13 @@ namespace BookLibrarySystem.Logic.Services
                     Id = a.Id,
                     Name = a.Name,
                     Country = a.Country,
-                    Books = a.AuthorBooks.Select(b => b.Book).ToList()
+                    Books = a.BookAuthors.Select(b => b.Book).ToList()
                 }).ToListAsync();
             }
-            catch (Exception ex) 
+            catch
             {
-                _logger.LogError($"GetAuthors error: {ex.Message}", ex);
-                //return null;
+                var sourceMessage = $"AuthorsService - GetAuthors method - there was an error";
+                _logger.LogError(sourceMessage);
                 throw;
             }
         }
@@ -50,22 +50,24 @@ namespace BookLibrarySystem.Logic.Services
             {
                 return await _dbContext.Authors.FindAsync(id);
             }
-            catch(Exception ex)
+            catch
             {
-                _logger.LogError("The author could not be found !", ex);
-                return null;
+                _logger.LogError("AuthorsService - GetAuthorById - The author could not be found !");
+                throw;
             }
         }
 
         public async Task<Author?> AddAuthorAsync(Author author)
-        {            
-            await _dbContext.Authors.AddAsync(author);
-            int added = await _dbContext.SaveChangesAsync();
-
-            if (added <= 0)
+        {
+            try
             {
-                _logger.LogError("Author could not be added");
-                return null;
+                await _dbContext.Authors.AddAsync(author);
+                int added = await _dbContext.SaveChangesAsync();
+            }
+            catch
+            {
+                _logger.LogError("AuthorsService - AddAuthor - Author could not be added");
+                throw;
             }
 
             return await _dbContext.Authors.FindAsync(author.Id);
@@ -73,30 +75,38 @@ namespace BookLibrarySystem.Logic.Services
 
         public async Task<bool> UpdateAuthorAsync(Author author)
         {
-            var dbAuthor = await GetAuthorAsync(author.Id);
-            if (dbAuthor == null)
+            using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                _logger.LogError("Author was not found to be updated !");
-                return false;
+                try
+                {
+                    var dbAuthor = await GetAuthorAsync(author.Id);
+                    dbAuthor.Name = author.Name;
+                    dbAuthor.Country = author.Country;
+                    _dbContext.Entry(dbAuthor).State = EntityState.Modified;
+                    return await _dbContext.SaveChangesAsync() > 0;
+                }
+                catch
+                {
+                    _logger.LogError("AuthorsService - UpdateAuthor method - an error occurred");
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
-
-            dbAuthor.Name=author.Name;
-            dbAuthor.Country = author.Country;
-            _dbContext.Entry(dbAuthor).State = EntityState.Modified;
-            return await _dbContext.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteAuthorAsync(int id)
         {
-            var dbAuthor = await GetAuthorAsync(id);
-            if (dbAuthor == null)
+            try
             {
-                _logger.LogError("Author was not found to be deleted !");
-                return false;
+                var dbAuthor = await GetAuthorAsync(id);
+                _dbContext.Authors.Remove(dbAuthor);
+                return await _dbContext.SaveChangesAsync() > 0;
             }
-
-            _dbContext.Authors.Remove(dbAuthor);
-            return await _dbContext.SaveChangesAsync() > 0;
+            catch
+            {
+                _logger.LogError("AuthorsService - DeleteAuthor method - an error occurred");
+                throw;
+            }
         }
     }
 }

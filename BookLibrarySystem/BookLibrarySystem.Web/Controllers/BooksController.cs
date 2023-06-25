@@ -1,7 +1,5 @@
 ﻿using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,22 +11,17 @@ namespace BookLibrarySystem.Web.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBooksService _booksService;
-        private readonly TelemetryClient _logger;
 
-        public BooksController(IBooksService booksService, TelemetryClient logger)
+        public BooksController(IBooksService booksService)
         {
             _booksService = booksService;
-            _logger = logger;
         }
 
         [HttpGet]
-        [Authorize(Roles ="Administrator,NormalUser")]
         public async Task<IActionResult> GetAllAsync()
         {
-            _logger.TrackTrace("Inside BooksController", SeverityLevel.Information, new Dictionary<string, string>() { });
             var books = await _booksService.GetBooksAsync();
             
-            _logger.TrackTrace("Finish BooksController");
             return StatusCode(StatusCodes.Status200OK, books);
         }
 
@@ -46,6 +39,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> AddBook(Book book)
         {
 
@@ -55,6 +49,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpPost("borrow")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> BorrowBookAsync(int bookId, string appUserId)
         {
             var exists = await _booksService.CheckExistsAsync(bookId);
@@ -74,6 +69,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpPost("return")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ReturnBookAsync(int bookId, string appUserId)
         {
             var exists = await _booksService.CheckExistsAsync(bookId);
@@ -92,6 +88,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateBookAsync(int id, [FromBody] Book updatedBook)
         {
             if (id == 0 || id != updatedBook.Id)
@@ -113,6 +110,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteBookAsync(int id)
         {
             if (id == 0)

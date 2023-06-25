@@ -4,6 +4,7 @@ using BookLibrarySystem.Data.Models;
 using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace BookLibrarySystem.Data
@@ -33,19 +34,29 @@ namespace BookLibrarySystem.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Book>().ToTable("Books");
             modelBuilder.Entity<Author>().ToTable("Authors");
-            modelBuilder.Entity<BookAuthor>().ToTable("BookAuthors");
+            modelBuilder.Entity<BookAuthor>().ToTable("BookAuthors").HasKey(a => new { a.AuthorId, a.BookId });
             modelBuilder.Entity<BookLoan>().ToTable("Loans");
             modelBuilder.Entity<Reservation>().ToTable("Reservations");
             modelBuilder.Entity<WaitingList>().ToTable("WaitingList");
 
-            modelBuilder.Entity<Author>()
-                .HasMany<Book>(a => a.Books)
-                .WithMany(b => b.Authors)
-                .UsingEntity("BookAuthor",
-            l => l.HasOne(typeof(Book)).WithMany().HasForeignKey("BookId").HasPrincipalKey(nameof(Book.Id)),
-            r => r.HasOne(typeof(Author)).WithMany().HasForeignKey("AuthorId").HasPrincipalKey(nameof(Book.Id))
-            );
+            modelBuilder.Entity<BookAuthor>()
+                .HasOne(ba => ba.Book)
+                .WithMany(b => b.BookAuthors)
+                .HasForeignKey(ba => ba.BookId);
 
+            modelBuilder.Entity<BookAuthor>()
+                .HasOne(ba => ba.Author)
+                .WithMany(a => a.BookAuthors)
+                .HasForeignKey(ba => ba.AuthorId);
+
+            //modelBuilder.Entity<Author>()
+            //    .HasMany(a => a.Books)
+            //    .WithMany(b => b.Authors)
+            //    .UsingEntity<BookAuthor>(
+            //        r => r.HasOne<Book>().WithMany(b=>b.BookAuthors).HasForeignKey("BookId").HasPrincipalKey(nameof(Book.Id)),
+            //        l => l.HasOne<Author>().WithMany(c=>c.).HasForeignKey("AuthorId").HasPrincipalKey(nameof(Author.Id))
+            //    );
+         
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.Loans);
 
@@ -71,7 +82,6 @@ namespace BookLibrarySystem.Data
 
             //Seed database with data about books and authors
             new DbInitializer(modelBuilder).Seed();
-
         }
     }
 }

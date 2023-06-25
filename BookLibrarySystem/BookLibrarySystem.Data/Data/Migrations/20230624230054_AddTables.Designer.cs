@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookLibrarySystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230515180740_AddTables")]
+    [Migration("20230624230054_AddTables")]
     partial class AddTables
     {
         /// <inheritdoc />
@@ -25,22 +25,22 @@ namespace BookLibrarySystem.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BookAuthor", b =>
+            modelBuilder.Entity("AuthorBook", b =>
                 {
-                    b.Property<int>("AuthorId")
+                    b.Property<int>("AuthorsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BookId")
+                    b.Property<int>("BooksId")
                         .HasColumnType("int");
 
-                    b.HasKey("AuthorId", "BookId");
+                    b.HasKey("AuthorsId", "BooksId");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("BooksId");
 
-                    b.ToTable("BookAuthor");
+                    b.ToTable("AuthorBook");
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.ApplicationUser", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -49,7 +49,6 @@ namespace BookLibrarySystem.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("BirthDate")
@@ -73,7 +72,6 @@ namespace BookLibrarySystem.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
@@ -119,7 +117,7 @@ namespace BookLibrarySystem.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.Author", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.Author", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -140,7 +138,7 @@ namespace BookLibrarySystem.Data.Migrations
                     b.ToTable("Authors", (string)null);
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.Book", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -181,30 +179,24 @@ namespace BookLibrarySystem.Data.Migrations
                     b.ToTable("Books", (string)null);
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.BookAuthor", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.BookAuthor", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("AuthorId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
 
                     b.Property<int>("BookId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnOrder(2);
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
+                    b.HasKey("AuthorId", "BookId");
 
                     b.HasIndex("BookId");
 
                     b.ToTable("BookAuthors", (string)null);
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.BookLoan", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.BookLoan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,8 +204,9 @@ namespace BookLibrarySystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("BookId")
                         .HasColumnType("int");
@@ -224,22 +217,19 @@ namespace BookLibrarySystem.Data.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("ReturnedDate")
+                    b.Property<DateTime?>("ReturnedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("BookId");
 
                     b.ToTable("Loans", (string)null);
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.Reservation", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.Reservation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -247,8 +237,9 @@ namespace BookLibrarySystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("BookId")
                         .HasColumnType("int");
@@ -259,19 +250,16 @@ namespace BookLibrarySystem.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("BookId");
 
                     b.ToTable("Reservations", (string)null);
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.WaitingList", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.WaitingList", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -279,8 +267,9 @@ namespace BookLibrarySystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("BookId")
                         .HasColumnType("int");
@@ -288,12 +277,9 @@ namespace BookLibrarySystem.Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("BookId");
 
@@ -578,31 +564,31 @@ namespace BookLibrarySystem.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BookAuthor", b =>
+            modelBuilder.Entity("AuthorBook", b =>
                 {
-                    b.HasOne("BookLibrarySystem.Models.Author", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.Author", null)
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("AuthorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookLibrarySystem.Models.Book", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.Book", null)
                         .WithMany()
-                        .HasForeignKey("BookId")
+                        .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.BookAuthor", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.BookAuthor", b =>
                 {
-                    b.HasOne("BookLibrarySystem.Models.Author", "Author")
-                        .WithMany()
+                    b.HasOne("BookLibrarySystem.Data.Models.Author", "Author")
+                        .WithMany("BookAuthors")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookLibrarySystem.Models.Book", "Book")
-                        .WithMany()
+                    b.HasOne("BookLibrarySystem.Data.Models.Book", "Book")
+                        .WithMany("BookAuthors")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -612,39 +598,45 @@ namespace BookLibrarySystem.Data.Migrations
                     b.Navigation("Book");
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.BookLoan", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.BookLoan", b =>
                 {
-                    b.HasOne("BookLibrarySystem.Models.Author", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.ApplicationUser", null)
                         .WithMany("Loans")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("BookLibrarySystem.Models.Book", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.Book", null)
                         .WithMany("Loans")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.Reservation", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.Reservation", b =>
                 {
-                    b.HasOne("BookLibrarySystem.Models.Author", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.ApplicationUser", null)
                         .WithMany("Reservations")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("BookLibrarySystem.Models.Book", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.Book", null)
                         .WithMany("Reservations")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.WaitingList", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.WaitingList", b =>
                 {
-                    b.HasOne("BookLibrarySystem.Models.Author", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.ApplicationUser", null)
                         .WithMany("WaitingList")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("BookLibrarySystem.Models.Book", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.Book", null)
                         .WithMany("WaitingList")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -662,7 +654,7 @@ namespace BookLibrarySystem.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("BookLibrarySystem.Models.ApplicationUser", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -671,7 +663,7 @@ namespace BookLibrarySystem.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("BookLibrarySystem.Models.ApplicationUser", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -686,7 +678,7 @@ namespace BookLibrarySystem.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookLibrarySystem.Models.ApplicationUser", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -695,14 +687,14 @@ namespace BookLibrarySystem.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("BookLibrarySystem.Models.ApplicationUser", null)
+                    b.HasOne("BookLibrarySystem.Data.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.Author", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Loans");
 
@@ -711,8 +703,15 @@ namespace BookLibrarySystem.Data.Migrations
                     b.Navigation("WaitingList");
                 });
 
-            modelBuilder.Entity("BookLibrarySystem.Models.Book", b =>
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.Author", b =>
                 {
+                    b.Navigation("BookAuthors");
+                });
+
+            modelBuilder.Entity("BookLibrarySystem.Data.Models.Book", b =>
+                {
+                    b.Navigation("BookAuthors");
+
                     b.Navigation("Loans");
 
                     b.Navigation("Reservations");

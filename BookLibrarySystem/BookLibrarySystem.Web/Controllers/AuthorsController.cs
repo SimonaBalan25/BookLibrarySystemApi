@@ -1,7 +1,6 @@
 ﻿using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookLibrarySystem.Web.Controllers
@@ -45,6 +44,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> AddAuthorAsync([FromBody] Author newAuthor)
         {
             var author = await _authorsService.AddAuthorAsync(newAuthor);    
@@ -58,6 +58,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateAuthorAsync(int id, [FromBody] Author author)
         {
             if (id != author.Id)
@@ -81,6 +82,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteAuthorAsync(int id)
         {
             if (!await _authorsService.CheckExistsAsync(id))

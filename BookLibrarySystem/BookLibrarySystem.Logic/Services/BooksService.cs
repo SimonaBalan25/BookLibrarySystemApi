@@ -65,7 +65,7 @@ namespace BookLibrarySystem.Logic.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,$"AddBookAsync method: Exception when trying to add the book {book.Title}: {ex.Message}.");
+                _logger.LogError(ex,$"AddBookAsync method: Exception when trying to add the book {book.Title}.");
                 throw;
             }
         }
@@ -101,7 +101,7 @@ namespace BookLibrarySystem.Logic.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("BorrowBook method: there was a problem in executing the method");
+                    _logger.LogError("BookService- BorrowBook method: there was a problem in executing the method");
                     await dbTransaction.RollbackAsync();
                     throw;
                 }

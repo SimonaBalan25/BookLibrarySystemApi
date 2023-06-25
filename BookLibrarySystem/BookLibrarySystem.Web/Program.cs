@@ -5,7 +5,6 @@ using BookLibrarySystem.Logic.Services;
 using BookLibrarySystem.Web.Middleware;
 using BookLibrarySystem.Web.Services;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Authentication;
@@ -52,25 +51,22 @@ internal class Program
                     options.SignInScheme = IdentityConstants.ExternalScheme;
                 });
 
+            //configure ApplicationInsights
             ApplicationInsightsServiceOptions telemetryOptions = new();
             telemetryOptions.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
             telemetryOptions.EnableRequestTrackingTelemetryModule = true;
             telemetryOptions.EnableDependencyTrackingTelemetryModule = true;
             telemetryOptions.EnableDiagnosticsTelemetryModule = true;
             telemetryOptions.EnableQuickPulseMetricStream = true;
-
-            // Can enable/disable adaptive sampling here.
-            // https://learn.microsoft.com/en-us/azure/azure-monitor/app/sampling
             telemetryOptions.EnableAdaptiveSampling = false;
             builder.Services.AddApplicationInsightsTelemetry(telemetryOptions);
 
             builder.Services.AddLogging(logBuilder =>
             {
-                var instrumentationKey = builder.Configuration["ApplicationInsights:InstrumentationKey"];
-                logBuilder.AddApplicationInsights(instrumentationKey);
+                logBuilder.AddApplicationInsights();
             });
 
-            // Create a TelemetryConfiguration instance.
+            // Set api key for AppInsights module.
             var apiKey = builder.Configuration["ApplicationInsights:APIKey"];
            
             if (!string.IsNullOrEmpty(apiKey))

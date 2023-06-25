@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookLibrarySystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230608222330_ApplicationUserChangeNullability")]
-    partial class ApplicationUserChangeNullability
+    [Migration("20230624231255_SeedData")]
+    partial class SeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,19 +25,19 @@ namespace BookLibrarySystem.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BookAuthor", b =>
+            modelBuilder.Entity("AuthorBook", b =>
                 {
-                    b.Property<int>("AuthorId")
+                    b.Property<int>("AuthorsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BookId")
+                    b.Property<int>("BooksId")
                         .HasColumnType("int");
 
-                    b.HasKey("AuthorId", "BookId");
+                    b.HasKey("AuthorsId", "BooksId");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("BooksId");
 
-                    b.ToTable("BookAuthor");
+                    b.ToTable("AuthorBook");
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.ApplicationUser", b =>
@@ -161,6 +161,18 @@ namespace BookLibrarySystem.Data.Migrations
                             Id = 4,
                             Country = "Denmark",
                             Name = "Martin Simon"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Country = "USA",
+                            Name = "Avi Silberchatz"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Country = "USA",
+                            Name = "Paul Auster"
                         });
                 });
 
@@ -264,26 +276,44 @@ namespace BookLibrarySystem.Data.Migrations
                             Publisher = "McGraw-Hill",
                             ReleaseYear = 2010,
                             Title = "Database System Concenpts 6th Edition"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Genre = "NonFiction-Guide",
+                            ISBN = "453-263-283-4",
+                            LoanedQuantity = 0,
+                            NumberOfCopies = 5,
+                            NumberOfPages = 255,
+                            Publisher = "Textmaster",
+                            ReleaseYear = 2014,
+                            Title = "Windows 8.1-Effectiv udden touch"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Genre = "Fiction-Crime",
+                            ISBN = "253-273-284-9",
+                            LoanedQuantity = 0,
+                            NumberOfCopies = 3,
+                            NumberOfPages = 458,
+                            Publisher = "Faber and Faber",
+                            ReleaseYear = 1985,
+                            Title = "The New York Triogy"
                         });
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.BookAuthor", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("AuthorId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
 
                     b.Property<int>("BookId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnOrder(2);
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
+                    b.HasKey("AuthorId", "BookId");
 
                     b.HasIndex("BookId");
 
@@ -292,33 +322,38 @@ namespace BookLibrarySystem.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
                             AuthorId = 1,
                             BookId = 1
                         },
                         new
                         {
-                            Id = 2,
                             AuthorId = 1,
                             BookId = 2
                         },
                         new
                         {
-                            Id = 3,
                             AuthorId = 2,
                             BookId = 3
                         },
                         new
                         {
-                            Id = 4,
                             AuthorId = 2,
                             BookId = 4
                         },
                         new
                         {
-                            Id = 5,
                             AuthorId = 3,
                             BookId = 5
+                        },
+                        new
+                        {
+                            AuthorId = 5,
+                            BookId = 7
+                        },
+                        new
+                        {
+                            AuthorId = 6,
+                            BookId = 8
                         });
                 });
 
@@ -358,7 +393,7 @@ namespace BookLibrarySystem.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationUserId = "ef0a33da-c8b1-4148-9840-71871578768e",
+                            ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8",
                             BookId = 1,
                             BorrowedDate = new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DueDate = new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -366,7 +401,7 @@ namespace BookLibrarySystem.Data.Migrations
                         new
                         {
                             Id = 2,
-                            ApplicationUserId = "ef0a33da-c8b1-4148-9840-71871578768e",
+                            ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8",
                             BookId = 2,
                             BorrowedDate = new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DueDate = new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -406,7 +441,7 @@ namespace BookLibrarySystem.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationUserId = "ef0a33da-c8b1-4148-9840-71871578768e",
+                            ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8",
                             BookId = 3,
                             ReservedDate = new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 2
@@ -414,7 +449,7 @@ namespace BookLibrarySystem.Data.Migrations
                         new
                         {
                             Id = 2,
-                            ApplicationUserId = "ef0a33da-c8b1-4148-9840-71871578768e",
+                            ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8",
                             BookId = 4,
                             ReservedDate = new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 2
@@ -618,13 +653,13 @@ namespace BookLibrarySystem.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b3daaee2-566e-4301-9613-0b07ed9388f1",
+                            Id = "1af27cd0-8c67-463e-bfca-de6a760f5db8",
                             Name = "NormalUser",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "d73f9e01-3cb4-4eb2-ad64-1bc1b81f9a74",
+                            Id = "2862a022-1a74-45d6-ba90-997446ee42da",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -740,17 +775,17 @@ namespace BookLibrarySystem.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BookAuthor", b =>
+            modelBuilder.Entity("AuthorBook", b =>
                 {
                     b.HasOne("BookLibrarySystem.Data.Models.Author", null)
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("AuthorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BookLibrarySystem.Data.Models.Book", null)
                         .WithMany()
-                        .HasForeignKey("BookId")
+                        .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -758,7 +793,7 @@ namespace BookLibrarySystem.Data.Migrations
             modelBuilder.Entity("BookLibrarySystem.Data.Models.BookAuthor", b =>
                 {
                     b.HasOne("BookLibrarySystem.Data.Models.Author", "Author")
-                        .WithMany("AuthorBooks")
+                        .WithMany("BookAuthors")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -881,7 +916,7 @@ namespace BookLibrarySystem.Data.Migrations
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.Author", b =>
                 {
-                    b.Navigation("AuthorBooks");
+                    b.Navigation("BookAuthors");
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.Book", b =>

@@ -1,5 +1,6 @@
 ﻿using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,17 +12,20 @@ namespace BookLibrarySystem.Web.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBooksService _booksService;
+        private readonly TelemetryClient _logger;
 
-        public BooksController(IBooksService booksService)
+        public BooksController(IBooksService booksService, TelemetryClient logger)
         {
             _booksService = booksService;
+            _logger = logger;   
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
+            _logger.TrackTrace("Start:BooksController-GetAllAsync", Microsoft.ApplicationInsights.DataContracts.SeverityLevel.Information, new Dictionary<string, string> { { "source", "BooksController" } });
             var books = await _booksService.GetBooksAsync();
-            
+            _logger.TrackTrace("End BooksController-GetAllAsync");
             return StatusCode(StatusCodes.Status200OK, books);
         }
 
@@ -34,7 +38,9 @@ namespace BookLibrarySystem.Web.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetBook(int id)
         {
+            _logger.TrackTrace("Start: BooksController - GetBookById");
             var book = await _booksService.GetBookAsync(id);
+            _logger.TrackTrace("End: BooksController - GetBookById");
             return StatusCode(StatusCodes.Status200OK, book);
         }
 

@@ -49,7 +49,7 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task<bool> UpdateUserAsync(Guid id, ApplicationUser updatedUser)
+        public async Task<bool> UpdateUserAsync(string id, ApplicationUser updatedUser)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task<bool> DeleteUserAsync(Guid id)
+        public async Task<bool> DeleteUserAsync(string id)
         {
             try
             {
@@ -90,6 +90,11 @@ namespace BookLibrarySystem.Logic.Services
                 _logger.LogError("UserService - DeleteUser method - an error occurred");
                 throw;
             }
+        }
+
+        public async Task<bool> CheckUserExistsAsync(string userId)
+        {
+            return await _dbContext.Users.FindAsync(userId) != null;
         }
     }
 }

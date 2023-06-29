@@ -21,11 +21,16 @@ namespace BookLibrarySystem.Logic.Services
         public async Task<IEnumerable<Book>> GetBooksAsync()
         {
             _logger.LogDebug("Inside BooksService: GetBooksAsync method");
-            return await _dbContext.Books.Select(b=> 
-                new Book { Id = b.Id, 
-                          Title= b.Title, 
-                          Genre = b.Genre, 
-                          Authors = b.BookAuthors.Select(a => a.Author).ToList()}).ToListAsync();
+            var firstBook = _dbContext.Books.First();
+
+            return await _dbContext.Books.Select(b =>
+                new Book
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Genre = b.Genre,
+                    Authors = b.BookAuthors.Select(a => a.Author).ToList()
+                }).ToListAsync();
         }
 
         public async Task<Book?> GetBookAsync(int id)

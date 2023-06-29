@@ -52,32 +52,10 @@ internal class Program
                 });
 
             //configure ApplicationInsights
-            ApplicationInsightsServiceOptions telemetryOptions = new();
-            telemetryOptions.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
-            telemetryOptions.EnableRequestTrackingTelemetryModule = true;
-            telemetryOptions.EnableDependencyTrackingTelemetryModule = true;
-            telemetryOptions.EnableDiagnosticsTelemetryModule = true;
-            telemetryOptions.EnableQuickPulseMetricStream = true;
-            telemetryOptions.EnableAdaptiveSampling = false;
-            builder.Services.AddApplicationInsightsTelemetry(telemetryOptions);
+            builder.Services.AddApplicationInsightsLogging(builder.Configuration);
 
-            builder.Services.AddLogging(logBuilder =>
-            {
-                logBuilder.AddApplicationInsights();
-            });
+            //add RateLimiter
 
-            // Set api key for AppInsights module.
-            var apiKey = builder.Configuration["ApplicationInsights:APIKey"];
-           
-            if (!string.IsNullOrEmpty(apiKey))
-            {
-                var module = TelemetryModules.Instance.Modules
-                                             .OfType<QuickPulseTelemetryModule>().FirstOrDefault();
-                if (module != null)
-                {
-                    module.AuthenticationApiKey = apiKey;
-                }
-            }
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
@@ -106,7 +84,7 @@ internal class Program
             app.UseMiddleware(typeof(ExceptionHandlingMiddleware));
 
             //app.UseClaimsTransformation();
-            app.UseApplicationInsightsExceptionTelemetry();
+            app.UseApplicationInsightsLogging();
 
             app.UseAuthentication();
             app.UseIdentityServer();

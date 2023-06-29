@@ -8,12 +8,14 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<ApplicationUser> GetByIdAsync(string Id);
 
-        Task<IEnumerable<ApplicationUser>> GetUsersAsync();   
+        Task<IEnumerable<ApplicationUser>> GetUsersAsync();
+
+        Task<bool> CheckUserExistsAsync(string id);
 
         Task<ApplicationUser> AddUserAsync(ApplicationUser newUser);   
 
-        Task<bool> UpdateUserAsync(Guid id, ApplicationUser modifiedUser);
+        Task<bool> UpdateUserAsync(string id, ApplicationUser modifiedUser);
 
-        Task<bool> DeleteUserAsync(Guid id);
+        Task<bool> DeleteUserAsync(string id);
     }
 }

@@ -49,14 +49,6 @@ namespace BookLibrarySystem.Data
                 .WithMany(a => a.BookAuthors)
                 .HasForeignKey(ba => ba.AuthorId);
 
-            //modelBuilder.Entity<Author>()
-            //    .HasMany(a => a.Books)
-            //    .WithMany(b => b.Authors)
-            //    .UsingEntity<BookAuthor>(
-            //        r => r.HasOne<Book>().WithMany(b=>b.BookAuthors).HasForeignKey("BookId").HasPrincipalKey(nameof(Book.Id)),
-            //        l => l.HasOne<Author>().WithMany(c=>c.).HasForeignKey("AuthorId").HasPrincipalKey(nameof(Author.Id))
-            //    );
-         
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.Loans);
 

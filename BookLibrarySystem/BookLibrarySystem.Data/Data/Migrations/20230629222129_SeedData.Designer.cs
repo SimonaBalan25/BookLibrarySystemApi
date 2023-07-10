@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookLibrarySystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230624231255_SeedData")]
+    [Migration("20230629222129_SeedData")]
     partial class SeedData
     {
         /// <inheritdoc />
@@ -24,21 +24,6 @@ namespace BookLibrarySystem.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AuthorBook", b =>
-                {
-                    b.Property<int>("AuthorsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BooksId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AuthorsId", "BooksId");
-
-                    b.HasIndex("BooksId");
-
-                    b.ToTable("AuthorBook");
-                });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.ApplicationUser", b =>
                 {
@@ -317,7 +302,7 @@ namespace BookLibrarySystem.Data.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("BookAuthors", (string)null);
+                    b.ToTable("BookAuthors");
 
                     b.HasData(
                         new
@@ -393,7 +378,7 @@ namespace BookLibrarySystem.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8",
+                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
                             BookId = 1,
                             BorrowedDate = new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DueDate = new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -401,7 +386,7 @@ namespace BookLibrarySystem.Data.Migrations
                         new
                         {
                             Id = 2,
-                            ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8",
+                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
                             BookId = 2,
                             BorrowedDate = new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DueDate = new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -441,7 +426,7 @@ namespace BookLibrarySystem.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8",
+                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
                             BookId = 3,
                             ReservedDate = new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 2
@@ -449,7 +434,7 @@ namespace BookLibrarySystem.Data.Migrations
                         new
                         {
                             Id = 2,
-                            ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8",
+                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
                             BookId = 4,
                             ReservedDate = new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 2
@@ -481,6 +466,22 @@ namespace BookLibrarySystem.Data.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("WaitingList", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
+                            BookId = 3,
+                            DateCreated = new DateTime(2023, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
+                            BookId = 4,
+                            DateCreated = new DateTime(2023, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -653,13 +654,13 @@ namespace BookLibrarySystem.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1af27cd0-8c67-463e-bfca-de6a760f5db8",
+                            Id = "39df0779-d853-402b-aeab-145a138daa1a",
                             Name = "NormalUser",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "2862a022-1a74-45d6-ba90-997446ee42da",
+                            Id = "6b9f5145-ea00-456c-be27-9870dc438a26",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -773,21 +774,6 @@ namespace BookLibrarySystem.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("AuthorBook", b =>
-                {
-                    b.HasOne("BookLibrarySystem.Data.Models.Author", null)
-                        .WithMany()
-                        .HasForeignKey("AuthorsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookLibrarySystem.Data.Models.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.BookAuthor", b =>

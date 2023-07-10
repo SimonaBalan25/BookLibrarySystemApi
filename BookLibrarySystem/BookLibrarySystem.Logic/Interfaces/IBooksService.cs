@@ -12,7 +12,7 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<IEnumerable<Book>> SearchBooksAsync(string keyword);
 
-        Task<Book?> AddBookAsync(Book book);
+        Task<Book?> AddBookAsync(Book book, IEnumerable<int> authorIds);
 
         Task<int> BorrowBookAsync(Book book, string appUserId);
 

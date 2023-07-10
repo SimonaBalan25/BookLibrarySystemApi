@@ -13,6 +13,25 @@ namespace BookLibrarySystem.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: "6ae0800f-195e-4e0d-986c-5894cefe78a2");
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: "a319454b-b223-46b1-b7a4-82c6caf61ca3");
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "39df0779-d853-402b-aeab-145a138daa1a", null, "NormalUser", "USER" },
+                    { "6b9f5145-ea00-456c-be27-9870dc438a26", null, "Administrator", "ADMINISTRATOR" }
+                });
+
             migrationBuilder.InsertData(
                 table: "Authors",
                 columns: new[] { "Id", "Country", "Name" },
@@ -59,8 +78,8 @@ namespace BookLibrarySystem.Data.Migrations
                 columns: new[] { "Id", "ApplicationUserId", "BookId", "BorrowedDate", "DueDate", "ReturnedDate" },
                 values: new object[,]
                 {
-                    { 1, "c72ac90e-ca57-4c2f-b04b-17409032aea8", 1, new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
-                    { 2, "c72ac90e-ca57-4c2f-b04b-17409032aea8", 2, new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), null }
+                    { 1, "764172d9-4ac0-4531-b303-73574c8f4204", 1, new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
+                    { 2, "764172d9-4ac0-4531-b303-73574c8f4204", 2, new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), null }
                 });
 
             migrationBuilder.InsertData(
@@ -68,14 +87,33 @@ namespace BookLibrarySystem.Data.Migrations
                 columns: new[] { "Id", "ApplicationUserId", "BookId", "ReservedDate", "Status" },
                 values: new object[,]
                 {
-                    { 1, "c72ac90e-ca57-4c2f-b04b-17409032aea8", 3, new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
-                    { 2, "c72ac90e-ca57-4c2f-b04b-17409032aea8", 4, new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 }
+                    { 1, "764172d9-4ac0-4531-b303-73574c8f4204", 3, new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
+                    { 2, "764172d9-4ac0-4531-b303-73574c8f4204", 4, new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "WaitingList",
+                columns: new[] { "Id", "ApplicationUserId", "BookId", "DateCreated" },
+                values: new object[,]
+                {
+                    { 1, "764172d9-4ac0-4531-b303-73574c8f4204", 3, new DateTime(2023, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 2, "764172d9-4ac0-4531-b303-73574c8f4204", 4, new DateTime(2023, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: "39df0779-d853-402b-aeab-145a138daa1a");
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: "6b9f5145-ea00-456c-be27-9870dc438a26");
+
             migrationBuilder.DeleteData(
                 table: "Authors",
                 keyColumn: "Id",
@@ -133,6 +171,16 @@ namespace BookLibrarySystem.Data.Migrations
 
             migrationBuilder.DeleteData(
                 table: "Reservations",
+                keyColumn: "Id",
+                keyValue: 2);
+
+            migrationBuilder.DeleteData(
+                table: "WaitingList",
+                keyColumn: "Id",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "WaitingList",
                 keyColumn: "Id",
                 keyValue: 2);
 
@@ -195,6 +243,15 @@ namespace BookLibrarySystem.Data.Migrations
                 table: "Books",
                 keyColumn: "Id",
                 keyValue: 8);
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "6ae0800f-195e-4e0d-986c-5894cefe78a2", null, "Administrator", "ADMINISTRATOR" },
+                    { "a319454b-b223-46b1-b7a4-82c6caf61ca3", null, "NormalUser", "USER" }
+                });
         }
     }
 }

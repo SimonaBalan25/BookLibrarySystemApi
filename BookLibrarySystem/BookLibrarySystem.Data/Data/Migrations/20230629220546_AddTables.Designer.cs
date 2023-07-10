@@ -4,16 +4,19 @@ using BookLibrarySystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace SampleProject.Data.Migrations
+namespace BookLibrarySystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230629220546_AddTables")]
+    partial class AddTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,44 +121,6 @@ namespace SampleProject.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Authors", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Country = "Japan",
-                            Name = "Haruki Murakami"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Country = "Denmark",
-                            Name = "Helle Helle"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Country = "Belgium",
-                            Name = "Georges Simenon"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Country = "Denmark",
-                            Name = "Martin Simon"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Country = "USA",
-                            Name = "Avi Silberchatz"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Country = "USA",
-                            Name = "Paul Auster"
-                        });
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.Book", b =>
@@ -197,92 +162,6 @@ namespace SampleProject.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Books", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Genre = "Fiction-SF",
-                            ISBN = "978-606-123-1",
-                            LoanedQuantity = 0,
-                            NumberOfCopies = 3,
-                            NumberOfPages = 505,
-                            Publisher = "Klim",
-                            ReleaseYear = 2007,
-                            Title = "Kafka on the shore"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Genre = "Fiction-Romance",
-                            ISBN = "093-184-732-2",
-                            LoanedQuantity = 0,
-                            NumberOfCopies = 4,
-                            NumberOfPages = 808,
-                            Publisher = "Klim",
-                            ReleaseYear = 2011,
-                            Title = "1Q84"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Genre = "Fiction-Thriller",
-                            ISBN = "731-847-427-0",
-                            LoanedQuantity = 0,
-                            NumberOfCopies = 3,
-                            NumberOfPages = 0,
-                            Publisher = "Samleren",
-                            ReleaseYear = 2011,
-                            Title = "Rodby-Puttgarden"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Genre = "Fiction-Crime",
-                            ISBN = "743-263-482-8",
-                            LoanedQuantity = 0,
-                            NumberOfCopies = 5,
-                            NumberOfPages = 144,
-                            Publisher = "Lindhart op Linghorf",
-                            ReleaseYear = 2011,
-                            Title = "Maigret"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Genre = "NonFiction-Textbook",
-                            ISBN = "943-921-813-0",
-                            LoanedQuantity = 0,
-                            NumberOfCopies = 10,
-                            NumberOfPages = 505,
-                            Publisher = "McGraw-Hill",
-                            ReleaseYear = 2010,
-                            Title = "Database System Concenpts 6th Edition"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Genre = "NonFiction-Guide",
-                            ISBN = "453-263-283-4",
-                            LoanedQuantity = 0,
-                            NumberOfCopies = 5,
-                            NumberOfPages = 255,
-                            Publisher = "Textmaster",
-                            ReleaseYear = 2014,
-                            Title = "Windows 8.1-Effectiv udden touch"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Genre = "Fiction-Crime",
-                            ISBN = "253-273-284-9",
-                            LoanedQuantity = 0,
-                            NumberOfCopies = 3,
-                            NumberOfPages = 458,
-                            Publisher = "Faber and Faber",
-                            ReleaseYear = 1985,
-                            Title = "The New York Triogy"
-                        });
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.BookAuthor", b =>
@@ -300,43 +179,6 @@ namespace SampleProject.Data.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("BookAuthors");
-
-                    b.HasData(
-                        new
-                        {
-                            AuthorId = 1,
-                            BookId = 1
-                        },
-                        new
-                        {
-                            AuthorId = 1,
-                            BookId = 2
-                        },
-                        new
-                        {
-                            AuthorId = 2,
-                            BookId = 3
-                        },
-                        new
-                        {
-                            AuthorId = 2,
-                            BookId = 4
-                        },
-                        new
-                        {
-                            AuthorId = 3,
-                            BookId = 5
-                        },
-                        new
-                        {
-                            AuthorId = 5,
-                            BookId = 7
-                        },
-                        new
-                        {
-                            AuthorId = 6,
-                            BookId = 8
-                        });
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.BookLoan", b =>
@@ -360,9 +202,6 @@ namespace SampleProject.Data.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Renewed")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("ReturnedDate")
                         .HasColumnType("datetime2");
 
@@ -373,26 +212,6 @@ namespace SampleProject.Data.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("Loans", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
-                            BookId = 1,
-                            BorrowedDate = new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DueDate = new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Renewed = false
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
-                            BookId = 2,
-                            BorrowedDate = new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DueDate = new DateTime(2023, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Renewed = false
-                        });
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.Reservation", b =>
@@ -423,24 +242,6 @@ namespace SampleProject.Data.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("Reservations", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
-                            BookId = 3,
-                            ReservedDate = new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
-                            BookId = 4,
-                            ReservedDate = new DateTime(2023, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0
-                        });
                 });
 
             modelBuilder.Entity("BookLibrarySystem.Data.Models.WaitingList", b =>
@@ -461,9 +262,6 @@ namespace SampleProject.Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
@@ -471,24 +269,6 @@ namespace SampleProject.Data.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("WaitingList", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
-                            BookId = 3,
-                            DateCreated = new DateTime(2023, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Position = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204",
-                            BookId = 4,
-                            DateCreated = new DateTime(2023, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Position = 0
-                        });
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -657,20 +437,6 @@ namespace SampleProject.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "15f321af-4b79-4802-bedb-57f8e6f4ae09",
-                            Name = "NormalUser",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "85288b9d-acda-4cdb-9a88-dd04ffa629be",
-                            Name = "Administrator",
-                            NormalizedName = "ADMINISTRATOR"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookLibrarySystem.Data.Models
 {
-    [Table("BookAuthors")]
     public class BookAuthor
     {
         //[Key]

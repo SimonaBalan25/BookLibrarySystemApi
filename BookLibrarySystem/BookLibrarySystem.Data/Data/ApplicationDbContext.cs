@@ -4,7 +4,6 @@ using BookLibrarySystem.Data.Models;
 using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace BookLibrarySystem.Data
@@ -34,20 +33,14 @@ namespace BookLibrarySystem.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Book>().ToTable("Books");
             modelBuilder.Entity<Author>().ToTable("Authors");
-            modelBuilder.Entity<BookAuthor>().ToTable("BookAuthors").HasKey(a => new { a.AuthorId, a.BookId });
             modelBuilder.Entity<BookLoan>().ToTable("Loans");
             modelBuilder.Entity<Reservation>().ToTable("Reservations");
             modelBuilder.Entity<WaitingList>().ToTable("WaitingList");
 
-            modelBuilder.Entity<BookAuthor>()
-                .HasOne(ba => ba.Book)
-                .WithMany(b => b.BookAuthors)
-                .HasForeignKey(ba => ba.BookId);
-
-            modelBuilder.Entity<BookAuthor>()
-                .HasOne(ba => ba.Author)
-                .WithMany(a => a.BookAuthors)
-                .HasForeignKey(ba => ba.AuthorId);
+            modelBuilder.Entity<BookAuthor>().HasKey(a => new { a.AuthorId, a.BookId });
+            modelBuilder.Entity<Book>().HasMany(x => x.Authors)
+                .WithMany(x => x.Books)
+                .UsingEntity<BookAuthor>();
 
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.Loans);
@@ -57,9 +50,6 @@ namespace BookLibrarySystem.Data
 
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.WaitingList);
-
-            modelBuilder.Entity<Author>()
-                .HasMany(a => a.Books);
 
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(a => a.Loans);

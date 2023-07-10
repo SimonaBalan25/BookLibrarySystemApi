@@ -17,8 +17,8 @@ namespace BookLibrarySystem.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "8224b7ad-39c2-4269-ab01-353f92bae6dc", null, "Administrator", "ADMINISTRATOR" },
-                    { "b25ed80c-fc9e-4ea0-a359-abffb4d84cf2", null, "NormalUser", "USER" }
+                    { "6ae0800f-195e-4e0d-986c-5894cefe78a2", null, "Administrator", "ADMINISTRATOR" },
+                    { "a319454b-b223-46b1-b7a4-82c6caf61ca3", null, "NormalUser", "USER" }
                 });
         }
 
@@ -28,12 +28,12 @@ namespace BookLibrarySystem.Data.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "8224b7ad-39c2-4269-ab01-353f92bae6dc");
+                keyValue: "6ae0800f-195e-4e0d-986c-5894cefe78a2");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "b25ed80c-fc9e-4ea0-a359-abffb4d84cf2");
+                keyValue: "a319454b-b223-46b1-b7a4-82c6caf61ca3");
         }
     }
 }

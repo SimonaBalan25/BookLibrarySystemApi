@@ -48,7 +48,7 @@ namespace BookLibrarySystem.Logic.Services
         {
             try
             {
-                return await _dbContext.Authors.FindAsync(id);
+                return await _dbContext.Authors.AsNoTracking().FirstAsync(ent => ent.Id.Equals(id));
             }
             catch
             {

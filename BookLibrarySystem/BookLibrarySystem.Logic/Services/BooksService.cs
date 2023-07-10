@@ -1,5 +1,6 @@
 ﻿using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
+using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -11,11 +12,13 @@ namespace BookLibrarySystem.Logic.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<BooksService> _logger;   
+        private readonly IAuthorsService _authorsService;
 
-        public BooksService(ApplicationDbContext dbContext, ILogger<BooksService> logger) 
+        public BooksService(ApplicationDbContext dbContext, ILogger<BooksService> logger, IAuthorsService authorsService) 
         { 
             _dbContext = dbContext;
             _logger = logger;
+            _authorsService = authorsService;   
         }
 
         public async Task<IEnumerable<Book>> GetBooksAsync()
@@ -29,7 +32,16 @@ namespace BookLibrarySystem.Logic.Services
                     Id = b.Id,
                     Title = b.Title,
                     Genre = b.Genre,
-                    Authors = b.BookAuthors.Select(a => a.Author).ToList()
+                    ISBN = b.ISBN,
+                    NumberOfCopies = b.NumberOfCopies,  
+                    LoanedQuantity = b.LoanedQuantity,
+                    NumberOfPages = b.NumberOfPages,
+                    Publisher = b.Publisher,
+                    ReleaseYear = b.ReleaseYear,    
+                    //Loans = b.Loans.ToList(),
+                    //Reservations = b.Reservations.ToList(),  
+                    //WaitingList = b.WaitingList.ToList(),
+                    Authors = b.Authors.ToList() //.BookAuthors.Select(a => a.Author)
                 }).ToListAsync();
         }
 
@@ -59,13 +71,39 @@ namespace BookLibrarySystem.Logic.Services
             return matchedBooks;
         }
 
-        public async Task<Book?> AddBookAsync(Book book)
+        public async Task<Book?> AddBookAsync(Book book, IEnumerable<int> authorIds)
         {
             try
             {
+                //foreach (var authorId in authorIds)
+                //{
+                //    var author = await _authorsService.GetAuthorAsync(authorId);
+                //    if (author != null)
+                //    {
+                //        //_dbContext.Authors.Add(author);
+                //        author.BookAuthors.Add();
+                //    }
+                //}
+                
                 await _dbContext.Books.AddAsync(book);
                 _dbContext.Entry(book).State = EntityState.Added;
                 await _dbContext.SaveChangesAsync();
+
+                foreach (var authorId in authorIds)
+                {
+                    var author = await _authorsService.GetAuthorAsync(authorId);
+                    if (author != null)
+                    {
+                        var bookAuthor = new BookAuthor
+                        {
+                            BookId = book.Id,
+                            AuthorId = author.Id
+                        };
+                        _dbContext.BookAuthors.Add(bookAuthor);
+                    }
+                }
+                await _dbContext.SaveChangesAsync();
+
                 return await _dbContext.Books.FindAsync(book.Id);
             }
             catch (Exception ex)
@@ -197,6 +235,15 @@ namespace BookLibrarySystem.Logic.Services
                     throw;
                 }
             }
+        }
+
+        public async Task ReserveBookAsync(int bookId)
+        {
+
+        }
+
+        public async Task CancelReservationAsync(int bookId) 
+        {
         }
     }
 }

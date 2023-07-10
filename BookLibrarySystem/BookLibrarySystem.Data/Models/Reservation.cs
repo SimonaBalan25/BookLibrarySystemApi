@@ -7,6 +7,7 @@ namespace BookLibrarySystem.Data.Models
     {
         [Key]
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [ForeignKey("ApplicationUser")]
@@ -22,8 +23,10 @@ namespace BookLibrarySystem.Data.Models
 
     public enum ReservationStatus
     {
-        Finalized = 0,
-        Cancelled,
-        Pending
+        Pending = 0,
+        Active=1,
+        Finalized = 2,
+        Cancelled = 3,
+        Expired=4
     }
 }

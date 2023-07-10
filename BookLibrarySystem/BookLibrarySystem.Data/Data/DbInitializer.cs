@@ -51,14 +51,19 @@ namespace BookLibrarySystem.Data.Data
             //);
 
             _modelBuilder.Entity<BookLoan>().HasData(
-                new BookLoan() { Id = 1, ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8", BookId = 1, BorrowedDate = new DateTime(2023, 05, 10), DueDate = new DateTime(2023, 05, 31), ReturnedDate = null },
-                new BookLoan() { Id = 2, ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8", BookId = 2, BorrowedDate = new DateTime(2023, 05, 10), DueDate = new DateTime(2023, 05, 31), ReturnedDate = null }
+                new BookLoan() { Id = 1, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 1, BorrowedDate = new DateTime(2023, 05, 10), DueDate = new DateTime(2023, 05, 31), ReturnedDate = null },
+                new BookLoan() { Id = 2, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 2, BorrowedDate = new DateTime(2023, 05, 10), DueDate = new DateTime(2023, 05, 31), ReturnedDate = null }
                 );
 
             _modelBuilder.Entity<Reservation>().HasData(
-                new Reservation() { Id = 1, ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8", BookId = 3, ReservedDate = new DateTime(2023, 05, 17), Status = ReservationStatus.Pending },
-                new Reservation() { Id = 2, ApplicationUserId = "c72ac90e-ca57-4c2f-b04b-17409032aea8", BookId = 4, ReservedDate = new DateTime(2023, 05, 17), Status = ReservationStatus.Pending }
+                new Reservation() { Id = 1, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 3, ReservedDate = new DateTime(2023, 05, 17), Status = ReservationStatus.Pending },
+                new Reservation() { Id = 2, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 4, ReservedDate = new DateTime(2023, 05, 17), Status = ReservationStatus.Pending }
                 );
+
+            _modelBuilder.Entity<WaitingList>().HasData(
+               new WaitingList() { Id = 1, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 3, DateCreated = new DateTime(2023, 06, 30) },
+               new WaitingList() { Id = 2, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 4, DateCreated = new DateTime(2023, 06, 30) }
+               );
         }
     }
 }

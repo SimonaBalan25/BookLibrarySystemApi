@@ -1,4 +1,6 @@
-﻿using BookLibrarySystem.Data.Models;
+﻿using AutoMapper;
+using BookLibrarySystem.Data.Models;
+using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +15,13 @@ namespace BookLibrarySystem.Web.Controllers
     {
         private readonly IBooksService _booksService;
         private readonly TelemetryClient _logger;
+        private readonly IMapper _mapper;
 
-        public BooksController(IBooksService booksService, TelemetryClient logger)
+        public BooksController(IBooksService booksService, TelemetryClient logger, IMapper mapper)
         {
             _booksService = booksService;
-            _logger = logger;   
+            _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -46,12 +50,13 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> AddBook(Book book)
+        public async Task<IActionResult> AddBook(BookDto bookDto)
         {
+            var book = _mapper.Map<Book>(bookDto);
 
-            var dbBook = await _booksService.AddBookAsync(book);
+            var dbBook = await _booksService.AddBookAsync(book, bookDto.Authors);
 
-            return CreatedAtAction("AddBook", new { id = book.Id }, book);
+            return CreatedAtAction("AddBook", new { id = dbBook.Id }, book);
         }
 
         [HttpPost("borrow")]
@@ -73,6 +78,8 @@ namespace BookLibrarySystem.Web.Controllers
             }
             return StatusCode(StatusCodes.Status500InternalServerError, "There was a problem in borrowing the selected book !");
         }
+
+
 
         [HttpPost("return")]
         [Authorize(Roles = "Administrator")]

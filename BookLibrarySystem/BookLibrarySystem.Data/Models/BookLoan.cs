@@ -7,6 +7,7 @@ namespace BookLibrarySystem.Data.Models
     {
         [Key]
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [ForeignKey("Book")]
@@ -20,5 +21,7 @@ namespace BookLibrarySystem.Data.Models
         public DateTime? ReturnedDate { get; set; }
 
         public DateTime DueDate { get; set; }
+
+        public bool Renewed { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace BookLibrarySystem.Data.Models
     {
         [Key]
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public string ISBN { get; set; }
@@ -28,7 +29,7 @@ namespace BookLibrarySystem.Data.Models
 
         public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
-        [JsonIgnore,NotMapped]
+        [JsonIgnore, NotMapped]
         public virtual ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
 
         public virtual ICollection<BookLoan> Loans { get; set; } = new List<BookLoan>();

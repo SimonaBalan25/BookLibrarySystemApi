@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookLibrarySystem.Web.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [Authorize]
     public class AuthorsController : ControllerBase
@@ -45,7 +45,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> AddAuthorAsync([FromBody] Author newAuthor)
+        public async Task<IActionResult> AddAuthorAsync(Author newAuthor)
         {
             var author = await _authorsService.AddAuthorAsync(newAuthor);    
 

@@ -1,4 +1,6 @@
-﻿using BookLibrarySystem.Data.Models;
+﻿using AutoMapper;
+using BookLibrarySystem.Data.Models;
+using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +13,12 @@ namespace BookLibrarySystem.Web.Controllers
     public class AuthorsController : ControllerBase
     {
         private readonly IAuthorsService _authorsService;
+        private readonly IMapper _authorMapper;
 
-        public AuthorsController(IAuthorsService authorsService)
+        public AuthorsController(IAuthorsService authorsService, IMapper mapper)
         {
             _authorsService = authorsService;
+            _authorMapper = mapper;
         }
 
         [HttpGet()]
@@ -45,9 +49,10 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> AddAuthorAsync(Author newAuthor)
+        public async Task<IActionResult> AddAuthorAsync(AuthorDto newAuthor)
         {
-            var author = await _authorsService.AddAuthorAsync(newAuthor);    
+            var authorDb = _authorMapper.Map<Author>(newAuthor);
+            var author = await _authorsService.AddAuthorAsync(authorDb);    
 
             if (author == null)
             {
@@ -59,9 +64,9 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> UpdateAuthorAsync(int id, [FromBody] Author author)
+        public async Task<IActionResult> UpdateAuthorAsync(int id, [FromBody] AuthorDto modifiedAuthor)
         {
-            if (id != author.Id)
+            if (id != modifiedAuthor.Id)
             {
                 return BadRequest("not the same author");
             }
@@ -71,7 +76,7 @@ namespace BookLibrarySystem.Web.Controllers
                 return NotFound("Author was not found");
             }
 
-            var updated = await _authorsService.UpdateAuthorAsync(author);    
+            var updated = await _authorsService.UpdateAuthorAsync(modifiedAuthor);    
 
             if (!updated)
             {

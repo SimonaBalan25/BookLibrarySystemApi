@@ -56,8 +56,8 @@ namespace BookLibrarySystem.Data.Data
                 );
 
             _modelBuilder.Entity<Reservation>().HasData(
-                new Reservation() { Id = 1, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 3, ReservedDate = new DateTime(2023, 05, 17), Status = ReservationStatus.Pending },
-                new Reservation() { Id = 2, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 4, ReservedDate = new DateTime(2023, 05, 17), Status = ReservationStatus.Pending }
+                new Reservation() { Id = 1, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 3, ReservedDate = new DateTime(2023, 05, 17), Status = ReservationStatus.Active },
+                new Reservation() { Id = 2, ApplicationUserId = "764172d9-4ac0-4531-b303-73574c8f4204", BookId = 4, ReservedDate = new DateTime(2023, 05, 17), Status = ReservationStatus.Active }
                 );
 
             _modelBuilder.Entity<WaitingList>().HasData(

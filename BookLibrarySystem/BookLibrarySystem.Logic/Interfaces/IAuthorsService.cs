@@ -1,4 +1,5 @@
 ﻿using BookLibrarySystem.Data.Models;
+using BookLibrarySystem.Logic.DTOs;
 
 namespace BookLibrarySystem.Logic.Interfaces
 {
@@ -8,11 +9,11 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<IEnumerable<Author>> GetAuthorsAsync();
 
-        Task<Author?> GetAuthorAsync(int id);
+        Task<AuthorDto?> GetAuthorAsync(int id);
 
         Task<Author> AddAuthorAsync(Author author);
 
-        Task<bool> UpdateAuthorAsync(Author author);
+        Task<bool> UpdateAuthorAsync(AuthorDto author);
 
         Task<bool> DeleteAuthorAsync(int id);
     }

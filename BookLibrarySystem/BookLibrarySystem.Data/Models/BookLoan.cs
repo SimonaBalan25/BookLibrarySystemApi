@@ -23,5 +23,16 @@ namespace BookLibrarySystem.Data.Models
         public DateTime DueDate { get; set; }
 
         public bool Renewed { get; set; }
+
+        public LoanStatus Status { get; set; }
+    }
+
+    public enum LoanStatus
+    {
+        Active = 0,
+        Returned = 1,
+        Overdue = 2,
+        Renewed = 3,
+        Reserved
     }
 }

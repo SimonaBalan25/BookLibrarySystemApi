@@ -52,7 +52,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpDelete]
         [Authorize(Roles ="Administrator")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult> DeleteUserAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
             {

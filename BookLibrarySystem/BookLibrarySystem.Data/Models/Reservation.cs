@@ -23,10 +23,9 @@ namespace BookLibrarySystem.Data.Models
 
     public enum ReservationStatus
     {
-        Pending = 0,
-        Active=1,
-        Finalized = 2,
-        Cancelled = 3,
-        Expired=4
+        Active=0,
+        Finalized = 1,
+        Cancelled = 2,
+        Expired=3
     }
 }

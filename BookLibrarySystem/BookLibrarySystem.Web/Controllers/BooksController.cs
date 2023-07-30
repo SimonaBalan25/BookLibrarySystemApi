@@ -61,17 +61,16 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPost("borrow")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> BorrowBookAsync(int bookId, string appUserId)
+        public async Task<IActionResult> BorrowBookAsync([FromQuery]int bookId, [FromQuery]string appUserId)
         {
             var exists = await _booksService.CheckExistsAsync(bookId);
             if (!exists)
                 return NotFound("Book does not exist");
 
-            var selectedBook = await _booksService.GetBookAsync(bookId);
-            if (!_booksService.ValidateBorrowAsync(selectedBook))
+            if (!_booksService.CanBorrow(bookId, appUserId))
                 return BadRequest("Book cannot be borrowed, since all the copies are already borrowed");
 
-            var result = await _booksService.BorrowBookAsync(selectedBook, appUserId);
+            var result = await _booksService.BorrowBookAsync(bookId, appUserId);
             if (result > 0)
             {
                 return Ok(result);
@@ -80,18 +79,16 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
 
-
-        [HttpPost("return")]
+        [HttpPut("return")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> ReturnBookAsync(int bookId, string appUserId)
+        public async Task<IActionResult> ReturnBookAsync([FromQuery]int bookId, [FromQuery]string appUserId)
         {
             var exists = await _booksService.CheckExistsAsync(bookId);
 
             if (!exists)
                 return NotFound("Book does not exist");
 
-            var selectedBook = await _booksService.GetBookAsync(bookId);
-            var result = await _booksService.ReturnBookAsync(selectedBook, appUserId);
+            var result = await _booksService.ReturnBookAsync(bookId, appUserId);
             if (result > 0)
             {
                 return Ok(result);
@@ -102,7 +99,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> UpdateBookAsync(int id, [FromBody] Book updatedBook)
+        public async Task<IActionResult> UpdateBookAsync(int id, [FromBody] BookDto updatedBook)
         {
             if (id == 0 || id != updatedBook.Id)
                 return StatusCode(StatusCodes.Status400BadRequest, "Invalid id");
@@ -142,6 +139,31 @@ namespace BookLibrarySystem.Web.Controllers
                 return StatusCode(StatusCodes.Status200OK, "Book was deleted successfully");
 
             return StatusCode(StatusCodes.Status500InternalServerError, "The selected book could not be deleted from the library ");
+        }
+
+        [HttpPost("reserve")]
+        [Authorize(Roles ="NormalUser")]
+        public async Task<IActionResult> ReserveBookAsync([FromQuery]int bookId, [FromQuery]string appUserId)
+        {
+            if (bookId <= 0)
+                return BadRequest("BookId should be a positive number");
+
+            if (!await _booksService.CheckExistsAsync(bookId))
+                return NotFound($"Book with id {bookId} was not found in the database");
+
+            return Ok(await _booksService.ReserveBookAsync(bookId, appUserId));
+        }
+
+        [HttpPut("cancelReservation")]
+        public async Task<IActionResult> CancelReservationAsync([FromQuery] int bookId, [FromQuery] string appUserId)
+        {
+            if (bookId < 0)
+                return BadRequest("BookId should be a positive number");
+
+            if (!await _booksService.CheckExistsAsync(bookId))
+                return NotFound($"Book with id {bookId} was not found in the database");
+
+            return Ok(await _booksService.CancelReservationAsync(bookId, appUserId));
         }
     }
 }

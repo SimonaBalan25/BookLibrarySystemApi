@@ -4,6 +4,8 @@ namespace BookLibrarySystem.Logic.DTOs
 {
     public class BookDto
     {
+        public int Id { get; set; } 
+
         public string ISBN { get; set; }
 
         public string Title { get; set; }
@@ -13,6 +15,8 @@ namespace BookLibrarySystem.Logic.DTOs
         public int ReleaseYear { get; set; }
 
         public string Genre { get; set; }
+
+        public int Status { get; set; }
 
         public int NumberOfCopies { get; set; }
 

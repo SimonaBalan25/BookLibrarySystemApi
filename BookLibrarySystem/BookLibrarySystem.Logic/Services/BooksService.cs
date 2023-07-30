@@ -21,13 +21,12 @@ namespace BookLibrarySystem.Logic.Services
             _authorsService = authorsService;   
         }
 
-        public async Task<IEnumerable<Book>> GetBooksAsync()
+        public async Task<IEnumerable<BookDto>> GetBooksAsync()
         {
             _logger.LogDebug("Inside BooksService: GetBooksAsync method");
-            var firstBook = _dbContext.Books.First();
-
+            
             return await _dbContext.Books.Select(b =>
-                new Book
+                new BookDto
                 {
                     Id = b.Id,
                     Title = b.Title,
@@ -41,15 +40,28 @@ namespace BookLibrarySystem.Logic.Services
                     //Loans = b.Loans.ToList(),
                     //Reservations = b.Reservations.ToList(),  
                     //WaitingList = b.WaitingList.ToList(),
-                    Authors = b.Authors.ToList() //.BookAuthors.Select(a => a.Author)
+                    Authors = b.Authors.Select(a=>a.Id).ToList() 
                 }).ToListAsync();
         }
 
-        public async Task<Book?> GetBookAsync(int id)
+        public async Task<BookDto?> GetBookAsync(int id)
         {
             try
             {
-                return await _dbContext.Books.FindAsync(id);
+                return await _dbContext.Books.Select(b => new BookDto 
+                { 
+                    Id = b.Id,
+                    Title = b.Title,
+                    Genre = b.Genre,
+                    ISBN= b.ISBN,   
+                    LoanedQuantity= b.LoanedQuantity,
+                    NumberOfCopies= b.NumberOfCopies,
+                    NumberOfPages = b.NumberOfPages,
+                    Publisher = b.Publisher,    
+                    ReleaseYear = b.ReleaseYear,
+                    Status = (int)b.Status,
+                    Authors = b.Authors.Select(a=>a.Id)
+                }).FirstOrDefaultAsync(b => b.Id.Equals(id));
             }
             catch (Exception ex)
             {
@@ -74,17 +86,7 @@ namespace BookLibrarySystem.Logic.Services
         public async Task<Book?> AddBookAsync(Book book, IEnumerable<int> authorIds)
         {
             try
-            {
-                //foreach (var authorId in authorIds)
-                //{
-                //    var author = await _authorsService.GetAuthorAsync(authorId);
-                //    if (author != null)
-                //    {
-                //        //_dbContext.Authors.Add(author);
-                //        author.BookAuthors.Add();
-                //    }
-                //}
-                
+            {               
                 await _dbContext.Books.AddAsync(book);
                 _dbContext.Entry(book).State = EntityState.Added;
                 await _dbContext.SaveChangesAsync();
@@ -118,25 +120,28 @@ namespace BookLibrarySystem.Logic.Services
             return await _dbContext.Books.FindAsync(bookId) != null;
         }
 
-        public bool ValidateBorrowAsync(Book bookToBorrow)
+        public bool CanReserve(Book book)
         {
-            if (bookToBorrow.LoanedQuantity == bookToBorrow.NumberOfCopies)
-            {
-                return false;
-            }
-
-            return true;
+            return book.Status != BookStatus.Lost;
         }
 
-        public async Task<int> BorrowBookAsync(Book selectedBook, string userId)
+        public bool CanBorrow(int bookId, string appUserId)
         {
+            var bookToBorrow = _dbContext.Books.Find(bookId);
+            var bookReservations = _dbContext.Reservations.Where(r => r.BookId.Equals(bookToBorrow.Id) && r.Status.Equals(ReservationStatus.Active)).Count();
+            return bookToBorrow.LoanedQuantity + bookReservations < bookToBorrow.NumberOfCopies;
+        }
+
+        public async Task<int> BorrowBookAsync(int bookId, string userId)
+        {
+            var selectedBook = await _dbContext.Books.FindAsync(bookId);
             using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
                     selectedBook.LoanedQuantity += 1;
                     _dbContext.Books.Update(selectedBook);
-                    _dbContext.Loans.Add(new BookLoan() { ApplicationUserId = userId, BookId = selectedBook.Id, BorrowedDate = DateTime.UtcNow, DueDate = DateTime.Now.AddDays(21), ReturnedDate = null });
+                    _dbContext.Loans.Add(new BookLoan() { ApplicationUserId = userId, BookId = selectedBook.Id, BorrowedDate = DateTime.UtcNow, DueDate = DateTime.Now.AddDays(14), ReturnedDate = null, Renewed = false });
 
                     var result = await _dbContext.SaveChangesAsync();
                     await dbTransaction.CommitAsync();
@@ -151,8 +156,9 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task<int> ReturnBookAsync(Book selectedBook, string userId)
+        public async Task<int> ReturnBookAsync(int bookId, string userId)
         {
+            var selectedBook = await _dbContext.Books.FindAsync(bookId);
             using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync()) 
             {
                 try
@@ -179,14 +185,14 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task<bool> UpdateBookAsync(int bookId, Book selectedBook)
+        public async Task<bool> UpdateBookAsync(int bookId, BookDto selectedBook)
         {
             //use transactions in EF
             using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var dbBook = await GetBookAsync(bookId);
+                    var dbBook = await _dbContext.Books.FindAsync(bookId);
                     dbBook.Genre = selectedBook.Genre;
                     dbBook.ISBN = selectedBook.ISBN;
                     dbBook.LoanedQuantity = selectedBook.LoanedQuantity;
@@ -195,10 +201,10 @@ namespace BookLibrarySystem.Logic.Services
                     dbBook.Publisher = selectedBook.Publisher;
                     dbBook.ReleaseYear = selectedBook.ReleaseYear;
                     dbBook.Title = selectedBook.Title;
-                    dbBook.BookAuthors = selectedBook.BookAuthors;
-                    dbBook.Loans = selectedBook.Loans;
-                    dbBook.Reservations = selectedBook.Reservations;
-                    dbBook.WaitingList = selectedBook.WaitingList;
+                    //dbBook.BookAuthors = selectedBook.BookAuthors;
+                    //dbBook.Loans = selectedBook.Loans;
+                    //dbBook.Reservations = selectedBook.Reservations;
+                    //dbBook.WaitingList = selectedBook.WaitingList;
 
                     _dbContext.Entry(dbBook).State = EntityState.Modified;
                     var result = await _dbContext.SaveChangesAsync();
@@ -220,7 +226,7 @@ namespace BookLibrarySystem.Logic.Services
             {
                 try
                 {
-                    var dbBook = await GetBookAsync(bookId);
+                    var dbBook = await _dbContext.Books.FindAsync(bookId);
                     var deleted = _dbContext.Books.Remove(dbBook);
 
                     _dbContext.Entry(dbBook).State = EntityState.Deleted;
@@ -237,13 +243,60 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task ReserveBookAsync(int bookId)
+        public async Task<bool> ReserveBookAsync(int bookId, string appUserId)
         {
-
+            using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    await _dbContext.Reservations.AddAsync(new Reservation { ApplicationUserId = appUserId, BookId = bookId, ReservedDate = DateTime.Now, Status = ReservationStatus.Active });
+                    var existingUsersInTheWaitingListForBook = _dbContext.WaitingList.Where(wl => wl.BookId.Equals(bookId)).ToList();
+                    await _dbContext.WaitingList.AddAsync(new WaitingList { ApplicationUserId = appUserId, BookId = bookId, DateCreated = DateTime.Now, Position = existingUsersInTheWaitingListForBook.Count + 1 });
+                    await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }            
         }
 
-        public async Task CancelReservationAsync(int bookId) 
+        public async Task<bool> CancelReservationAsync(int bookId, string appUserId) 
         {
+            try
+            {
+                var selectedBook = await _dbContext.Reservations.FirstOrDefaultAsync(r => r.BookId.Equals(bookId) && r.ApplicationUserId.Equals(appUserId));
+                selectedBook.Status = ReservationStatus.Cancelled;
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> RenewBookAsync(int bookId, string appUserId)
+        {
+            var dbLoan = await _dbContext.Loans.FirstOrDefaultAsync(loan => loan.BookId.Equals(bookId) && loan.ApplicationUserId.Equals(appUserId));
+            
+            dbLoan.Renewed = true;
+            dbLoan.DueDate = DateTime.UtcNow.AddDays(10);
+            dbLoan.Status = LoanStatus.Renewed;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        private async Task<bool> CanBeRenewed(int bookId, string appUserId)
+        {
+            var dbLoan = await _dbContext.Loans.FirstOrDefaultAsync(loan => loan.ApplicationUserId.Equals(appUserId) && loan.BookId.Equals(bookId));
+            var dbBook = await _dbContext.Books.FirstOrDefaultAsync(b => b.Id.Equals(bookId));
+            var dbActiveReservations = await _dbContext.Reservations.Where(r => r.BookId.Equals(bookId) && r.Status.Equals(ReservationStatus.Active)).ToListAsync();
+
+            return dbLoan != null && dbLoan.ReturnedDate == null && dbLoan.Status.Equals(LoanStatus.Active) && !dbLoan.Renewed && dbBook.NumberOfCopies - dbBook.LoanedQuantity > dbActiveReservations.Count();
         }
     }
 }

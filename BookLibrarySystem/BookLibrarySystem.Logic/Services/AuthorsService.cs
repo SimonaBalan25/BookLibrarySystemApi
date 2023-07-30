@@ -1,5 +1,6 @@
 ﻿using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
+using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -44,11 +45,17 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task<Author?> GetAuthorAsync(int id)
+        public async Task<AuthorDto?> GetAuthorAsync(int id)
         {
             try
             {
-                return await _dbContext.Authors.AsNoTracking().FirstAsync(ent => ent.Id.Equals(id));
+                return await _dbContext.Authors.AsNoTracking()
+                    .Select(a => new AuthorDto { 
+                        Id = a.Id,
+                        Name = a.Name,
+                        Country = a.Country
+                    })
+                    .FirstAsync(ent => ent.Id.Equals(id));
             }
             catch
             {
@@ -73,7 +80,7 @@ namespace BookLibrarySystem.Logic.Services
             return await _dbContext.Authors.FindAsync(author.Id);
         }
 
-        public async Task<bool> UpdateAuthorAsync(Author author)
+        public async Task<bool> UpdateAuthorAsync(AuthorDto author)
         {
             using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
             {
@@ -98,7 +105,7 @@ namespace BookLibrarySystem.Logic.Services
         {
             try
             {
-                var dbAuthor = await GetAuthorAsync(id);
+                var dbAuthor = await _dbContext.Authors.FindAsync(id);
                 _dbContext.Authors.Remove(dbAuthor);
                 return await _dbContext.SaveChangesAsync() > 0;
             }

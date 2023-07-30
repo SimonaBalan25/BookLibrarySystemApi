@@ -4,14 +4,10 @@ using BookLibrarySystem.Logic.Interfaces;
 using BookLibrarySystem.Logic.Services;
 using BookLibrarySystem.Web.Middleware;
 using BookLibrarySystem.Web.Services;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NLog.Web;
-using Microsoft.AspNetCore.Hosting;
 
 internal class Program
 {

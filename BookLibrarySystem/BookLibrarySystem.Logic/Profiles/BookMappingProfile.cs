@@ -11,10 +11,10 @@ namespace BookLibrarySystem.Logic.Profiles
         public BookMappingProfile() 
         {
             CreateMap<BookDto, Book>()
-            .ForMember(
-                dest => dest.Id,
-                opt => opt.MapFrom(src => Guid.NewGuid())
-            )
+            //.ForMember(
+            //    dest => dest.Id,
+            //    opt => opt.MapFrom(src => Guid.NewGuid())
+            //)
             .ForMember(
                 dest => dest.ISBN,
                 opt => opt.MapFrom(src => src.ISBN)
@@ -40,6 +40,10 @@ namespace BookLibrarySystem.Logic.Profiles
                 opt => opt.MapFrom(src => src.Genre)
             )
             .ForMember(
+                dest => dest.Status,
+                opt => opt.MapFrom(src => src.Status)
+            )
+            .ForMember(
                 dest => dest.ReleaseYear,
                 opt => opt.MapFrom(src => src.ReleaseYear)
             )
@@ -50,7 +54,7 @@ namespace BookLibrarySystem.Logic.Profiles
             .ForMember(dest => dest.Authors, opt => opt.Ignore())
             .ForMember(
                 dest => dest.Id,
-                opt => opt.MapFrom(src => 0)
+                opt => opt.MapFrom(src => src.Id)
             ).ReverseMap();
             //.AfterMap((src, dest) =>
             //{

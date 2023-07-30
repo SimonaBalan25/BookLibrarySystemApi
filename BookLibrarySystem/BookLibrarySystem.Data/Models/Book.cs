@@ -21,6 +21,8 @@ namespace BookLibrarySystem.Data.Models
 
         public string Genre { get; set; }
 
+        public BookStatus Status { get; set; }  
+
         public int NumberOfCopies { get; set; }
 
         public int LoanedQuantity { get; set; }
@@ -37,5 +39,11 @@ namespace BookLibrarySystem.Data.Models
         public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
         public virtual ICollection<WaitingList> WaitingList { get; set; } = new List<WaitingList>();
+    }
+
+    public enum BookStatus
+    {
+        Available = 0,
+        Lost
     }
 }

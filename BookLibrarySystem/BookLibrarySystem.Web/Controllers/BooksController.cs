@@ -15,13 +15,13 @@ namespace BookLibrarySystem.Web.Controllers
     {
         private readonly IBooksService _booksService;
         private readonly TelemetryClient _logger;
-        private readonly IMapper _mapper;
+        
 
-        public BooksController(IBooksService booksService, TelemetryClient logger, IMapper mapper)
+        public BooksController(IBooksService booksService, TelemetryClient logger)
         {
             _booksService = booksService;
             _logger = logger;
-            _mapper = mapper;
+            
         }
 
         [HttpGet]
@@ -52,11 +52,9 @@ namespace BookLibrarySystem.Web.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> AddBook(BookDto bookDto)
         {
-            var book = _mapper.Map<Book>(bookDto);
+            var dbBook = await _booksService.AddBookAsync(bookDto, bookDto.Authors);
 
-            var dbBook = await _booksService.AddBookAsync(book, bookDto.Authors);
-
-            return CreatedAtAction("AddBook", new { id = dbBook.Id }, book);
+            return CreatedAtAction("AddBook", new { id = dbBook.Id }, dbBook);
         }
 
         [HttpPost("borrow")]
@@ -67,10 +65,11 @@ namespace BookLibrarySystem.Web.Controllers
             if (!exists)
                 return NotFound("Book does not exist");
 
-            if (!_booksService.CanBorrow(bookId, appUserId))
-                return BadRequest("Book cannot be borrowed, since all the copies are already borrowed");
+            var response = await _booksService.CanBorrowAsync(bookId, appUserId);
+            if (!response.Allowed)
+                return BadRequest(response.Reason);
 
-            var result = await _booksService.BorrowBookAsync(bookId, appUserId);
+            var result = await _booksService.BorrowBookAsync(bookId, appUserId, response.Borrowed);
             if (result > 0)
             {
                 return Ok(result);
@@ -151,6 +150,9 @@ namespace BookLibrarySystem.Web.Controllers
             if (!await _booksService.CheckExistsAsync(bookId))
                 return NotFound($"Book with id {bookId} was not found in the database");
 
+            var response = await _booksService.CanReserveAsync(bookId, appUserId);
+            if (!response.Allowed)
+                return BadRequest(response.Reason);
             return Ok(await _booksService.ReserveBookAsync(bookId, appUserId));
         }
 

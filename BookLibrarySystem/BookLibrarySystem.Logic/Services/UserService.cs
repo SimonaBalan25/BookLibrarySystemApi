@@ -75,6 +75,14 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
+        public async Task<bool> BlockUserAsync(string userId)
+        {
+            var selectedUser = await _dbContext.Users.FindAsync(userId);
+            selectedUser.Status = UserStatus.Blocked;
+            await _dbContext.SaveChangesAsync();    
+            return true;
+        }
+
         public async Task<bool> DeleteUserAsync(string id)
         {
             try

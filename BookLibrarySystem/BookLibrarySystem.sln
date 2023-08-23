@@ -5,9 +5,11 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibrarySystem.Web", "BookLibrarySystem.Web\BookLibrarySystem.Web.csproj", "{8A148773-F857-4071-AB64-0CB6E206526B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookLibrarySystem.Data", "BookLibrarySystem.Data\BookLibrarySystem.Data.csproj", "{193CFE98-BD8B-4521-9393-5C4FB949D0C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibrarySystem.Data", "BookLibrarySystem.Data\BookLibrarySystem.Data.csproj", "{193CFE98-BD8B-4521-9393-5C4FB949D0C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookLibrarySystem.Logic", "BookLibrarySystem.Logic\BookLibrarySystem.Logic.csproj", "{2F81EC01-F608-4833-8C96-B12598DE312C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibrarySystem.Logic", "BookLibrarySystem.Logic\BookLibrarySystem.Logic.csproj", "{2F81EC01-F608-4833-8C96-B12598DE312C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryWorkerService", "LibraryWorkerService\LibraryWorkerService.csproj", "{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{2F81EC01-F608-4833-8C96-B12598DE312C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F81EC01-F608-4833-8C96-B12598DE312C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F81EC01-F608-4833-8C96-B12598DE312C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

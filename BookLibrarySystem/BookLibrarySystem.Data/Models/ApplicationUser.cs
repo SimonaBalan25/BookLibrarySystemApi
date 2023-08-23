@@ -22,7 +22,6 @@ namespace BookLibrarySystem.Data.Models
     public enum UserStatus
     {
         Active = 0,
-        Terminated,
-        Loaned
+        Blocked
     }
 }

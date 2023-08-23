@@ -47,7 +47,7 @@ namespace BookLibrarySystem.Web.Services
             var roles = await _userManager.GetRolesAsync(user);
 
             //check if user is not blocked, his status, and then give him the role
-            if (user.Status != UserStatus.Loaned)
+            if (user.Status != UserStatus.Blocked)
             {
                 foreach (var role in roles)
                 {

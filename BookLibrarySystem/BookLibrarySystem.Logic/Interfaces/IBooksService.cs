@@ -18,7 +18,7 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<CanGetBookResponse> CanReserveAsync(int bookId, string appUserId);
 
-        Task<bool> CanBeRenewed(int bookId, string appUserId);
+        Task<bool> CanRenewAsync(int bookId, string appUserId);
 
         Task<Book?> AddBookAsync(BookDto book, IEnumerable<int> authorIds);
 
@@ -34,6 +34,6 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<bool> CancelReservationAsync(int bookId, string appUserId);
 
-        Task<bool> RenewBookAsync(int bookId, string appUserId);
+        Task<DateTime> RenewBookAsync(int bookId, string appUserId);
     }
 }

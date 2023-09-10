@@ -1,4 +1,5 @@
-﻿using BookLibrarySystem.Data;
+﻿using AutoMapper;
+using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
@@ -12,11 +13,13 @@ namespace BookLibrarySystem.Logic.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<AuthorsService> _logger;
+        private readonly IMapper _mapper;
 
-        public AuthorsService(ApplicationDbContext dbContext, ILogger<AuthorsService> logger) 
+        public AuthorsService(ApplicationDbContext dbContext, ILogger<AuthorsService> logger, IMapper mapper) 
         { 
             _dbContext = dbContext;
             _logger = logger;
+            _mapper = mapper;
         }
         
         public async Task<bool> CheckExistsAsync(int id)
@@ -64,11 +67,12 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task<Author?> AddAuthorAsync(Author author)
+        public async Task<Author?> AddAuthorAsync(AuthorDto author)
         {
             try
             {
-                await _dbContext.Authors.AddAsync(author);
+                var dbAuthor = _mapper.Map<Author>(author);
+                await _dbContext.Authors.AddAsync(dbAuthor);
                 int added = await _dbContext.SaveChangesAsync();
             }
             catch

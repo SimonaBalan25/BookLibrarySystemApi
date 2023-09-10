@@ -1,5 +1,7 @@
-﻿using BookLibrarySystem.Data;
+﻿using AutoMapper;
+using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
+using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,11 +12,13 @@ namespace BookLibrarySystem.Logic.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private ILogger<UserService> _logger;
+        private readonly IMapper _mapper;
 
-        public UserService(ApplicationDbContext dbContext, ILogger<UserService> logger)
+        public UserService(ApplicationDbContext dbContext, ILogger<UserService> logger, IMapper mapper)
         {
             _dbContext = dbContext;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetUsersAsync()
@@ -29,14 +33,15 @@ namespace BookLibrarySystem.Logic.Services
 
         public async Task<ApplicationUser> GetByIdAsync(string id)
         {
-            return await _dbContext.Users.Where(u => u.Id.Equals(id)).FirstOrDefaultAsync();
+            return await _dbContext.Users.Where(u => u.Id.Equals(id)).SingleOrDefaultAsync();
         }
 
-        public async Task<ApplicationUser?> AddUserAsync(ApplicationUser newUser)
+        public async Task<ApplicationUser?> AddUserAsync(UserDto newUser)
         {
             try
             {
-                await _dbContext.Users.AddAsync(newUser);
+                var dbUser = _mapper.Map<ApplicationUser>(newUser);
+                await _dbContext.Users.AddAsync(dbUser);
                 _dbContext.Entry(newUser).State = EntityState.Added;
                 await _dbContext.SaveChangesAsync();
 
@@ -49,21 +54,24 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task<bool> UpdateUserAsync(string id, ApplicationUser updatedUser)
+        public async Task<bool> UpdateUserAsync(string id, UserDto updatedUser)
         {
             try
-            {
+            {                
                 var dbUser = await _dbContext.Users.FindAsync(id);
                 dbUser.Address = updatedUser.Address;
                 dbUser.PhoneNumber = updatedUser.PhoneNumber;
                 dbUser.PhoneNumberConfirmed = updatedUser.PhoneNumberConfirmed;
+                dbUser.Email = updatedUser.Email;   
+                dbUser.Name = updatedUser.Name;
+                dbUser.UserName = updatedUser.UserName;
                 dbUser.EmailConfirmed = updatedUser.EmailConfirmed;
                 dbUser.BirthDate = updatedUser.BirthDate;
                 dbUser.Email = updatedUser.Email;
-                dbUser.Loans = updatedUser.Loans;
-                dbUser.Reservations = updatedUser.Reservations;
+                //dbUser.Loans = updatedUser.Loans;
+                //dbUser.Reservations = updatedUser.Reservations;
                 dbUser.Status = updatedUser.Status;
-                dbUser.WaitingList = updatedUser.WaitingList;
+                //dbUser.WaitingList = updatedUser.WaitingList;
                 _dbContext.Entry(updatedUser).State = EntityState.Modified;
                 var result = await _dbContext.SaveChangesAsync();
                 return result > 0;

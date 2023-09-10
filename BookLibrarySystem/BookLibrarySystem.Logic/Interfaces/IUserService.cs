@@ -1,4 +1,5 @@
 ﻿using BookLibrarySystem.Data.Models;
+using BookLibrarySystem.Logic.DTOs;
 
 namespace BookLibrarySystem.Logic.Interfaces
 {
@@ -12,9 +13,9 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<bool> CheckUserExistsAsync(string id);
 
-        Task<ApplicationUser> AddUserAsync(ApplicationUser newUser);   
+        Task<ApplicationUser> AddUserAsync(UserDto newUser);   
 
-        Task<bool> UpdateUserAsync(string id, ApplicationUser modifiedUser);
+        Task<bool> UpdateUserAsync(string id, UserDto modifiedUser);
 
         Task<bool> DeleteUserAsync(string id);
 

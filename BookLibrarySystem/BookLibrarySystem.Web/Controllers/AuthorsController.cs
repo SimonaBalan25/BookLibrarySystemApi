@@ -51,8 +51,7 @@ namespace BookLibrarySystem.Web.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> AddAuthorAsync(AuthorDto newAuthor)
         {
-            var authorDb = _authorMapper.Map<Author>(newAuthor);
-            var author = await _authorsService.AddAuthorAsync(authorDb);    
+            var author = await _authorsService.AddAuthorAsync(newAuthor);    
 
             if (author == null)
             {

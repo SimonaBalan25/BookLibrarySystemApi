@@ -11,7 +11,7 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<AuthorDto?> GetAuthorAsync(int id);
 
-        Task<Author> AddAuthorAsync(Author author);
+        Task<Author> AddAuthorAsync(AuthorDto author);
 
         Task<bool> UpdateAuthorAsync(AuthorDto author);
 

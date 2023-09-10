@@ -2,10 +2,8 @@
 
 namespace LibraryWorkerService.Interfaces
 {
-    public interface IProcessLoansService
+    public interface IProcessLoans
     {
         Task DoWorkAsync(CancellationToken stoppingToken);
-
-        //Task<int> BlockUsersNotReturningBook();
     }
 }

@@ -95,9 +95,17 @@ namespace BookLibrarySystem.Logic.Services
 
         public async Task<CanGetBookResponse> CanReserveAsync(int bookId, string appUserId)
         {
+            var dbUser = await _dbContext.Users.FindAsync(appUserId);
+            if (dbUser.Status.Equals(UserStatus.Blocked))
+            {
+                return new CanGetBookResponse { Allowed = false, Reason = "User is blocked, cannot make reservations !" };
+            }
+
             var dbBook = await _dbContext.Books.FindAsync(bookId);
             if (dbBook.Status == BookStatus.Lost)
+            {
                 return new CanGetBookResponse { Allowed = false, Reason = "The book is reported to be lost, cannot be reserved." };
+            }
 
             var reservedBooksCount = _dbContext.Reservations.Where(r => r.ApplicationUserId.Equals(appUserId) && r.Status.Equals(ReservationStatus.Active)).Count();
             if (reservedBooksCount >= 3)
@@ -140,7 +148,7 @@ namespace BookLibrarySystem.Logic.Services
             return new CanGetBookResponse { Allowed = true };
         }
 
-        public async Task<bool> CanBeRenewed(int bookId, string appUserId)
+        public async Task<bool> CanRenewAsync(int bookId, string appUserId)
         {
             var dbLoan = await _dbContext.Loans.FirstOrDefaultAsync(loan => loan.ApplicationUserId.Equals(appUserId) && loan.BookId.Equals(bookId) && loan.Status.Equals(LoanStatus.Active));
             var dbBook = await _dbContext.Books.FirstOrDefaultAsync(b => b.Id.Equals(bookId));
@@ -148,13 +156,9 @@ namespace BookLibrarySystem.Logic.Services
             //check there are available book copies
             var dbActiveReservations = await _dbContext.Reservations.Where(r => r.BookId.Equals(bookId) && r.Status.Equals(ReservationStatus.Active)).ToListAsync();
 
-            //check user, not to be blocked
-            var dbUser = await _dbContext.Users.SingleOrDefaultAsync(usr => usr.Id.Equals(appUserId));
-
             return dbLoan != null &&
-                dbLoan.ReturnedDate == null && 
-                dbBook?.NumberOfCopies - dbBook?.LoanedQuantity > dbActiveReservations.Count() &&
-                dbUser?.Status != UserStatus.Blocked;
+                dbLoan.ReturnedDate == null &&
+                dbBook?.NumberOfCopies - dbBook?.LoanedQuantity > dbActiveReservations.Count();
         }
 
         public async Task<Book?> AddBookAsync(BookDto bookDto, IEnumerable<int> authorIds)
@@ -377,7 +381,7 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
-        public async Task<bool> RenewBookAsync(int bookId, string appUserId)
+        public async Task<DateTime> RenewBookAsync(int bookId, string appUserId)
         {
             var dbLoan = await _dbContext.Loans.FirstOrDefaultAsync(loan => loan.BookId.Equals(bookId) && loan.ApplicationUserId.Equals(appUserId));
 
@@ -387,7 +391,7 @@ namespace BookLibrarySystem.Logic.Services
                 dbLoan.Status = LoanStatus.Renewed;
                 await _dbContext.SaveChangesAsync();
             }
-            return true;
+            return dbLoan.DueDate;
         }        
     }
 }

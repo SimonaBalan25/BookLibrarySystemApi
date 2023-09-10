@@ -1,5 +1,4 @@
 using LibraryWorkerService.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LibraryWorkerService
 {
@@ -7,13 +6,11 @@ namespace LibraryWorkerService
     {
         private readonly ILogger<Worker> _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IProcessReservationsService _reservationsCheckService;
 
-        public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider)//, IReservationsCheckService reservationsCheckService
+        public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
-            //_reservationsCheckService = reservationsCheckService;   
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -25,13 +22,13 @@ namespace LibraryWorkerService
 
                 using (IServiceScope scope = _serviceProvider.CreateScope())
                 {
-                    IProcessLoansService loansProcessingService =
-                        scope.ServiceProvider.GetRequiredService<IProcessLoansService>();
+                    IProcessLoans loansProcessingService =
+                        scope.ServiceProvider.GetRequiredService<IProcessLoans>();
 
                     await loansProcessingService.DoWorkAsync(stoppingToken);
 
-                    IProcessReservationsService reservationsProcessingService =
-                        scope.ServiceProvider.GetRequiredService<IProcessReservationsService>();
+                    IProcessReservations reservationsProcessingService =
+                        scope.ServiceProvider.GetRequiredService<IProcessReservations>();
 
                     await reservationsProcessingService.DoWorkAsync(stoppingToken);
                 }

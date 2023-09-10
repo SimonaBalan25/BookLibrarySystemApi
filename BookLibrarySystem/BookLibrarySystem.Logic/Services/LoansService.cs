@@ -16,7 +16,7 @@ namespace BookLibrarySystem.Logic.Services
 
         public async Task<IEnumerable<BookLoan>> GetAllLoansAsync()
         {
-            return await _dbContext.Loans.ToListAsync();
+            return await _dbContext.Loans.Where(loan => !loan.Status.Equals(LoanStatus.Finalized)).ToListAsync();
         }
     }
 }

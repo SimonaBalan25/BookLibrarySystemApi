@@ -80,7 +80,7 @@ namespace BookLibrarySystem.Logic.Services
             // Perform the search across all fields using LINQ
             var matchedBooks = _dbContext.Books.Where(book =>
                 book.Title.ToLower().Contains(keyword.ToLower()) ||
-                book.BookAuthors.Any(ba => ba.Author.Name.ToLower().Contains(keyword.ToLower())) || //, StringComparison.OrdinalIgnoreCase
+                book.Authors.Any(a => a.Name.ToLower().Contains(keyword.ToLower())) || //, StringComparison.OrdinalIgnoreCase
                 book.Genre.ToLower().Contains(keyword.ToLower()) ||
                 book.Publisher.ToLower().Contains(keyword.ToLower())  //, StringComparison.OrdinalIgnoreCase
             ).ToList();
@@ -164,12 +164,13 @@ namespace BookLibrarySystem.Logic.Services
         public async Task<Book?> AddBookAsync(BookDto bookDto, IEnumerable<int> authorIds)
         {
             var dbBook = _mapper.Map<Book>(bookDto);
-            using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync())
+            //using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
                     await _dbContext.Books.AddAsync(dbBook);
                     _dbContext.Entry(dbBook).State = EntityState.Added;
+                    await _dbContext.SaveChangesAsync();
 
                     foreach (var authorId in authorIds)
                     {
@@ -185,13 +186,13 @@ namespace BookLibrarySystem.Logic.Services
                         }
                     }
                     await _dbContext.SaveChangesAsync();
-                    await dbTransaction.CommitAsync();
+                    //await dbTransaction.CommitAsync();
                     return await _dbContext.Books.FindAsync(dbBook.Id);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"AddBookAsync method: Exception when trying to add the book {dbBook.Title}.");
-                    await dbTransaction.RollbackAsync();    
+                    //await dbTransaction.RollbackAsync();    
                     throw;
                 }
             }
@@ -256,7 +257,7 @@ namespace BookLibrarySystem.Logic.Services
                 try
                 {
                     selectedBook.LoanedQuantity -= 1;
-                    var loan =  await _dbContext.Loans.FirstOrDefaultAsync(l => l.ApplicationUserId == userId && l.BookId == selectedBook.Id && l.Status.Equals(LoanStatus.Active));
+                    var loan =  await _dbContext.Loans.FirstOrDefaultAsync(l => l.ApplicationUserId == userId && l.BookId == selectedBook.Id && !l.Status.Equals(LoanStatus.Finalized));
                     if (loan != null)
                     {
                         loan.ReturnedDate = DateTime.UtcNow;

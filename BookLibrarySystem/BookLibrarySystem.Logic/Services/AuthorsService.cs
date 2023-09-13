@@ -27,17 +27,17 @@ namespace BookLibrarySystem.Logic.Services
             return await _dbContext.Authors.FindAsync(id) != null;
         }
 
-        public async Task<IEnumerable<Author>> GetAuthorsAsync()
+        public async Task<IEnumerable<AuthorDto>> GetAuthorsAsync()
         {
             try
             {
                 return await _dbContext.Authors.Select(a =>
-                new Author()
+                new AuthorDto()
                 {
                     Id = a.Id,
                     Name = a.Name,
                     Country = a.Country,
-                    Books = a.BookAuthors.Select(b => b.Book).ToList()
+                    Books = a.Books.Select(b => b.Id).ToList()
                 }).ToListAsync();
             }
             catch
@@ -56,7 +56,8 @@ namespace BookLibrarySystem.Logic.Services
                     .Select(a => new AuthorDto { 
                         Id = a.Id,
                         Name = a.Name,
-                        Country = a.Country
+                        Country = a.Country,
+                        Books = a.Books.Select(a=>a.Id).ToList()
                     })
                     .FirstAsync(ent => ent.Id.Equals(id));
             }
@@ -69,9 +70,10 @@ namespace BookLibrarySystem.Logic.Services
 
         public async Task<Author?> AddAuthorAsync(AuthorDto author)
         {
+            Author? dbAuthor = null;
             try
             {
-                var dbAuthor = _mapper.Map<Author>(author);
+                dbAuthor = _mapper.Map<Author>(author);
                 await _dbContext.Authors.AddAsync(dbAuthor);
                 int added = await _dbContext.SaveChangesAsync();
             }
@@ -81,7 +83,7 @@ namespace BookLibrarySystem.Logic.Services
                 throw;
             }
 
-            return await _dbContext.Authors.FindAsync(author.Id);
+            return await _dbContext.Authors.FindAsync(dbAuthor.Id);
         }
 
         public async Task<bool> UpdateAuthorAsync(AuthorDto author)

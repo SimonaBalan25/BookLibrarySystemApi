@@ -7,7 +7,7 @@ namespace BookLibrarySystem.Logic.Interfaces
     {
         Task<bool> CheckExistsAsync(int id);
 
-        Task<IEnumerable<Author>> GetAuthorsAsync();
+        Task<IEnumerable<AuthorDto>> GetAuthorsAsync();
 
         Task<AuthorDto?> GetAuthorAsync(int id);
 

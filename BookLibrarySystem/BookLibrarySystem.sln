@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibrarySystem.Data", "B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibrarySystem.Logic", "BookLibrarySystem.Logic\BookLibrarySystem.Logic.csproj", "{2F81EC01-F608-4833-8C96-B12598DE312C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryWorkerService", "LibraryWorkerService\LibraryWorkerService.csproj", "{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryWorkerService", "LibraryWorkerService\LibraryWorkerService.csproj", "{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookLibrary.Common", "BookLibrary.Common\BookLibrary.Common.csproj", "{141433CD-9159-4B95-A6E5-E7245FB9C828}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11CF5F4C-DB97-4D06-B6B8-BDB4065E6A92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{141433CD-9159-4B95-A6E5-E7245FB9C828}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{141433CD-9159-4B95-A6E5-E7245FB9C828}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{141433CD-9159-4B95-A6E5-E7245FB9C828}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{141433CD-9159-4B95-A6E5-E7245FB9C828}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

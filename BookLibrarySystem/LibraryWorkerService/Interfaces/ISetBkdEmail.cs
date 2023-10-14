@@ -1,7 +1,7 @@
 ﻿
 namespace LibraryWorkerService.Interfaces
 {
-    public interface ISendEmail
+    public interface ISetBkdEmail
     {
         Task SendRenewalPeriodEmail(string emailTo, string userName, string book, DateTime renewTime);
 

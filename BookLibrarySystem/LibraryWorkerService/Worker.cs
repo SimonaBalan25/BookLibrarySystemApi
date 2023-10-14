@@ -4,6 +4,7 @@ namespace LibraryWorkerService
 {
     public class Worker : BackgroundService
     {
+        private int _executionCount;
         private readonly ILogger<Worker> _logger;
         private readonly IServiceProvider _serviceProvider;
 
@@ -15,24 +16,37 @@ namespace LibraryWorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            ++_executionCount;
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
+                _logger.LogInformation(
+                   "{ServiceName} working, running at: {time}",
+                   nameof(Worker),
+                   DateTimeOffset.Now);
 
                 using (IServiceScope scope = _serviceProvider.CreateScope())
                 {
                     IProcessLoans loansProcessingService =
                         scope.ServiceProvider.GetRequiredService<IProcessLoans>();
 
-                    await loansProcessingService.DoWorkAsync(stoppingToken);
+                    await loansProcessingService.DoWorkAsync(_executionCount);
 
                     IProcessReservations reservationsProcessingService =
                         scope.ServiceProvider.GetRequiredService<IProcessReservations>();
 
-                    await reservationsProcessingService.DoWorkAsync(stoppingToken);
+                    await reservationsProcessingService.DoWorkAsync(_executionCount);
                 }
+
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
+        }
+
+        public override async Task StopAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation(
+                $"{nameof(Worker)} is stopping.");
+
+            await base.StopAsync(stoppingToken);
         }
     }
 }

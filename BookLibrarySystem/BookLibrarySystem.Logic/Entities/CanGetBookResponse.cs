@@ -6,7 +6,5 @@ namespace BookLibrarySystem.Logic.Entities
         public bool Allowed { get; set; }
 
         public string Reason { get; set; } 
-        
-        public IEnumerable<int> Borrowed { get; set; }
     }
 }

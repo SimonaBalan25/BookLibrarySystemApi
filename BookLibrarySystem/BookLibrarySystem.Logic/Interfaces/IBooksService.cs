@@ -10,6 +10,8 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<BookDto?> GetBookAsync(int id);
 
+        Task<IEnumerable<BookForListing>> GetBooksForListingAsync();
+
         Task<IEnumerable<Book>> SearchBooksAsync(string keyword);
 
         Task<bool> CheckExistsAsync(int bookId);
@@ -22,7 +24,7 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<Book?> AddBookAsync(BookDto book, IEnumerable<int> authorIds);
 
-        Task<int> BorrowBookAsync(int bookId, string appUserId, IEnumerable<int> borrowed);
+        Task<int> BorrowBookAsync(int bookId, string appUserId);
 
         Task<int> ReturnBookAsync(int bookId, string appUserId);
 

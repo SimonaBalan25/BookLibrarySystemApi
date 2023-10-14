@@ -32,6 +32,7 @@ internal class Program
             builder.Services.AddScoped<IBooksService, BooksService>();
             builder.Services.AddScoped<IAuthorsService, AuthorsService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ISendEmail, SendEmail>();
             builder.Services.AddScoped<IClaimsTransformation, AddRolesClaimsTransformation>();
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

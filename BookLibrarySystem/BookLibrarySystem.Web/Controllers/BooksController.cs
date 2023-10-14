@@ -33,6 +33,15 @@ namespace BookLibrarySystem.Web.Controllers
             return StatusCode(StatusCodes.Status200OK, books);
         }
 
+        [HttpGet("GetAllForListing")]
+        public async Task<IActionResult> GetAllForListingAsync()
+        {
+            _logger.TrackTrace("Start:BooksController-GetAllAsync", Microsoft.ApplicationInsights.DataContracts.SeverityLevel.Information, new Dictionary<string, string> { { "source", "BooksController" } });
+            var books = await _booksService.GetBooksForListingAsync();
+            _logger.TrackTrace("End BooksController-GetAllAsync");
+            return StatusCode(StatusCodes.Status200OK, books);
+        }
+
         [HttpGet("search")]
         public async Task<IEnumerable<Book>> SearchBooksAsync(string keyword)
         {
@@ -69,7 +78,7 @@ namespace BookLibrarySystem.Web.Controllers
             if (!response.Allowed)
                 return BadRequest(response.Reason);
 
-            var result = await _booksService.BorrowBookAsync(bookId, appUserId, response.Borrowed);
+            var result = await _booksService.BorrowBookAsync(bookId, appUserId);
             if (result > 0)
             {
                 return Ok(result);

@@ -23,6 +23,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddScoped<IReservationsService, ReservationsService>();    
         services.AddScoped<IProcessLoans, ProcessLoans>();
         services.AddScoped<ISendEmail, SendEmail>();
+        services.AddScoped<ISetBkdEmail, SetBkdEmail>();    
         services.AddScoped<IProcessReservations, ProcessReservations>();
         services.AddHostedService<Worker>();
     })

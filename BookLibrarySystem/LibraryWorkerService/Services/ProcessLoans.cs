@@ -5,16 +5,15 @@ using LibraryWorkerService.Interfaces;
 namespace LibraryWorkerService.Services
 {
     public class ProcessLoans : IProcessLoans
-    {
-        private int _executionCount;
+    {        
         private readonly IBooksService _booksService;
         private readonly IUserService _userService;
         private readonly ILoansService _loansService;
-        private readonly ISendEmail _emailService;
+        private readonly ISetBkdEmail _emailService;
         private readonly ILogger<ProcessLoans> _logger;
 
         public ProcessLoans(IBooksService booksService, IUserService userService, 
-            ILoansService loansService, ISendEmail emailService, ILogger<ProcessLoans> logger) 
+            ILoansService loansService, ISetBkdEmail emailService, ILogger<ProcessLoans> logger) 
         {
             _booksService = booksService;
             _userService = userService;
@@ -23,69 +22,64 @@ namespace LibraryWorkerService.Services
             _logger = logger;
         }
 
-        public async Task DoWorkAsync(CancellationToken stoppingToken)
+        public async Task DoWorkAsync(int executionCount)
         {
-            while (!stoppingToken.IsCancellationRequested)
+
+            _logger.LogInformation(
+                "{ServiceName} working, execution count: {Count}",
+                nameof(ProcessLoans),
+                executionCount);
+
+            var blockedUsers = new List<string>();
+            var loans = (await _loansService.GetAllActiveAsync()).ToList();
+            foreach (var loan in loans)
             {
-                ++_executionCount;
-                _logger.LogInformation(
-                    "{ServiceName} working, execution count: {Count}",
-                    nameof(ProcessLoans),
-                    _executionCount);
+                var user = await _userService.GetByIdAsync(loan.ApplicationUserId);
 
-                var blockedUsers = new List<string>();
-                var loans = (await _loansService.GetAllLoansAsync()).ToList();
-                foreach (var loan in loans)
+                if (loan.Status == LoanStatus.Active && 
+                    DateTime.Now > loan.DueDate && 
+                    await _booksService.CanRenewAsync(loan.BookId, loan.ApplicationUserId) &&
+                    !user.Status.Equals(UserStatus.Blocked))
                 {
-                    var user = await _userService.GetByIdAsync(loan.ApplicationUserId);
-
-                    if (loan.Status == LoanStatus.Active && 
-                        DateTime.Now > loan.DueDate && 
-                        await _booksService.CanRenewAsync(loan.BookId, loan.ApplicationUserId) &&
-                        !user.Status.Equals(UserStatus.Blocked))
-                    {
-                        //try to renew the loan
-                        var dateRenewed = await _booksService.RenewBookAsync(loan.BookId, loan.ApplicationUserId);
-                        var book = await _booksService.GetBookAsync(loan.BookId);
-                        await _emailService.SendRenewalPeriodEmail(user?.Email, user?.UserName, book.Title, dateRenewed);
-                        continue;
-                    }
-
-                    
-                    if (loan.Status == LoanStatus.Active && 
-                        DateTime.Now > loan.DueDate && 
-                        ! await _booksService.CanRenewAsync(loan.BookId, loan.ApplicationUserId) &&
-                        !user.Status.Equals(UserStatus.Blocked))    
-                    {
-                        //block the user
-                        var blocked = await _userService.BlockUserAsync(loan.ApplicationUserId);
-                        var book = await _booksService.GetBookAsync(loan.BookId);
-                        
-                        await _emailService.SendBlockUserEmail(user?.Email, user?.UserName, book.Title);
-                        if (!blockedUsers.Contains(loan.ApplicationUserId))
-                        {
-                            blockedUsers.Add(loan.ApplicationUserId);
-                        }
-                        continue;
-                    }
-                    
-                    if (loan.Status == LoanStatus.Renewed && 
-                        DateTime.Now > loan.DueDate &&
-                        !user.Status.Equals(UserStatus.Blocked))
-                    {
-                        //block the user
-                        var blocked = await _userService.BlockUserAsync(loan.ApplicationUserId);
-                        var book = await _booksService.GetBookAsync(loan.BookId);
-
-                        await _emailService.SendBlockUserEmail(user?.Email, user?.UserName, book.Title);
-                        if (!blockedUsers.Contains(loan.ApplicationUserId))
-                        {
-                            blockedUsers.Add(loan.ApplicationUserId);
-                        }
-                    }
+                    //try to renew the loan
+                    var dateRenewed = await _booksService.RenewBookAsync(loan.BookId, loan.ApplicationUserId);
+                    var book = await _booksService.GetBookAsync(loan.BookId);
+                    await _emailService.SendRenewalPeriodEmail(user?.Email, user?.UserName, book.Title, dateRenewed);
+                    continue;
                 }
 
-                await Task.Delay(10_000, stoppingToken);
+                    
+                if (loan.Status == LoanStatus.Active && 
+                    DateTime.Now > loan.DueDate && 
+                    ! await _booksService.CanRenewAsync(loan.BookId, loan.ApplicationUserId) &&
+                    !user.Status.Equals(UserStatus.Blocked))    
+                {
+                    //block the user
+                    var blocked = await _userService.BlockUserAsync(loan.ApplicationUserId);
+                    var book = await _booksService.GetBookAsync(loan.BookId);
+                        
+                    await _emailService.SendBlockUserEmail(user?.Email, user?.UserName, book.Title);
+                    if (!blockedUsers.Contains(loan.ApplicationUserId))
+                    {
+                        blockedUsers.Add(loan.ApplicationUserId);
+                    }
+                    continue;
+                }
+                    
+                if (loan.Status == LoanStatus.Renewed && 
+                    DateTime.Now > loan.DueDate &&
+                    !user.Status.Equals(UserStatus.Blocked))
+                {
+                    //block the user
+                    var blocked = await _userService.BlockUserAsync(loan.ApplicationUserId);
+                    var book = await _booksService.GetBookAsync(loan.BookId);
+
+                    await _emailService.SendBlockUserEmail(user?.Email, user?.UserName, book.Title);
+                    if (!blockedUsers.Contains(loan.ApplicationUserId))
+                    {
+                        blockedUsers.Add(loan.ApplicationUserId);
+                    }
+                }
             }
         }
     }

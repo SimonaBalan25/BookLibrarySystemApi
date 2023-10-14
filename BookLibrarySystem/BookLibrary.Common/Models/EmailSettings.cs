@@ -1,5 +1,5 @@
 ﻿
-namespace LibraryWorkerService.Models
+namespace BookLibrary.Common
 {
     public class EmailSettings
     {

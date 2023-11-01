@@ -355,6 +355,17 @@ namespace BookLibrarySystem.Logic.Services
                     var dbBook = await _dbContext.Books.FindAsync(bookId);
                     var deleted = _dbContext.Books.Remove(dbBook);
 
+                    //delete authors, if they are only assigned to the book to delete
+                    var selectedBookAuthors = await _dbContext.BookAuthors.Where(a => a.BookId == bookId).ToListAsync();
+                    foreach (var bookAuthor in selectedBookAuthors)
+                    {
+                        if (!_dbContext.BookAuthors.Any(ba => !ba.BookId.Equals(bookId) && ba.AuthorId.Equals(bookAuthor.AuthorId)))
+                        {
+                            var selectedAuthor = await _dbContext.Authors.FindAsync(bookAuthor.AuthorId);
+                            _dbContext.Authors.Remove(selectedAuthor);
+                        }
+                    }                    
+
                     _dbContext.Entry(dbBook).State = EntityState.Deleted;
 
                     IQueryable<Reservation> reservationsToDelete = _dbContext.Reservations.Where(r => r.BookId.Equals(bookId));

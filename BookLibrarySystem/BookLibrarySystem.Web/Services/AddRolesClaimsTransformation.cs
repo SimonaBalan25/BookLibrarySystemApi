@@ -22,14 +22,14 @@ namespace BookLibrarySystem.Web.Services
             // Clone current identity
             var clone = principal.Clone();
             
-               var newIdentity = (ClaimsIdentity)clone.Identity;
+            var newIdentity = (ClaimsIdentity)clone.Identity;
 
             // Support AD and local accounts
-            var emailId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+            var emailId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email || c.Type=="email");
             ApplicationUser user;
             if (emailId == null)
             {
-                var nameId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                var nameId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type=="name");
                 user = await _userService.GetByIdAsync(nameId.Value);
             }
             else

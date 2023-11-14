@@ -1,9 +1,10 @@
 <header>
   <nav
-    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"
+    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-custom border-bottom box-shadow mb-3"
   >
     <div class="container">
       <a class="navbar-brand" [routerLink]="['/']">BookLibrarySystem</a>
+      <mat-icon svgIcon="book-icon" style="height: 35px;"></mat-icon>
       <button
         class="navbar-toggler"
         type="button"
@@ -23,19 +24,17 @@
           <li
             class="nav-item"
             [routerLinkActive]="['link-active']"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
+            [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link text-dark lead" [routerLink]="['/']">Home</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/counter']"
-              >Counter</a
-            >
+            <a class="nav-link text-dark" [routerLink]="['/books-list']">Books</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/fetch-data']"
-              >Fetch data</a
-            >
+            <a class="nav-link text-dark" [routerLink]="['/fetch-data']">Fetch Data</a>
+          </li>
+          <li class="nav-item" *ngIf="userRoles.includes('Administrator')" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/users-list']">Users</a>
           </li>
         </ul>
         <app-login-menu></app-login-menu>

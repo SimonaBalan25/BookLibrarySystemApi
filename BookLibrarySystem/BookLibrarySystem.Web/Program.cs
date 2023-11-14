@@ -23,7 +23,8 @@ internal class Program
         {            
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddEndpointsApiExplorer();         
+
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -60,6 +61,17 @@ internal class Program
             // Configure AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            builder.Services.AddCors(
+                options => {
+                    options.AddPolicy("AllowAllHeadersPolicy",
+                    builder =>
+                    {
+                        builder.WithOrigins("https://localhost:44490")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+                });
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
@@ -93,7 +105,15 @@ internal class Program
 
             app.UseAuthentication();
             app.UseIdentityServer();
+            
+            app.UseCors("AllowAllHeadersPolicy");
             app.UseAuthorization();
+            // Add this inside the Configure method of Startup.cs
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers(); 
+            });
+
 
             app.MapControllerRoute(
                 name: "default",

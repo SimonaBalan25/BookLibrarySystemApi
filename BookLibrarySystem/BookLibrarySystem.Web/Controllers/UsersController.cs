@@ -1,19 +1,27 @@
-﻿using BookLibrarySystem.Logic.DTOs;
+﻿using BookLibrarySystem.Data.Models;
+using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BookLibrarySystem.Web.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
+    [EnableCors("AllowAllHeadersPolicy")]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, UserManager<ApplicationUser> userManager)
         {
             _userService = userService;
+            _userManager = userManager;
         }
 
         [HttpGet("getUsers")]
@@ -62,6 +70,16 @@ namespace BookLibrarySystem.Web.Controllers
             var result = await _userService.DeleteUserAsync(id);
 
             return StatusCode(StatusCodes.Status200OK, "User was deleted successfully");
+        }
+
+        [HttpGet("user-roles")]
+        [Authorize(Roles ="Administrator")]
+        public async Task<IActionResult> GetUserRoles()
+        {
+            var nameIdValue = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var user = await _userService.GetByIdAsync(nameIdValue);
+            var roles = await _userManager.GetRolesAsync(user);
+            return Ok(roles);
         }
     }
 }

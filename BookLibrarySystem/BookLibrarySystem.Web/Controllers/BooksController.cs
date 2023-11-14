@@ -166,6 +166,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpPut("cancelReservation")]
+        [Authorize(Roles ="NormalUser")]
         public async Task<IActionResult> CancelReservationAsync([FromQuery] int bookId, [FromQuery] string appUserId)
         {
             if (bookId < 0)

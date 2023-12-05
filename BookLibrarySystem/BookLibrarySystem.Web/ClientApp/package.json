@@ -28,6 +28,7 @@
     "@auth0/angular-jwt": "^5.2.0",
     "bootstrap": "^5.2.3",
     "jquery": "^3.6.3",
+    "ng-table-virtual-scroll": "^1.5.1",
     "oidc-client": "^1.11.5",
     "popper.js": "^1.16.0",
     "run-script-os": "^1.1.6",

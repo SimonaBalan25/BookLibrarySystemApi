@@ -17,6 +17,8 @@ import { BooksListComponent } from './books/books-list/books-list.component';
 import { UsersListComponent } from './users/users-list/users-list.component';
 import { RoleExistsPipe } from './pipes/role-exists.pipe';
 import { MaterialModule } from './material/material.module';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,8 @@ import { MaterialModule } from './material/material.module';
     HttpClientModule,
     FormsModule,
     MaterialModule,
+    ScrollingModule,
+    TableVirtualScrollModule,
     BrowserAnimationsModule,
     ApiAuthorizationModule,
     HttpClientModule,

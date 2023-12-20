@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using BookLibrarySystem.Common;
+using BookLibrarySystem.Common.Models;
 using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.DTOs;
@@ -7,6 +9,11 @@ using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using BookLibrarySystem.Common.Extensions;
+using System.Linq.Dynamic.Core;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookLibrarySystem.Logic.Services
 {
@@ -64,6 +71,66 @@ namespace BookLibrarySystem.Logic.Services
                 Publisher = b.Publisher,
                 ReleaseYear = b.ReleaseYear
             }).ToListAsync();
+        }
+
+        private static readonly Dictionary<string, IFilterBy> FilterFunctions =
+            new Dictionary<string, IFilterBy>
+            {
+                { "title", new FilterBy<Book, string>(v => s => s.Title == v) },
+                { "releaseYear", new FilterBy<Book, int>(v => s => s.ReleaseYear == v) },
+                { "genre", new FilterBy<Book, string>(v => s => s.Genre == v) },
+                { "numberOfPages", new FilterBy<Book, int>(v => s => s.NumberOfPages == v) },
+                { "status", new FilterBy<Book,int>(v => s => (int)s.Status == v) }
+            };
+
+        
+        public async Task<PagedResponse> GetBySearchFilters(int pageIndex=1, int pageSize=10, string sortColumn="", string sortDirection="asc", Dictionary<string,string> filters=null)
+        {
+            IQueryable<Book> filteredBooks = _dbContext.Books.AsQueryable();
+            var totalCount = filteredBooks.Count();
+            if (pageIndex >= 0 && pageSize > 0)
+            {
+                filteredBooks = filteredBooks.Skip((pageIndex - 1) * pageSize)
+                                .Take(pageSize);
+            }            
+
+            if (filters != null)
+            {
+                string filterExpression;
+                foreach(var filter in filters) 
+                {
+                    if (filter.Value != null)
+                    {                       
+                        string columnName = $"{filter.Key[0].ToString().ToUpper()}{filter.Key.Substring(1)}";
+                        string filterValue = filter.Value;
+
+                        bool isStringColumn = typeof(Book).GetProperty(columnName)?.PropertyType == typeof(string);
+                        if (!isStringColumn)
+                        {
+                            filterExpression = $"{columnName} == @0";
+                        }
+                        else
+                        {
+                            filterExpression = $"{columnName}.Contains(@0)";
+                        }
+
+                        // Apply the filter using Dynamic LINQ
+                        filteredBooks = filteredBooks.Where(filterExpression, filterValue);
+                    }
+                }
+            }
+
+            IOrderedQueryable<Book> orderedBooks = filteredBooks as IOrderedQueryable<Book>;
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                // Build the dynamic sorting expression
+                var orderByExpression = $"{sortColumn} {sortDirection}";
+
+                // Apply dynamic sorting
+                orderedBooks = filteredBooks.OrderBy(orderByExpression);
+
+            }
+            return new PagedResponse { Rows = orderedBooks, TotalItems = totalCount };
         }
 
         public async Task<BookDto?> GetBookAsync(int id)

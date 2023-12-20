@@ -4,7 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TableVirtualScrollDataSource } from 'ng-table-virtual-scroll';
 import { Observable } from 'rxjs';
 import { EditDialogComponent } from 'src/app/dialogs/edit/edit.dialog.component';
 import { Book } from 'src/app/models/book';
@@ -22,6 +21,17 @@ export class BooksListComponent implements AfterViewInit {
   books: Book[] = [];
   index: number=0;
   id: number=0;
+  pageIndex: number=1;
+  pageSize: number=10;
+  sortColumn: string='title';
+  sortDirection:string='asc';
+  filters: {[prop:string]:string} = {
+    title: '',
+    releaseYear: '',
+    genre: '',
+    status: '',
+  };
+  totalItems:number=0;
 
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort = {} as MatSort;
@@ -29,16 +39,23 @@ export class BooksListComponent implements AfterViewInit {
   constructor(private bookService: BookService, public dialog: MatDialog) {
 
   }
+
   ngAfterViewInit(): void {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
   }
 
   ngOnInit(): void {
-    this.bookService.getBooks().subscribe((data) => {
-      this.dataSource = new MatTableDataSource<Book>(data);//TableVirtualScrollDataSource(data);
+    this.loadBooks();
+  }
+
+  loadBooks(){
+    this.bookService.getBooksBySearchCriteria(this.pageIndex, this.pageSize, this.sortColumn, this.sortDirection, this.filters).subscribe((data) => {
+      this.dataSource = new MatTableDataSource<Book>(data['books']);//TableVirtualScrollDataSource(data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.totalItems = data['totalItems'];
+
     }, error => console.error(error));
   }
 
@@ -50,6 +67,12 @@ export class BooksListComponent implements AfterViewInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+
+  applyServerSideFilter(filters: Record<string, string>) {
+    this.filters = filters;
+    this.loadBooks();
   }
 
   addNew(){
@@ -75,6 +98,36 @@ export class BooksListComponent implements AfterViewInit {
         this.refreshTable();
       }
     });
+  }
+
+  onPageChanged(event: any) {
+    this.pageIndex = event.pageIndex+1;
+    this.pageSize = event.pageSize;
+    this.loadBooks();
+  }
+
+ /* onSortChange(event: any) {
+    this.sortColumn = `${event.active}`;
+    this.sortDirection = `${event.direction}`;
+    this.loadBooks();
+  }*/
+
+  onSortOnHeader(columnName: string) {
+    // Check if the clicked column is already the active sorting column
+    if (this.dataSource.sort.active === columnName) {
+      // Toggle the sorting direction
+      this.dataSource.sort.direction =
+      this.dataSource.sort.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Set the new sorting column and direction
+      this.dataSource.sort.active = columnName;
+      this.dataSource.sort.direction = 'asc';
+    }
+
+    // Apply sorting
+    this.sortColumn = this.dataSource.sort.active;
+    this.sortDirection = this.dataSource.sort.direction;
+    this.loadBooks();
   }
 
   startDelete(id: number) {

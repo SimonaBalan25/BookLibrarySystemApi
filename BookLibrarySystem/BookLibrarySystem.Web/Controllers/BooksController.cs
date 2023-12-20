@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BookLibrarySystem.Data.Models;
+﻿using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.ApplicationInsights;
@@ -31,6 +30,14 @@ namespace BookLibrarySystem.Web.Controllers
             var books = await _booksService.GetBooksAsync();
             _logger.TrackTrace("End BooksController-GetAllAsync");
             return StatusCode(StatusCodes.Status200OK, books);
+        }
+
+        [HttpGet("getBySearchCriteria")]
+        public async Task<IActionResult> GetBySearchCriteria(int pageIndex=1, int pageSize=10, string sortColumn="", string sortDirection="asc", [FromQuery]Dictionary<string,string> filters=null)
+        {
+            var pagedResponseBooks = await _booksService.GetBySearchFilters(pageIndex, pageSize, sortColumn, sortDirection, filters);
+
+            return Ok(new { Books = pagedResponseBooks.Rows.ToList(), TotalItems = pagedResponseBooks.TotalItems });
         }
 
         [HttpGet("GetAllForListing")]

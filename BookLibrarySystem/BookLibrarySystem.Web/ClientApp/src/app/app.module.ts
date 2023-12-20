@@ -19,6 +19,7 @@ import { RoleExistsPipe } from './pipes/role-exists.pipe';
 import { MaterialModule } from './material/material.module';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
+import { FilterComponent } from './books/filter/filter.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
     CounterComponent,
     FetchDataComponent,
     BooksListComponent,
+    FilterComponent,
     UsersListComponent,
     RoleExistsPipe
   ],

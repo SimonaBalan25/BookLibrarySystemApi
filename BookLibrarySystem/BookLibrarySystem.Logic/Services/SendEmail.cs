@@ -1,7 +1,7 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using BookLibrarySystem.Logic.Interfaces;
-using BookLibrary.Common;
+using BookLibrarySystem.Common;
 using Microsoft.Extensions.Configuration;
 
 namespace BookLibrarySystem.Logic.Services

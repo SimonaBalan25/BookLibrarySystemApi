@@ -1,0 +1,25 @@
+<!-- filter.component.html -->
+<div class="filters">
+  <mat-form-field>
+    <input matInput placeholder="Title" [(ngModel)]="filters.title" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="Release Year" [(ngModel)]="filters.releaseYear" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="Genre" [(ngModel)]="filters.genre" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <!-- <input matInput placeholder="Status" [(ngModel)]="filters.status" /> -->
+    <mat-select [(value)]="selected">
+      <mat-option>None</mat-option>
+      <mat-option value="0">Active</mat-option>
+      <mat-option value="1">Lost</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
+</div>

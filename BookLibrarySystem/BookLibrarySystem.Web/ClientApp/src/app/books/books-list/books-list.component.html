@@ -1,12 +1,7 @@
 <h1>Books grid</h1>
-<input matInput (keyup)="filter($event)" placeholder="find" />
+<!-- <input matInput (keyup)="filter($event)" placeholder="find" /> -->
+  <app-filter (filterChange)="applyServerSideFilter($event)"></app-filter>
 
-<!-- <cdk-virtual-scroll-viewport
-  tvsItemSize="10"
-  headerHeight="56"
-  class="wrapper mat-elevation-z2"
-  style="height: 400px" matSort
-> -->
   <table
     mat-table
     [dataSource]="dataSource"
@@ -15,31 +10,31 @@
     matSort matSortActive="title" matSortDisableClear matSortDirection="asc"
   >
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns" style="min-width: 70% !important;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
     <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-      <td mat-cell *matCellDef="let b" style="width:280px;">{{ b.title }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header (click)="onSortOnHeader('title')">Title</th>
+      <td mat-cell *matCellDef="let b">{{ b.title }}</td>
     </ng-container>
 
     <ng-container matColumnDef="releaseYear">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>ReleaseYear</th>
-      <td mat-cell *matCellDef="let b" style="width:100px">{{ b.releaseYear }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header (click)="onSortOnHeader('releaseYear')">ReleaseYear</th>
+      <td mat-cell *matCellDef="let b">{{ b.releaseYear }}</td>
     </ng-container>
 
     <ng-container matColumnDef="genre">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Genre</th>
-      <td mat-cell *matCellDef="let b" style="width:170px;">{{ b.genre }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header (click)="onSortOnHeader('genre')">Genre</th>
+      <td mat-cell *matCellDef="let b">{{ b.genre }}</td>
     </ng-container>
 
     <ng-container matColumnDef="numberOfPages">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>NumberOfPages</th>
-      <td mat-cell *matCellDef="let b" style="width:100px;">{{ b.numberOfPages }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header (click)="onSortOnHeader('numberOfPages')">NumberOfPages</th>
+      <td mat-cell *matCellDef="let b">{{ b.numberOfPages }}</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-      <td mat-cell *matCellDef="let b" style="width:70px;">{{ b.status }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header (click)="onSortOnHeader('status')">Status</th>
+      <td mat-cell *matCellDef="let b">{{ b.status }}</td>
     </ng-container>
 
     <!-- Action Column -->
@@ -50,29 +45,32 @@
           <mat-icon color="primary">add</mat-icon>
         </button>
       </th>
-      <td mat-cell *matCellDef="let row; let i=index;" style="width:200px;">
+      <td mat-cell *matCellDef="let row; let i=index;">
         <button mat-icon-button matTooltip="Click to Edit" class="iconbutton"
            (click)="startEdit(i, row.ID, row.title, row.publisher, row.status, row.numberOfPages, row.numberOfCopies)">
-          <mat-icon class="purpleStyle">edit</mat-icon>
+          <mat-icon matTooltip="Edit" class="purpleStyle">edit</mat-icon>
         </button>
 
         <button mat-icon-button matTooltip="Click to Delete" class="iconbutton"
           (click)="startDelete(row.ID)">
-          <mat-icon style="color:red !important">delete</mat-icon>
+          <mat-icon matTooltip="Delete" class="redStyle">delete</mat-icon>
         </button>
 
         <button mat-icon-button matTooltip="Click to Borrow" class="iconbutton"
             (click)="startBorrow(row.ID)">
-            <mat-icon style="color:darkblue !important">send</mat-icon>
+            <mat-icon matTooltip="Borrow" class="darkBlueStyle">send</mat-icon>
         </button>
       </td>
     </ng-container>
 
   </table>
-<!-- </cdk-virtual-scroll-viewport> --> -->
+
 <mat-paginator [length]="100" #paginator
-  [pageSize] = "10"
+  [length]="totalItems"
+  [pageSize] = "pageSize"
+  [pageIndex]="pageIndex - 1"
   [pageSizeOptions]="[10, 25, 30]"
   showFirstLastButtons
   aria-label="Select page"
+  (page)="onPageChanged($event)"
 ></mat-paginator>

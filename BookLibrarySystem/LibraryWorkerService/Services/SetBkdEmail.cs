@@ -1,6 +1,6 @@
 ﻿using LibraryWorkerService.Interfaces;
 using BookLibrarySystem.Logic.Interfaces;
-using BookLibrary.Common;
+using BookLibrarySystem.Common;
 
 namespace LibraryWorkerService.Services
 {

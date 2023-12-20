@@ -1,4 +1,5 @@
-﻿using BookLibrarySystem.Data.Models;
+﻿using BookLibrarySystem.Common.Models;
+using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Entities;
 
@@ -9,6 +10,8 @@ namespace BookLibrarySystem.Logic.Interfaces
         Task<IEnumerable<BookDto>> GetBooksAsync();//get all books
 
         Task<BookDto?> GetBookAsync(int id);
+
+        Task<PagedResponse> GetBySearchFilters(int pageIndex, int pageSize, string sortColumn, string sortDirection, Dictionary<string,string> filters);
 
         Task<IEnumerable<BookForListing>> GetBooksForListingAsync();
 

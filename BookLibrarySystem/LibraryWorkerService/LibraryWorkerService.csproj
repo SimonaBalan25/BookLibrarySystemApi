@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BookLibrary.Common\BookLibrary.Common.csproj" />
+    <ProjectReference Include="..\BookLibrary.Common\BookLibrarySystem.Common.csproj" />
     <ProjectReference Include="..\BookLibrarySystem.Data\BookLibrarySystem.Data.csproj" />
     <ProjectReference Include="..\BookLibrarySystem.Logic\BookLibrarySystem.Logic.csproj" />
   </ItemGroup>

@@ -2,8 +2,20 @@ table {
   width: 100%;
 }
 
+table tr{
+  min-width: 70% !important;
+}
+
 .purpleStyle{
   color:purple;
+}
+
+.redStyle{
+  color: red;
+}
+
+.darkBlueStyle{
+  color:darkblue;
 }
 
 mat-paginator {
@@ -11,9 +23,29 @@ mat-paginator {
   justify-content: center;
 }
 
-mat-paginator mat-option{
+mat-paginator mat-option {
   display: flex;
   justify-content: center;
+}
+
+.mat-column-title {
+  width: 280px;
+}
+
+.mat-column-releaseYear, .mat-column-numberOfPages {
+  width: 100px;
+}
+
+.mat-column-genre {
+  width:170px;
+}
+
+.mat-column-status {
+  width: 70px;
+}
+
+.mat-column-actions {
+  width:200px;
 }
 
 ::ng-deep body .cdk-overlay-container {
@@ -30,6 +62,7 @@ mat-paginator mat-option:last-child:before{
   top: 4px;
   position: relative;
 }
+
 mat-paginator mat-option:last-child .mat-option-text{
 display: none;
 position: relative;

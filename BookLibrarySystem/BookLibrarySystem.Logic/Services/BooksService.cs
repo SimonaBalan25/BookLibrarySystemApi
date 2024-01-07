@@ -84,13 +84,13 @@ namespace BookLibrarySystem.Logic.Services
             };
 
         
-        public async Task<PagedResponse> GetBySearchFilters(int pageIndex=1, int pageSize=10, string sortColumn="", string sortDirection="asc", Dictionary<string,string> filters=null)
+        public async Task<PagedResponse> GetBySearchFilters(string sortDirection, int pageIndex=1, int pageSize=10,  string sortColumn="", Dictionary<string,string> filters=null)
         {
             IQueryable<Book> filteredBooks = _dbContext.Books.AsQueryable();
             var totalCount = filteredBooks.Count();
             if (pageIndex >= 0 && pageSize > 0)
             {
-                filteredBooks = filteredBooks.Skip((pageIndex - 1) * pageSize)
+                filteredBooks = filteredBooks.Skip(pageIndex * pageSize)
                                 .Take(pageSize);
             }            
 

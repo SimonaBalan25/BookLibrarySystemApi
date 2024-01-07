@@ -1,7 +1,7 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
@@ -15,7 +15,7 @@ import { BookService } from 'src/app/services/book.service';
   styleUrls: ['./books-list.component.css']
 })
 export class BooksListComponent implements AfterViewInit {
-  displayedColumns = ['title', 'releaseYear', 'genre', 'numberOfPages', 'status', 'actions'];
+  displayedColumns = ['title', 'releaseYear', 'genre', 'numberOfPages', 'isbn', 'publisher', 'status', 'actions'];
 
   dataSource: any = [];
   books: Book[] = [];
@@ -33,8 +33,8 @@ export class BooksListComponent implements AfterViewInit {
   };
   totalItems:number=0;
 
-  @ViewChild('paginator') paginator!: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort = {} as MatSort;
+  @ViewChild('paginator', {static: true}) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort = {} as MatSort;
 
   constructor(private bookService: BookService, public dialog: MatDialog) {
 
@@ -51,9 +51,10 @@ export class BooksListComponent implements AfterViewInit {
 
   loadBooks(){
     this.bookService.getBooksBySearchCriteria(this.pageIndex, this.pageSize, this.sortColumn, this.sortDirection, this.filters).subscribe((data) => {
-      this.dataSource = new MatTableDataSource<Book>(data['books']);//TableVirtualScrollDataSource(data);
-      this.dataSource.paginator = this.paginator;
+      this.dataSource = new MatTableDataSource<Book>(data['books']);
+      //this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.paginator.length = data['totalItems'];
       this.totalItems = data['totalItems'];
 
     }, error => console.error(error));
@@ -79,13 +80,13 @@ export class BooksListComponent implements AfterViewInit {
 
   }
 
-  startEdit(i: number, id: number, title: string, publisher: string, status: string, numberOfPages: number, numberOfCopies: string) {
+  startEdit(i: number, id: number, title: string, releaseYear: number, genre: string, numberOfPages: number, isbn:string, publisher:string, status: string) {
     this.id = id;
     // index row is used just for debugging proposes and can be removed
     this.index = i;
     console.log(this.index);
     const dialogRef = this.dialog.open(EditDialogComponent, {
-      data: { id: id, title: title, publisher: publisher, status: status, numberOfPages: numberOfPages, numberOfCopies: numberOfCopies }
+      data: { id: id, title: title, releaseYear: releaseYear, status: status, numberOfPages: numberOfPages, genre: genre, isbn:isbn, publisher:publisher }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -100,8 +101,8 @@ export class BooksListComponent implements AfterViewInit {
     });
   }
 
-  onPageChanged(event: any) {
-    this.pageIndex = event.pageIndex+1;
+  onPageChanged(event: PageEvent) {
+    this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
     this.loadBooks();
   }
@@ -114,7 +115,7 @@ export class BooksListComponent implements AfterViewInit {
 
   onSortOnHeader(columnName: string) {
     // Check if the clicked column is already the active sorting column
-    if (this.dataSource.sort.active === columnName) {
+    /*if (this.dataSource?.sort?.active === columnName) {
       // Toggle the sorting direction
       this.dataSource.sort.direction =
       this.dataSource.sort.direction === 'asc' ? 'desc' : 'asc';
@@ -122,7 +123,7 @@ export class BooksListComponent implements AfterViewInit {
       // Set the new sorting column and direction
       this.dataSource.sort.active = columnName;
       this.dataSource.sort.direction = 'asc';
-    }
+    }*/
 
     // Apply sorting
     this.sortColumn = this.dataSource.sort.active;

@@ -1,5 +1,5 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Book } from '../models/book';
@@ -16,7 +16,7 @@ export class BookService {
    }
 
    getBooks() :Observable<Book[]> {
-    return this.http.get(environment.baseApiUrl + '/books/').pipe(
+    return this.http.get(environment.baseApiUrl + 'books/').pipe(
       map((response: any) => {
         console.log(response);
         return response;
@@ -30,7 +30,6 @@ export class BookService {
       .set('pageSize', pageSize.toString())
       .set('sortColumn', sortColumn)
       .set('sortDirection', sortDirection);
-      //.set('filters', filters);
 
       // Add filter parameters
       for (const key in filters) {
@@ -39,10 +38,18 @@ export class BookService {
         }
       }
 
-      return this.http.get(environment.baseApiUrl+'/books/getBySearchCriteria', { params });
+      return this.http.get(environment.serviceUrl + 'books/getBySearchCriteria', { params });
    }
 
    getDialogData(){
     return this.dialogData;
+   }
+
+   updateBook(updatedBook: Book) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json', // Set the Content-Type to JSON
+    });
+
+    return this.http.put(`${environment.serviceUrl}books/${updatedBook.id}`, updatedBook, {headers});
    }
 }

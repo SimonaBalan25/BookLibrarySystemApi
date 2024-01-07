@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
@@ -20,6 +20,7 @@ import { MaterialModule } from './material/material.module';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 import { FilterComponent } from './books/filter/filter.component';
+import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { FilterComponent } from './books/filter/filter.component';
     CounterComponent,
     FetchDataComponent,
     BooksListComponent,
+    EditDialogComponent,
     FilterComponent,
     UsersListComponent,
     RoleExistsPipe
@@ -37,6 +39,7 @@ import { FilterComponent } from './books/filter/filter.component';
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     MaterialModule,
     ScrollingModule,
     TableVirtualScrollModule,

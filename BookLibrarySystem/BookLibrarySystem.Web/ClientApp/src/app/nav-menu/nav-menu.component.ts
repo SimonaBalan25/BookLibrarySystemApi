@@ -1,7 +1,7 @@
 import { AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
-import { Observable, Subscription, map, switchMap, take, of } from 'rxjs';
+import { Observable, Subscription, map, switchMap, take, of, catchError } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';
@@ -28,11 +28,17 @@ export class NavMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.subscriptions$.push(
     this.authorizeService.isAuthenticated().pipe(switchMap(loggedIn => {
-      if(loggedIn){
-        return this.authorizeService.getUserRoles();
+      if(loggedIn) {
+        return this.authorizeService.getUserRoles().pipe(
+          catchError(error => {
+            console.error('Error in getUserRoles:', error);
+            return of([]); // Return an empty array or handle the error as needed
+          })
+        );
       }
       return of([]);
     })).subscribe((roles)=>{
+      console.log('Roles received:', roles);
       this.userRoles = roles;
     }
     )

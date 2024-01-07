@@ -1,1 +1,64 @@
-<p>edit.dialog works!</p>
+<div class="container">
+  <h3 mat-dialog-title>Book id: {{data.id}}</h3>
+
+  <form class="mat-dialog-content" (ngSubmit)="submit" #formControl="ngForm">
+
+    <div class="form">
+      <mat-form-field color="accent">
+        <textarea matInput #input class="form-control" placeholder="Title" [(ngModel)]="data.title" name="title" required ></textarea>
+        <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!--Contains mat-hint for characters count and has maxLengt set-->
+    <div class="form">
+      <mat-form-field color="accent">
+        <input matInput #inputstate class="form-control" placeholder="ReleaseYear" [(ngModel)]="data.releaseYear" name="releaseYear" maxlength="10" required >
+        <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+        <mat-hint align="end">{{inputstate.value.length || 0}}/10</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="form">
+      <mat-form-field color="accent">
+        <input matInput placeholder="Url" [(ngModel)]="data.genre" name="genre">
+      </mat-form-field>
+  </div>
+
+  <div class="form">
+    <mat-form-field color="accent">
+      <input matInput placeholder="Url" [(ngModel)]="data.numberOfPages" name="numberOfPages">
+    </mat-form-field>
+</div>
+
+<div class="form">
+  <mat-form-field color="accent">
+    <input matInput class="form-control" placeholder="ISBN" [(ngModel)]="data.isbn" name="isbn" required />
+    <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+  </mat-form-field>
+</div>
+
+<div class="form">
+  <mat-form-field color="accent">
+    <input matInput #input class="form-control" placeholder="Publisher" [(ngModel)]="data.publisher" name="publisher" required />
+    <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+  </mat-form-field>
+</div>
+
+  <!--Contains mat-hint for characters count and has maxLengt set-->
+  <div class="form">
+    <mat-form-field color="accent">
+      <input matInput #inputstatestatus class="form-control" placeholder="Status" [(ngModel)]="data.status" name="status" maxlength="10" required >
+      <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+      <mat-hint align="end">{{inputstatestatus.value.length || 0}}/10</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-button type="submit" [disabled]="!formControl.valid" [mat-dialog-close]="1" (click)="stopEdit()">Save</button>
+    <button mat-button (click)="onNoClick()" tabindex="-1">Cancel</button>
+  </div>
+
+    </form>
+
+  </div>

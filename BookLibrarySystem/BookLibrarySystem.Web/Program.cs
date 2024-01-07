@@ -66,7 +66,7 @@ internal class Program
                     options.AddPolicy("AllowAllHeadersPolicy",
                     builder =>
                     {
-                        builder.WithOrigins("https://localhost:44490")
+                        builder.AllowAnyOrigin()//WithOrigins("https://localhost:44490")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });

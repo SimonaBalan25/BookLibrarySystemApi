@@ -109,7 +109,7 @@
           "builder": "@angular-devkit/build-angular:server",
           "options": {
             "outputPath": "dist-server",
-            "main": "src/main.ts",
+            "main": "server.ts",
             "tsConfig": "tsconfig.server.json"
           },
           "configurations": {
@@ -130,6 +130,39 @@
               "vendorChunk": false
             }
           }
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "BookLibrarySystem:build:development",
+              "serverTarget": "BookLibrarySystem:server:development"
+            },
+            "production": {
+              "browserTarget": "BookLibrarySystem:build:production",
+              "serverTarget": "BookLibrarySystem:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "BookLibrarySystem:build:production",
+              "serverTarget": "BookLibrarySystem:server:production"
+            },
+            "development": {
+              "browserTarget": "BookLibrarySystem:build:development",
+              "serverTarget": "BookLibrarySystem:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }

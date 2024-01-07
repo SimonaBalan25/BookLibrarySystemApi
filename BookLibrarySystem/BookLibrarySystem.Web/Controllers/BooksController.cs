@@ -33,9 +33,9 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpGet("getBySearchCriteria")]
-        public async Task<IActionResult> GetBySearchCriteria(int pageIndex=1, int pageSize=10, string sortColumn="", string sortDirection="asc", [FromQuery]Dictionary<string,string> filters=null)
+        public async Task<IActionResult> GetBySearchCriteria(string sortDirection, int pageIndex=1, int pageSize=10, string sortColumn="",  [FromQuery]Dictionary<string,string> filters=null)
         {
-            var pagedResponseBooks = await _booksService.GetBySearchFilters(pageIndex, pageSize, sortColumn, sortDirection, filters);
+            var pagedResponseBooks = await _booksService.GetBySearchFilters(sortDirection, pageIndex, pageSize, sortColumn,  filters);
 
             return Ok(new { Books = pagedResponseBooks.Rows.ToList(), TotalItems = pagedResponseBooks.TotalItems });
         }

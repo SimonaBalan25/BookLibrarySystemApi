@@ -7,7 +7,7 @@
     [dataSource]="dataSource"
     class="mat-elevation-z8"
     #mytable
-    matSort matSortActive="title" matSortDisableClear matSortDirection="asc"
+    matSort matSortActive="title" matSortDirection="asc" matSortDisableClear
   >
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
@@ -32,6 +32,16 @@
       <td mat-cell *matCellDef="let b">{{ b.numberOfPages }}</td>
     </ng-container>
 
+    <ng-container matColumnDef="isbn">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header (click)="onSortOnHeader('isbn')">ISBN</th>
+      <td mat-cell *matCellDef="let b">{{ b.isbn }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="publisher">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header (click)="onSortOnHeader('publisher')">Publisher</th>
+      <td mat-cell *matCellDef="let b">{{ b.publisher }}</td>
+    </ng-container>
+
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef mat-sort-header (click)="onSortOnHeader('status')">Status</th>
       <td mat-cell *matCellDef="let b">{{ b.status }}</td>
@@ -47,17 +57,17 @@
       </th>
       <td mat-cell *matCellDef="let row; let i=index;">
         <button mat-icon-button matTooltip="Click to Edit" class="iconbutton"
-           (click)="startEdit(i, row.ID, row.title, row.publisher, row.status, row.numberOfPages, row.numberOfCopies)">
+           (click)="startEdit(i, row.id, row.title, row.releaseYear, row.genre, row.numberOfPages, row.isbn, row.publisher, row.status)">
           <mat-icon matTooltip="Edit" class="purpleStyle">edit</mat-icon>
         </button>
 
         <button mat-icon-button matTooltip="Click to Delete" class="iconbutton"
-          (click)="startDelete(row.ID)">
+          (click)="startDelete(row.id)">
           <mat-icon matTooltip="Delete" class="redStyle">delete</mat-icon>
         </button>
 
         <button mat-icon-button matTooltip="Click to Borrow" class="iconbutton"
-            (click)="startBorrow(row.ID)">
+            (click)="startBorrow(row.id)">
             <mat-icon matTooltip="Borrow" class="darkBlueStyle">send</mat-icon>
         </button>
       </td>
@@ -68,7 +78,7 @@
 <mat-paginator [length]="100" #paginator
   [length]="totalItems"
   [pageSize] = "pageSize"
-  [pageIndex]="pageIndex - 1"
+  [pageIndex]="pageIndex"
   [pageSizeOptions]="[10, 25, 30]"
   showFirstLastButtons
   aria-label="Select page"

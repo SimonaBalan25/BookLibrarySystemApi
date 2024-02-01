@@ -62,7 +62,7 @@
         </button>
 
         <button mat-icon-button matTooltip="Click to Delete" class="iconbutton"
-          (click)="startDelete(row.id)">
+          (click)="startDelete(i, row.id, row.title, row.url, row.publisher, row.genre)">
           <mat-icon matTooltip="Delete" class="redStyle">delete</mat-icon>
         </button>
 

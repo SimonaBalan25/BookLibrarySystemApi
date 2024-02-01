@@ -1,10 +1,13 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTableDataSourcePaginator } from '@angular/material/table';
 import { Observable } from 'rxjs';
+import { AddDialogComponent } from 'src/app/dialogs/add/add.dialog.component';
+import { DeleteDialogComponent } from 'src/app/dialogs/delete/delete.dialog.component';
 import { EditDialogComponent } from 'src/app/dialogs/edit/edit.dialog.component';
 import { Book } from 'src/app/models/book';
 import { BookService } from 'src/app/services/book.service';
@@ -18,6 +21,7 @@ export class BooksListComponent implements AfterViewInit {
   displayedColumns = ['title', 'releaseYear', 'genre', 'numberOfPages', 'isbn', 'publisher', 'status', 'actions'];
 
   dataSource: any = [];
+  exampleDatabase: BookService | null;
   books: Book[] = [];
   index: number=0;
   id: number=0;
@@ -36,7 +40,7 @@ export class BooksListComponent implements AfterViewInit {
   @ViewChild('paginator', {static: true}) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: false }) sort: MatSort = {} as MatSort;
 
-  constructor(private bookService: BookService, public dialog: MatDialog) {
+  constructor(private bookService: BookService, public dialog: MatDialog, private httpClient: HttpClient) {
 
   }
 
@@ -49,7 +53,8 @@ export class BooksListComponent implements AfterViewInit {
     this.loadBooks();
   }
 
-  loadBooks(){
+  loadBooks() {
+    this.exampleDatabase = new BookService(this.httpClient);
     this.bookService.getBooksBySearchCriteria(this.pageIndex, this.pageSize, this.sortColumn, this.sortDirection, this.filters).subscribe((data) => {
       this.dataSource = new MatTableDataSource<Book>(data['books']);
       //this.dataSource.paginator = this.paginator;
@@ -76,8 +81,21 @@ export class BooksListComponent implements AfterViewInit {
     this.loadBooks();
   }
 
-  addNew(){
+  addNew() {
+    //var newBook = new Book();
+    const dialogRef = this.dialog.open(AddDialogComponent, {
 
+      data: {  }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 1) {
+        // After dialog is closed we're doing frontend updates
+        // For add we're just pushing a new row inside DataService
+        this.exampleDatabase?.dataChange.value.push(this.bookService.getDialogData());
+        this.refreshTable();
+      }
+    });
   }
 
   startEdit(i: number, id: number, title: string, releaseYear: number, genre: string, numberOfPages: number, isbn:string, publisher:string, status: string) {
@@ -92,9 +110,11 @@ export class BooksListComponent implements AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result === 1) {
         // When using an edit things are little different, firstly we find record inside DataService by id
-        const foundIndex = 0;//this.dataSource.dataChange.value.findIndex(x => x.id === this.id);
+        let foundIndex = this.dataSource?.data.value.findIndex((x:Book) => x.id === this.id);
         // Then you update that record using data from dialogData (values you enetered)
-        this.dataSource.dataChange.value[foundIndex] = this.bookService.getDialogData();
+        if (foundIndex != undefined && foundIndex >= 0 && this.exampleDatabase != null) {
+          this.exampleDatabase.dataChange.value[foundIndex] = this.bookService.getDialogData();
+        }
         // And lastly refresh table
         this.refreshTable();
       }
@@ -131,8 +151,23 @@ export class BooksListComponent implements AfterViewInit {
     this.loadBooks();
   }
 
-  startDelete(id: number) {
+  startDelete(i: number, id: number, title: string, url: string, publisher: string, genre: string) {
+    this.index = i;
+    this.id = id;
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      data: {id: id, title: title, url: url, publisher: publisher, genre: genre}
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 1) {
+        let foundIndex = this.exampleDatabase?.dataChange.value.findIndex(x => x.id === this.id);
+        // for delete we use splice in order to remove single object from DataService
+        if (foundIndex !== undefined && foundIndex > 0) {
+            this.exampleDatabase?.dataChange.value.splice(foundIndex, 1);
+        }
+        this.refreshTable();
+      }
+    });
   }
 
   startBorrow(id:number){

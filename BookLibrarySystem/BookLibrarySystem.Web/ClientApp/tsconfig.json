@@ -6,6 +6,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitReturns": true,
+    //"strictNullChecks": false,
+    "strictPropertyInitialization": false,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,

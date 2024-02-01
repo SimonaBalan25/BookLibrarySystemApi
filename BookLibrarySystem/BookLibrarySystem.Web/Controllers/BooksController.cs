@@ -4,6 +4,7 @@ using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace BookLibrarySystem.Web.Controllers
 {
@@ -124,14 +125,29 @@ namespace BookLibrarySystem.Web.Controllers
             if (!exists)
                 return StatusCode(StatusCodes.Status404NotFound, "The book doesn't exist in the library !");
 
-            var result = await _booksService.UpdateBookAsync(id, updatedBook);
+            var dbBook = await _booksService.GetBookAsync(id);
+            // Compare the versions
+            if (!ByteArraysEqual(dbBook.Version, updatedBook.Version))
+            {
+                return Conflict(); // Concurrency conflict
+            }
+
+            bool result;
+            try
+            {
+                result = await _booksService.UpdateBookAsync(id, updatedBook);
+            }
+            catch (DBConcurrencyException ex)
+            {
+                return Conflict();
+            }
 
             if (result)
             {
-                return Ok("The book was updated successfully !");
+                return Ok();
             }
 
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error happened in the update book process !");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         [HttpDelete("{id}")]
@@ -146,7 +162,7 @@ namespace BookLibrarySystem.Web.Controllers
             {
                 return StatusCode(StatusCodes.Status404NotFound, "The book selected to be deleted was not found in the library !");
             }
-
+            
             //var selectedBook = await _libraryService.GetBookAsync(id);
             var result = await _booksService.DeleteBookAsync(id);
 
@@ -183,6 +199,23 @@ namespace BookLibrarySystem.Web.Controllers
                 return NotFound($"Book with id {bookId} was not found in the database");
 
             return Ok(await _booksService.CancelReservationAsync(bookId, appUserId));
+        }
+
+        private bool ByteArraysEqual(byte[] a, byte[] b)
+        {
+            if (a == null && b == null)
+                return true;
+
+            if (a == null || b == null || a.Length != b.Length)
+                return false;
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i])
+                    return false;
+            }
+
+            return true;
         }
     }
 }

@@ -45,11 +45,27 @@ export class BookService {
     return this.dialogData;
    }
 
+   addBook(newBook: Book){
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json', // Set the Content-Type to JSON
+    });
+
+    return this.http.post(`${environment.serviceUrl}books/`, newBook, {headers});
+   }
+
    updateBook(updatedBook: Book) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json', // Set the Content-Type to JSON
     });
 
     return this.http.put(`${environment.serviceUrl}books/${updatedBook.id}`, updatedBook, {headers});
+   }
+
+   deleteBook(id:number){
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json', // Set the Content-Type to JSON
+    });
+
+    return this.http.delete<string>(`${environment.serviceUrl}books/${id}`, {headers});
    }
 }

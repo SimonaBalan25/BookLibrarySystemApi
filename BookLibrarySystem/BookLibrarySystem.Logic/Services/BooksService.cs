@@ -257,6 +257,7 @@ namespace BookLibrarySystem.Logic.Services
         public async Task<Book?> AddBookAsync(BookDto bookDto, IEnumerable<int> authorIds)
         {
             var dbBook = _mapper.Map<Book>(bookDto);
+            dbBook.Id = 0;
             using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
@@ -385,7 +386,7 @@ namespace BookLibrarySystem.Logic.Services
             {
                 try
                 {
-                    var dbBook = await _dbContext.Books.FindAsync(bookId);
+                    var dbBook = await _dbContext.Books.FindAsync(bookId);                    
                     dbBook.Genre = selectedBook.Genre;
                     dbBook.ISBN = selectedBook.ISBN;
                     dbBook.LoanedQuantity = selectedBook.LoanedQuantity;
@@ -394,6 +395,8 @@ namespace BookLibrarySystem.Logic.Services
                     dbBook.Publisher = selectedBook.Publisher;
                     dbBook.ReleaseYear = selectedBook.ReleaseYear;
                     dbBook.Title = selectedBook.Title;
+                    // Update the timestamp
+                    dbBook.Version = BitConverter.GetBytes(DateTime.Now.Ticks);
                     //dbBook.BookAuthors = selectedBook.BookAuthors;
                     //dbBook.Loans = selectedBook.Loans;
                     //dbBook.Reservations = selectedBook.Reservations;
@@ -526,6 +529,8 @@ namespace BookLibrarySystem.Logic.Services
                 await _dbContext.SaveChangesAsync();
             }
             return dbLoan.DueDate;
-        }        
+        }
+
+        
     }
 }

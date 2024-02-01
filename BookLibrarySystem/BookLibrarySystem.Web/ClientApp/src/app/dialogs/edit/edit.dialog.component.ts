@@ -42,13 +42,16 @@ export class EditDialogComponent {
   }
 
   stopEdit(): void {
-    this.bookService.updateBook(<Book>this.data).subscribe(data => {
-      this.response = data as boolean;
-      this.snackBar.open('Successfully edited', "Okay!", {duration: 3000});
-    },
-    (err: HttpErrorResponse) => {
-      this.snackBar.open('Error occurred. Details: ' + err.name + ' ' + err.message, "Okay!", {duration: 8000});
-    }
-    );
+    this.bookService.updateBook(<Book>this.data).subscribe({
+      next: data => {
+        this.response = data as boolean;
+        this.snackBar.open('Successfully edited', "Okay!", {duration: 3000});
+        this.dialogRef.close(1);
+      },
+      error: err => {
+        this.snackBar.open('Error occurred. Details: ' + err.name + ' ' + err.message, "Okay!", {duration: 8000});
+        this.dialogRef.close(0);
+      }
+    });
   }
 }

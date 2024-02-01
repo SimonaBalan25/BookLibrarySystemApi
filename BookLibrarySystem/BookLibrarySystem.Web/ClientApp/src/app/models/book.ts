@@ -10,4 +10,5 @@ export interface Book {
   loanedQuantity: number;
   numberOfPages: number;
   authors: number[];
+
 }

@@ -51,6 +51,10 @@ namespace BookLibrarySystem.Logic.Profiles
                 dest => dest.Title,
                 opt => opt.MapFrom(src => src.Title)
             )
+            .ForMember(
+                dest => dest.Version,
+                opt => opt.MapFrom(src => src.Version)
+            )
             .ForMember(dest => dest.Authors, opt => opt.Ignore())
             .ForMember(
                 dest => dest.Id,

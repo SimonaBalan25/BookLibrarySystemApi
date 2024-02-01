@@ -51,6 +51,9 @@ namespace BookLibrarySystem.Data
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.WaitingList);
 
+            modelBuilder.Entity<Book>()
+                .Property(p => p.Version).IsConcurrencyToken();
+
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(a => a.Loans);
 

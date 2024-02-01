@@ -21,6 +21,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 import { FilterComponent } from './books/filter/filter.component';
 import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
+import { AddDialogComponent } from './dialogs/add/add.dialog.component';
+import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
     CounterComponent,
     FetchDataComponent,
     BooksListComponent,
+    AddDialogComponent,
     EditDialogComponent,
+    DeleteDialogComponent,
     FilterComponent,
     UsersListComponent,
     RoleExistsPipe

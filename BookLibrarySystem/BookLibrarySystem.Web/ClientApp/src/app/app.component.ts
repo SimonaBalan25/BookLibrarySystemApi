@@ -9,7 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class AppComponent {
   title = 'app';
 
-  constructor(private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer){
+  constructor(private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer) {
     this.matIconRegistry.addSvgIcon(
       'book-icon',
       this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/book-closed-svgrepo-com.svg')

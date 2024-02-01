@@ -29,6 +29,9 @@ namespace BookLibrarySystem.Data.Models
 
         public int NumberOfPages { get; set; }
 
+        [Timestamp]
+        public byte[] Version { get; set; }
+
         public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
         [JsonIgnore, NotMapped]

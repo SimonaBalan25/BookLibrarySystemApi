@@ -1,5 +1,7 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations;
+
 namespace BookLibrarySystem.Logic.DTOs
 {
     public class BookDto
@@ -23,6 +25,9 @@ namespace BookLibrarySystem.Logic.DTOs
         public int LoanedQuantity { get; set; }
 
         public int NumberOfPages { get; set; }
+
+        [Timestamp]
+        public byte[] Version { get; set; }
 
         public IEnumerable<int> Authors { get; set; } = new List<int>();
     }

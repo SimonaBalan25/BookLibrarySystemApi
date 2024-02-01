@@ -5,6 +5,13 @@
 
     <div class="form">
       <mat-form-field color="accent">
+        <input matInput #input class="form-control" placeholder="Id" [(ngModel)]="data.id" name="id" required >
+        <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form">
+      <mat-form-field color="accent">
         <textarea matInput #input class="form-control" placeholder="Title" [(ngModel)]="data.title" name="title" required ></textarea>
         <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
       </mat-form-field>
@@ -21,19 +28,19 @@
 
     <div class="form">
       <mat-form-field color="accent">
-        <input matInput placeholder="Url" [(ngModel)]="data.genre" name="genre">
+        <input matInput placeholder="Genre" [(ngModel)]="data.genre" name="genre">
       </mat-form-field>
   </div>
 
   <div class="form">
     <mat-form-field color="accent">
-      <input matInput placeholder="Url" [(ngModel)]="data.numberOfPages" name="numberOfPages">
+      <input matInput placeholder="NoOfPages" [(ngModel)]="data.numberOfPages" name="numberOfPages">
     </mat-form-field>
 </div>
 
 <div class="form">
   <mat-form-field color="accent">
-    <input matInput class="form-control" placeholder="ISBN" [(ngModel)]="data.isbn" name="isbn" required />
+    <input matInput class="form-control" placeholder="ISBN" [(ngModel)]="data.ISBN" name="isbn" required />
     <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
   </mat-form-field>
 </div>
@@ -55,8 +62,8 @@
   </div>
 
   <div mat-dialog-actions>
-    <button mat-button type="submit" [disabled]="!formControl.valid" (click)="stopEdit()">Save</button>
-    <button mat-button (click)="onNoClick()" tabindex="-1">Cancel</button>
+    <button mat-button type="submit" [disabled]="!formControl.valid" (click)="confirmAdd()">Save</button>
+    <button mat-button tabindex="-1" mat-dialog-close>Cancel</button>
   </div>
 
     </form>

@@ -618,3 +618,5 @@
 /BookLibrarySystem/.vs/BookLibrarySystem/FileContentIndex/read.lock
 **/bin/*
 **/obj/*
+/BookLibrarySystem/BookLibrarySystem.Logic/obj/Debug/net7.0/BookLibrarySystem.Logic.AssemblyInfo.cs
+/BookLibrarySystem/.vs/BookLibrarySystem/v17/TestStore/0/000.testlog

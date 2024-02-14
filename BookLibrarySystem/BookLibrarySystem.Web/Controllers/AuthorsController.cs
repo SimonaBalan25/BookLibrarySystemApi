@@ -41,7 +41,7 @@ namespace BookLibrarySystem.Web.Controllers
 
             if (author == null)
             {
-                return NotFound("Author was not found in the database !");
+                return NotFound();
             }
 
             return Ok(author);
@@ -55,7 +55,7 @@ namespace BookLibrarySystem.Web.Controllers
 
             if (author == null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error in adding new author in the database !");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
             return CreatedAtAction("AddAuthor", new { id = newAuthor.Id }, newAuthor);
@@ -82,7 +82,7 @@ namespace BookLibrarySystem.Web.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error in updating the author in the database");
             }
 
-            return Ok("Author was updated");
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -91,17 +91,17 @@ namespace BookLibrarySystem.Web.Controllers
         {
             if (!await _authorsService.CheckExistsAsync(id))
             {
-                return NotFound("Author was not found");
+                return NotFound();
             }
 
             var deleted = await _authorsService.DeleteAuthorAsync(id);
 
             if (!deleted)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error in deleting the author from database !");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-            return Ok("Author was deleted");
+            return Ok();
         }
     }
 }

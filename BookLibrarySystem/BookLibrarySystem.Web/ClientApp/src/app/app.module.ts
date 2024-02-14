@@ -23,6 +23,8 @@ import { FilterComponent } from './books/filter/filter.component';
 import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
 import { AddDialogComponent } from './dialogs/add/add.dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component';
+import { BorrowDialogComponent } from './dialogs/borrow/borrow.dialog.component';
+import { ReturnDialogComponent } from './dialogs/return/return.dialog.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,8 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component'
     AddDialogComponent,
     EditDialogComponent,
     DeleteDialogComponent,
+    BorrowDialogComponent,
+    ReturnDialogComponent,
     FilterComponent,
     UsersListComponent,
     RoleExistsPipe

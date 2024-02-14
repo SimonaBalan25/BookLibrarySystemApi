@@ -61,11 +61,27 @@ export class BookService {
     return this.http.put(`${environment.serviceUrl}books/${updatedBook.id}`, updatedBook, {headers});
    }
 
-   deleteBook(id:number){
+   deleteBook(id:number) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json', // Set the Content-Type to JSON
     });
 
-    return this.http.delete<string>(`${environment.serviceUrl}books/${id}`, {headers});
+    return this.http.delete<boolean>(`${environment.serviceUrl}books/${id}`, {headers});
+   }
+
+   borrowBook(bookId: number, userId: string){
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.post<number>(`${environment.serviceUrl}books/borrow?bookId=${bookId}&&appUserId=${userId}`, {headers});
+   }
+
+   returnBook(bookId: number, userId: string){
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+
+      return this.http.put<number>(`${environment.serviceUrl}books/return?bookId=${bookId}&&appUserId=${userId}`, {headers});
    }
 }

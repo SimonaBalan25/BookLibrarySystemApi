@@ -2,7 +2,7 @@
   <h3 mat-dialog-title>Book id: {{data.id}}</h3>
 
   <form class="mat-dialog-content" (ngSubmit)="submit" #formControl="ngForm">
-
+    <input type="hidden" name="version" [(ngModel)]="data.version"> <!-- Hidden input for version -->
     <div class="form">
       <mat-form-field color="accent">
         <textarea matInput #input class="form-control" placeholder="Title" [(ngModel)]="data.title" name="title" required ></textarea>
@@ -21,13 +21,13 @@
 
     <div class="form">
       <mat-form-field color="accent">
-        <input matInput placeholder="Url" [(ngModel)]="data.genre" name="genre">
+        <input matInput placeholder="Genre" [(ngModel)]="data.genre" name="genre">
       </mat-form-field>
   </div>
 
   <div class="form">
     <mat-form-field color="accent">
-      <input matInput placeholder="Url" [(ngModel)]="data.numberOfPages" name="numberOfPages">
+      <input matInput placeholder="NumberOfPages" [(ngModel)]="data.numberOfPages" name="numberOfPages">
     </mat-form-field>
 </div>
 

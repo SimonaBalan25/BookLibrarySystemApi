@@ -1,26 +1,26 @@
-<div class="container">
-  <h3 mat-dialog-title>Book id: {{data.id}}</h3>
+<div class="container-add">
+  <h3 mat-dialog-title>Book id: {{newBook.id}}</h3>
 
   <form class="mat-dialog-content" (ngSubmit)="submit" #formControl="ngForm">
 
     <div class="form">
       <mat-form-field color="accent">
-        <input matInput #input class="form-control" placeholder="Id" [(ngModel)]="data.id" name="id" required >
+        <input matInput #input class="form-control" placeholder="Id" [(ngModel)]="newBook.id" name="id" required >
         <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
       </mat-form-field>
     </div>
 
     <div class="form">
       <mat-form-field color="accent">
-        <textarea matInput #input class="form-control" placeholder="Title" [(ngModel)]="data.title" name="title" required ></textarea>
+        <textarea matInput #input class="form-control" placeholder="Title" [(ngModel)]="newBook.title" name="title" required ></textarea>
         <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
       </mat-form-field>
     </div>
 
-    <!--Contains mat-hint for characters count and has maxLengt set-->
+    <!--Contains mat-hint for characters count and has maxLength set-->
     <div class="form">
       <mat-form-field color="accent">
-        <input matInput #inputstate class="form-control" placeholder="ReleaseYear" [(ngModel)]="data.releaseYear" name="releaseYear" maxlength="10" required >
+        <input matInput #inputstate class="form-control" placeholder="ReleaseYear" [(ngModel)]="newBook.releaseYear" name="releaseYear" maxlength="10" required >
         <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
         <mat-hint align="end">{{inputstate.value.length || 0}}/10</mat-hint>
       </mat-form-field>
@@ -28,26 +28,26 @@
 
     <div class="form">
       <mat-form-field color="accent">
-        <input matInput placeholder="Genre" [(ngModel)]="data.genre" name="genre">
+        <input matInput class="form-control" placeholder="Genre" [(ngModel)]="newBook.genre" name="genre">
       </mat-form-field>
   </div>
 
   <div class="form">
     <mat-form-field color="accent">
-      <input matInput placeholder="NoOfPages" [(ngModel)]="data.numberOfPages" name="numberOfPages">
+      <input matInput class="form-control" placeholder="NoOfPages" [(ngModel)]="newBook.numberOfPages" name="numberOfPages">
     </mat-form-field>
 </div>
 
 <div class="form">
   <mat-form-field color="accent">
-    <input matInput class="form-control" placeholder="ISBN" [(ngModel)]="data.ISBN" name="isbn" required />
+    <input matInput class="form-control" placeholder="ISBN" [(ngModel)]="newBook.ISBN" name="isbn" required />
     <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
   </mat-form-field>
 </div>
 
 <div class="form">
   <mat-form-field color="accent">
-    <input matInput #input class="form-control" placeholder="Publisher" [(ngModel)]="data.publisher" name="publisher" required />
+    <input matInput #input class="form-control" placeholder="Publisher" [(ngModel)]="newBook.publisher" name="publisher" required />
     <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
   </mat-form-field>
 </div>
@@ -55,17 +55,19 @@
   <!--Contains mat-hint for characters count and has maxLengt set-->
   <div class="form">
     <mat-form-field color="accent">
-      <input matInput #inputstatestatus class="form-control" placeholder="Status" [(ngModel)]="data.status" name="status" maxlength="10" required >
+      <input matInput #inputstatestatus class="form-control" placeholder="Status" [(ngModel)]="newBook.status" name="status" maxlength="10" required >
       <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
       <mat-hint align="end">{{inputstatestatus.value.length || 0}}/10</mat-hint>
     </mat-form-field>
   </div>
+
+  <!--<input type="hidden" name="version" [(ngModel)]="newBook.version">--> <!-- Hidden input for version -->
 
   <div mat-dialog-actions>
     <button mat-button type="submit" [disabled]="!formControl.valid" (click)="confirmAdd()">Save</button>
     <button mat-button tabindex="-1" mat-dialog-close>Cancel</button>
   </div>
 
-    </form>
+  </form>
 
   </div>

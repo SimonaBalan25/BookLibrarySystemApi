@@ -21,9 +21,22 @@ namespace BookLibrarySystem.Logic.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetUsersAsync()
+        public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
-            return await _dbContext.Users.ToListAsync();
+            return await _dbContext.Users.Select(u => 
+                        new UserDto() 
+                        {
+                            Id = u.Id,
+                            Name = u.Name,
+                            Address = u.Address,
+                            BirthDate = u.BirthDate,
+                            Email = u.Email,
+                            EmailConfirmed = u.EmailConfirmed,
+                            PhoneNumber = u.PhoneNumber,
+                            PhoneNumberConfirmed = u.PhoneNumberConfirmed,
+                            Status = u.Status,
+                            UserName = u.UserName
+                        }).ToListAsync();
         }
 
         public async Task<ApplicationUser> GetByUsernameAsync(string username)

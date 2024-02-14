@@ -11,9 +11,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using BookLibrarySystem.Common.Extensions;
 using System.Linq.Dynamic.Core;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookLibrarySystem.Logic.Services
 {
@@ -130,6 +127,7 @@ namespace BookLibrarySystem.Logic.Services
                 orderedBooks = filteredBooks.OrderBy(orderByExpression);
 
             }
+            var list = orderedBooks.ToList();
             return new PagedResponse { Rows = orderedBooks, TotalItems = totalCount };
         }
 
@@ -149,6 +147,7 @@ namespace BookLibrarySystem.Logic.Services
                     Publisher = b.Publisher,    
                     ReleaseYear = b.ReleaseYear,
                     Status = (int)b.Status,
+                    Version = b.Version,
                     Authors = b.Authors.Select(a=>a.Id)
                 }).FirstOrDefaultAsync(b => b.Id.Equals(id));
             }
@@ -177,50 +176,56 @@ namespace BookLibrarySystem.Logic.Services
             return await _dbContext.Books.FindAsync(bookId) != null;
         }
 
-        public async Task<CanGetBookResponse> CanReserveAsync(int bookId, string appUserId)
+        public async Task<CanProcessBookResponse> CanReserveAsync(int bookId, string appUserId)
         {
             var dbUser = await _dbContext.Users.FindAsync(appUserId);
             if (dbUser.Status.Equals(UserStatus.Blocked))
             {
-                return new CanGetBookResponse { Allowed = false, Reason = "User is blocked, cannot make reservations !" };
+                return new CanProcessBookResponse { Allowed = false, Reason = "User is blocked, cannot make reservations !" };
             }
 
             var dbBook = await _dbContext.Books.FindAsync(bookId);
             if (dbBook.Status == BookStatus.Lost)
             {
-                return new CanGetBookResponse { Allowed = false, Reason = "The book is reported to be lost, cannot be reserved." };
+                return new CanProcessBookResponse { Allowed = false, Reason = "The book is reported to be lost, cannot be reserved." };
             }
 
             var reservedBooksCount = _dbContext.Reservations.Where(r => r.ApplicationUserId.Equals(appUserId) && r.Status.Equals(ReservationStatus.Active)).Count();
             if (reservedBooksCount >= MaxNumberOfBooksToReserve)
             {
-                return new CanGetBookResponse { Allowed = false, Reason = "User cannot reserve any book, since he already has reserved 3 books." };
+                return new CanProcessBookResponse { Allowed = false, Reason = "User cannot reserve any book, since he already has reserved 3 books." };
             }
 
             var checkIfSameBookIsLoaned = await _dbContext.Loans.Where(l=>l.ApplicationUserId.Equals(appUserId) && l.BookId.Equals(bookId)).FirstOrDefaultAsync() != null;
             if (checkIfSameBookIsLoaned)
             {
-                return new CanGetBookResponse { Allowed = false, Reason = "User has already loaned this book, he cannot reserve it again" };
+                return new CanProcessBookResponse { Allowed = false, Reason = "User has already loaned this book, he cannot reserve it again" };
             }
 
-            return new CanGetBookResponse { Allowed = true };
+            return new CanProcessBookResponse { Allowed = true };
         }
 
-        public async Task<CanGetBookResponse> CanBorrowAsync(int bookId, string appUserId)
+        public async Task<CanProcessBookResponse> CanBorrowAsync(int bookId, string appUserId)
         {
             var bookToBorrow = await _dbContext.Books.FindAsync(bookId);
             var userWhoBorrows = await _dbContext.Users.FindAsync(appUserId);
 
-            //check user status
+            //check user status, if he is blocked, he cannot loan any book
             if (userWhoBorrows.Status == UserStatus.Blocked)
             {
-                return new CanGetBookResponse { Allowed = false, Reason = "User is set on blocked, he cannot do any loan !" };
+                return new CanProcessBookResponse { Allowed = false, Reason = "User is set on blocked, he cannot do any loan !" };
             }
 
-            //the book is reported to be lost
+            //if the book is reported to be lost, then he cannot loan it
             if (bookToBorrow.Status == BookStatus.Lost)
             {
-                return new CanGetBookResponse { Allowed = false, Reason = "The book is reported to be lost." };
+                return new CanProcessBookResponse { Allowed = false, Reason = "The book is reported to be lost." };
+            }
+
+            //if user already loaned it, he cannot loan it again
+            if (_dbContext.Loans.Where(l => l.ApplicationUserId.Equals(appUserId) && l.BookId.Equals(bookId) && !l.Status.Equals(LoanStatus.Finalized)).Count() > 0)
+            {
+                return new CanProcessBookResponse { Allowed = false, Reason = "The book is already borrowed by this user, he cannot borrow it again !" };
             }
 
             //if there aren't enough copies, user cannot borrow that book
@@ -228,17 +233,17 @@ namespace BookLibrarySystem.Logic.Services
             var enoughCopies = bookToBorrow.LoanedQuantity + bookReservations < bookToBorrow.NumberOfCopies;
             if ( !enoughCopies )
             {
-                return new CanGetBookResponse { Allowed = false, Reason = "Book cannot be borrowed, since all the copies are already given." };
+                return new CanProcessBookResponse { Allowed = false, Reason = "Book cannot be borrowed, since all the copies are already given." };
             }
 
             //if user has already 3 books borrowed, he cannot borrow anymore until he returns 1 at least
             var booksBorrowedByUser = _dbContext.Loans.Where(l => l.ApplicationUserId.Equals(appUserId) && l.Status.Equals(LoanStatus.Active)).Select(l2=>l2.BookId).ToList();
             if (booksBorrowedByUser.Count >= MaxNumberOfBooksToBorrow)
             {
-                return new CanGetBookResponse { Allowed = false, Reason = "User has already 3 books borrowed, it's the maximum number in a certain time." };
+                return new CanProcessBookResponse { Allowed = false, Reason = "User has already 3 books borrowed, it's the maximum number in a certain time." };
             }
 
-            return new CanGetBookResponse { Allowed = true };
+            return new CanProcessBookResponse { Allowed = true };
         }
 
         public async Task<bool> CanRenewAsync(int bookId, string appUserId)
@@ -252,6 +257,12 @@ namespace BookLibrarySystem.Logic.Services
             return dbLoan != null &&
                 dbLoan.ReturnedDate == null &&
                 dbBook?.NumberOfCopies - dbBook?.LoanedQuantity > dbActiveReservations.Count();
+        }
+
+        public async Task<CanProcessBookResponse> CanReturnAsync(int bookId, string appUserId)
+        {
+            var selectedLoan = await _dbContext.Loans.FirstOrDefaultAsync(loan => loan.BookId.Equals(bookId) && loan.ApplicationUserId.Equals(appUserId) && !loan.Status.Equals(LoanStatus.Finalized));
+            return new CanProcessBookResponse() { Allowed = selectedLoan != null, Reason = "There is no loan registered with this book & user" };
         }
 
         public async Task<Book?> AddBookAsync(BookDto bookDto, IEnumerable<int> authorIds)
@@ -346,14 +357,12 @@ namespace BookLibrarySystem.Logic.Services
             {
                 try
                 {
-                    selectedBook.LoanedQuantity -= 1;
                     //update loan status
                     var loan =  await _dbContext.Loans.FirstOrDefaultAsync(l => l.ApplicationUserId == userId && l.BookId == selectedBook.Id && !l.Status.Equals(LoanStatus.Finalized));
-                    if (loan != null)
-                    {
-                        loan.ReturnedDate = DateTime.UtcNow;
-                        loan.Status = LoanStatus.Finalized;
-                    }
+                    
+                    loan.ReturnedDate = DateTime.UtcNow;
+                    loan.Status = LoanStatus.Finalized;
+                    selectedBook.LoanedQuantity -= 1;
 
                     //unblock the user if he is already blocked and he has no other loans that he hasn't returned
                     var selectedUser = await _dbContext.Users.FirstOrDefaultAsync(usr => usr.Id.Equals(userId));

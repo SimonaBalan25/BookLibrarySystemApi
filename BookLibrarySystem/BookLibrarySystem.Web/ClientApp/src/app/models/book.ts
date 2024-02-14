@@ -9,6 +9,7 @@ export interface Book {
   numberOfCopies: number;
   loanedQuantity: number;
   numberOfPages: number;
+  version: string;
   authors: number[];
 
 }

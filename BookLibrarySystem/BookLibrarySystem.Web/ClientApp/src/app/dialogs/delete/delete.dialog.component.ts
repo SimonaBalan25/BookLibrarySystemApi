@@ -10,7 +10,7 @@ import { BookService } from 'src/app/services/book.service';
   styleUrls: ['./delete.dialog.component.css']
 })
 export class DeleteDialogComponent {
-  response:string;
+  response:boolean;
 
   constructor(public dialogRef: MatDialogRef<DeleteDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any, public dataService: BookService, private snackBar: MatSnackBar) { }
@@ -22,11 +22,13 @@ export class DeleteDialogComponent {
   confirmDelete(): void {
     this.dataService.deleteBook(this.data.id).subscribe({
       next: data => {
-        this.response = data as string;
-        this.snackBar.open(this.response, "Okay!", {duration: 3000});
+        this.response = data as boolean;
+        this.snackBar.open("Book deleted successfully", "Okay!", {duration: 3000});
+        this.dialogRef.close(1);
       },
       error: err => {
         this.snackBar.open('Error occurred. Details: ' + err.name + ' ' + err.message, "Okay!", {duration: 8000});
+        this.dialogRef.close(0);
       }
     });
   }

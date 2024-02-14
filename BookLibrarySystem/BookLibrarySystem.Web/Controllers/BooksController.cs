@@ -80,7 +80,7 @@ namespace BookLibrarySystem.Web.Controllers
         {
             var exists = await _booksService.CheckExistsAsync(bookId);
             if (!exists)
-                return NotFound("Book does not exist");
+                return NotFound();
 
             var response = await _booksService.CanBorrowAsync(bookId, appUserId);
             if (!response.Allowed)
@@ -102,7 +102,13 @@ namespace BookLibrarySystem.Web.Controllers
             var exists = await _booksService.CheckExistsAsync(bookId);
 
             if (!exists)
-                return NotFound("Book does not exist");
+                return NotFound();
+            
+            var canReturnResponse = await _booksService.CanReturnAsync(bookId, appUserId);
+            if (!canReturnResponse.Allowed)
+            {
+                return BadRequest(canReturnResponse.Reason);
+            }
 
             var result = await _booksService.ReturnBookAsync(bookId, appUserId);
             if (result > 0)
@@ -123,7 +129,7 @@ namespace BookLibrarySystem.Web.Controllers
             var exists = await _booksService.CheckExistsAsync(id);
 
             if (!exists)
-                return StatusCode(StatusCodes.Status404NotFound, "The book doesn't exist in the library !");
+                return NotFound();
 
             var dbBook = await _booksService.GetBookAsync(id);
             // Compare the versions
@@ -160,16 +166,15 @@ namespace BookLibrarySystem.Web.Controllers
 
             if (!exists)
             {
-                return StatusCode(StatusCodes.Status404NotFound, "The book selected to be deleted was not found in the library !");
+                return NotFound();
             }
             
-            //var selectedBook = await _libraryService.GetBookAsync(id);
             var result = await _booksService.DeleteBookAsync(id);
 
             if (result)
-                return StatusCode(StatusCodes.Status200OK, "Book was deleted successfully");
+                return StatusCode(StatusCodes.Status200OK);
 
-            return StatusCode(StatusCodes.Status500InternalServerError, "The selected book could not be deleted from the library ");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         [HttpPost("reserve")]
@@ -180,7 +185,7 @@ namespace BookLibrarySystem.Web.Controllers
                 return BadRequest("BookId should be a positive number");
 
             if (!await _booksService.CheckExistsAsync(bookId))
-                return NotFound($"Book with id {bookId} was not found in the database");
+                return NotFound();
 
             var response = await _booksService.CanReserveAsync(bookId, appUserId);
             if (!response.Allowed)
@@ -196,7 +201,7 @@ namespace BookLibrarySystem.Web.Controllers
                 return BadRequest("BookId should be a positive number");
 
             if (!await _booksService.CheckExistsAsync(bookId))
-                return NotFound($"Book with id {bookId} was not found in the database");
+                return NotFound();
 
             return Ok(await _booksService.CancelReservationAsync(bookId, appUserId));
         }

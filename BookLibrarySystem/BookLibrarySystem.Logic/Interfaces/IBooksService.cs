@@ -19,9 +19,11 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<bool> CheckExistsAsync(int bookId);
 
-        Task<CanGetBookResponse> CanBorrowAsync(int selectedBook, string appUserId);
+        Task<CanProcessBookResponse> CanBorrowAsync(int selectedBook, string appUserId);
 
-        Task<CanGetBookResponse> CanReserveAsync(int bookId, string appUserId);
+        Task<CanProcessBookResponse> CanReturnAsync(int selectedBook, string appUserId);
+
+        Task<CanProcessBookResponse> CanReserveAsync(int bookId, string appUserId);
 
         Task<bool> CanRenewAsync(int bookId, string appUserId);
 

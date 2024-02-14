@@ -7,8 +7,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableDataSourcePaginator } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { AddDialogComponent } from 'src/app/dialogs/add/add.dialog.component';
+import { BorrowDialogComponent } from 'src/app/dialogs/borrow/borrow.dialog.component';
 import { DeleteDialogComponent } from 'src/app/dialogs/delete/delete.dialog.component';
 import { EditDialogComponent } from 'src/app/dialogs/edit/edit.dialog.component';
+import { ReturnDialogComponent } from 'src/app/dialogs/return/return.dialog.component';
 import { Book } from 'src/app/models/book';
 import { BookService } from 'src/app/services/book.service';
 
@@ -82,10 +84,13 @@ export class BooksListComponent implements AfterViewInit {
   }
 
   addNew() {
-    //var newBook = new Book();
+    //let newBook = {id: 0, title: '', ISBN: '000-000-000-0', publisher: '', genre: '', loanedQuantity:0, numberOfCopies: 0, numberOfPages:0,releaseYear:0,status:0} as Book;
+    const version = new Uint16Array([Date.now()]);
+    //newBook.version = version;
+
     const dialogRef = this.dialog.open(AddDialogComponent, {
 
-      data: {  }
+      data: { version: new Uint8Array(0) }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -98,13 +103,13 @@ export class BooksListComponent implements AfterViewInit {
     });
   }
 
-  startEdit(i: number, id: number, title: string, releaseYear: number, genre: string, numberOfPages: number, isbn:string, publisher:string, status: string) {
+  startEdit(i: number, id: number, title: string, releaseYear: number, genre: string, numberOfPages: number, isbn:string, publisher:string, status: string, version: Uint16Array) {
     this.id = id;
     // index row is used just for debugging proposes and can be removed
     this.index = i;
     console.log(this.index);
     const dialogRef = this.dialog.open(EditDialogComponent, {
-      data: { id: id, title: title, releaseYear: releaseYear, status: status, numberOfPages: numberOfPages, genre: genre, isbn:isbn, publisher:publisher }
+      data: { id: id, title: title, releaseYear: releaseYear, status: status, numberOfPages: numberOfPages, genre: genre, isbn:isbn, publisher:publisher, version: version }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -170,12 +175,25 @@ export class BooksListComponent implements AfterViewInit {
     });
   }
 
-  startBorrow(id:number){
+  startBorrow(i:number, id: number, title: string) {
+    this.index=i;
+    this.id=id;
+    const dialogRef=this.dialog.open(BorrowDialogComponent, {
+      data:{id:id, title: title }
+    });
+  }
 
+  startReturn(i:number, id:number, title:string){
+    this.index=i;
+    this.id=id;
+    const dialogRef=this.dialog.open(ReturnDialogComponent, {
+      data:{id:id, title: title }
+    });
   }
 
   private refreshTable() {
     // Refreshing table using paginator
+    this.loadBooks();
     this.paginator._changePageSize(this.paginator.pageSize);
   }
 }

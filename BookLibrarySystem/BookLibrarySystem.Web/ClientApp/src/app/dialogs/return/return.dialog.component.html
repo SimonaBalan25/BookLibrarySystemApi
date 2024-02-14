@@ -1,0 +1,19 @@
+<div class="container">
+  <h3 mat-dialog-title>Return book with name {{data.title}}</h3>
+  <form class="mat-dialog-content" (ngSubmit)="submit" #formControl="ngForm">
+    <div class="form">
+      <mat-form-field>
+        <mat-select matInput name="usersSelect" [(ngModel)]="selectedUser">
+          <mat-option value="no-option">Select users...</mat-option>
+          <mat-option *ngFor="let user of selectedUsers" value="{{user.id}}">{{user.userName}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div mat-dialog-actions>
+      <button mat-button type="submit" [disabled]="!formControl.valid" (click)="confirmReturn(selectedUser)">Return</button>
+      <button mat-button tabindex="-1" mat-dialog-close>Cancel</button>
+    </div>
+  </form>
+</div>

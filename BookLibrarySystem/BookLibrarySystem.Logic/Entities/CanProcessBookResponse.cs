@@ -1,7 +1,7 @@
 ﻿
 namespace BookLibrarySystem.Logic.Entities
 {
-    public class CanGetBookResponse
+    public class CanProcessBookResponse
     {
         public bool Allowed { get; set; }
 

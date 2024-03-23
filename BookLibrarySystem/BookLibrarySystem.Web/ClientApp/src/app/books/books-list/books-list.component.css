@@ -48,12 +48,12 @@ mat-paginator mat-option {
   width:200px;
 }
 
-::ng-deep body .cdk-overlay-container {
+/*::ng-deep body .cdk-overlay-container {*/
   .mat-tooltip {
       top: 104px;
   }
-  padding-left:400px;
-}
+  /*padding-left:400px;
+}*/
 
 mat-paginator mat-option:last-child:before{
   content: 'All';

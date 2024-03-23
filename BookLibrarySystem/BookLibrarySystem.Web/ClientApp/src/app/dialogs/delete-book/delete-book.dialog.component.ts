@@ -6,13 +6,13 @@ import { BookService } from 'src/app/services/book.service';
 
 @Component({
   selector: 'app-delete.dialog',
-  templateUrl: './delete.dialog.component.html',
-  styleUrls: ['./delete.dialog.component.css']
+  templateUrl: './delete-book.dialog.component.html',
+  styleUrls: ['./delete-book.dialog.component.css']
 })
-export class DeleteDialogComponent {
+export class DeleteBookDialogComponent {
   response:boolean;
 
-  constructor(public dialogRef: MatDialogRef<DeleteDialogComponent>,
+  constructor(public dialogRef: MatDialogRef<DeleteBookDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any, public dataService: BookService, private snackBar: MatSnackBar) { }
 
   onNoClick(): void {

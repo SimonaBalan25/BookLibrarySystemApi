@@ -4,7 +4,7 @@ using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookLibrarySystem.Web.Controllers
 {
@@ -131,21 +131,14 @@ namespace BookLibrarySystem.Web.Controllers
             if (!exists)
                 return NotFound();
 
-            var dbBook = await _booksService.GetBookAsync(id);
-            // Compare the versions
-            if (!ByteArraysEqual(dbBook.Version, updatedBook.Version))
-            {
-                return Conflict(); // Concurrency conflict
-            }
-
             bool result;
             try
             {
                 result = await _booksService.UpdateBookAsync(id, updatedBook);
             }
-            catch (DBConcurrencyException ex)
+            catch (DbUpdateConcurrencyException ex)
             {
-                return Conflict();
+                return Conflict(ex.Message);
             }
 
             if (result)
@@ -204,23 +197,6 @@ namespace BookLibrarySystem.Web.Controllers
                 return NotFound();
 
             return Ok(await _booksService.CancelReservationAsync(bookId, appUserId));
-        }
-
-        private bool ByteArraysEqual(byte[] a, byte[] b)
-        {
-            if (a == null && b == null)
-                return true;
-
-            if (a == null || b == null || a.Length != b.Length)
-                return false;
-
-            for (int i = 0; i < a.Length; i++)
-            {
-                if (a[i] != b[i])
-                    return false;
-            }
-
-            return true;
-        }
+        }        
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookLibrarySystem.Common.Models;
 using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.DTOs;
@@ -6,6 +7,7 @@ using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using System.Linq.Dynamic.Core;
 
 namespace BookLibrarySystem.Logic.Services
 {
@@ -48,6 +50,25 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
+        public async Task<PagedResponse<AuthorDto>> GetAuthorsBySortColumnAsync(string sortDirection, string sortColumn)
+        {
+            IQueryable<AuthorDto> filteredAuthors = (await GetAuthorsAsync()).AsQueryable();
+            var totalCount = filteredAuthors.Count();
+
+            IOrderedQueryable<AuthorDto> orderedAuthors = filteredAuthors as IOrderedQueryable<AuthorDto>;
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                // Build the dynamic sorting expression
+                var orderByExpression = $"{sortColumn} {sortDirection}";
+
+                // Apply dynamic sorting
+                orderedAuthors = filteredAuthors.OrderBy(orderByExpression);
+
+            }
+            var list = orderedAuthors.ToList();
+            return new PagedResponse<AuthorDto> { Rows = orderedAuthors, TotalItems = totalCount };
+        }
+
         public async Task<AuthorDto?> GetAuthorAsync(int id)
         {
             try
@@ -71,16 +92,27 @@ namespace BookLibrarySystem.Logic.Services
         public async Task<Author?> AddAuthorAsync(AuthorDto author)
         {
             Author? dbAuthor = null;
-            try
+            using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                dbAuthor = _mapper.Map<Author>(author);
-                await _dbContext.Authors.AddAsync(dbAuthor);
-                int added = await _dbContext.SaveChangesAsync();
-            }
-            catch
-            {
-                _logger.LogError("AuthorsService - AddAuthor - Author could not be added");
-                throw;
+                try
+                {
+                    dbAuthor = _mapper.Map<Author>(author);
+                    await _dbContext.Authors.AddAsync(dbAuthor);
+                    _dbContext.Entry(dbAuthor).State = EntityState.Added;
+                    await _dbContext.SaveChangesAsync();
+
+                    foreach (var bookId in author.Books)
+                    {
+                        await _dbContext.BookAuthors.AddAsync(new BookAuthor { AuthorId = dbAuthor.Id, BookId = bookId });
+                    }
+                    int added = await _dbContext.SaveChangesAsync();
+                    await dbTransaction.CommitAsync();
+                }
+                catch
+                {
+                    _logger.LogError("AuthorsService - AddAuthor - Author could not be added");
+                    throw;
+                }
             }
 
             return await _dbContext.Authors.FindAsync(dbAuthor.Id);
@@ -109,16 +141,55 @@ namespace BookLibrarySystem.Logic.Services
 
         public async Task<bool> DeleteAuthorAsync(int id)
         {
-            try
+            using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var dbAuthor = await _dbContext.Authors.FindAsync(id);
-                _dbContext.Authors.Remove(dbAuthor);
-                return await _dbContext.SaveChangesAsync() > 0;
+                try
+                {
+                    var booksWrittenBy = await _dbContext.BookAuthors.Where(ba => ba.AuthorId == id).ToListAsync();
+                    foreach (var authorBook in booksWrittenBy)
+                    {
+                        _dbContext.BookAuthors.Remove(authorBook);
+                    }
+
+                    var dbAuthor = await _dbContext.Authors.FindAsync(id);
+                    _dbContext.Authors.Remove(dbAuthor);
+
+                    var result = await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return result > 0;
+                }
+                catch
+                {
+                    _logger.LogError("AuthorsService - DeleteAuthor method - an error occurred");
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
-            catch
+        }
+
+        public async Task<bool> AssignBooksAsync(int id, string[] booksIds)
+        {
+            using (var dbTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                _logger.LogError("AuthorsService - DeleteAuthor method - an error occurred");
-                throw;
+                try
+                {
+                    var author = await _dbContext.Authors.FindAsync(id);
+                    var existentAuthorBooks = author?.BookAuthors;
+                    _dbContext.BookAuthors.RemoveRange(existentAuthorBooks);    
+
+                    foreach (var bookId in booksIds)
+                    {
+                        _dbContext.BookAuthors.Add(new BookAuthor { AuthorId = id, BookId = Int32.Parse(bookId) });
+                    }
+                    await _dbContext.SaveChangesAsync();
+                    await dbTransaction.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    await dbTransaction.RollbackAsync();
+                    return false;
+                }
             }
         }
     }

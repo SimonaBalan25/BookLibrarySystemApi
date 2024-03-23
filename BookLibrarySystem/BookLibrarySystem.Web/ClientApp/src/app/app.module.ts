@@ -20,11 +20,18 @@ import { MaterialModule } from './material/material.module';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 import { FilterComponent } from './books/filter/filter.component';
-import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
-import { AddDialogComponent } from './dialogs/add/add.dialog.component';
-import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component';
+import { EditBookDialogComponent } from './dialogs/edit-book/edit-book.dialog.component';
+import { AddBookDialogComponent } from './dialogs/add-book/add-book.dialog.component';
+import { DeleteBookDialogComponent } from './dialogs/delete-book/delete-book.dialog.component';
 import { BorrowDialogComponent } from './dialogs/borrow/borrow.dialog.component';
 import { ReturnDialogComponent } from './dialogs/return/return.dialog.component';
+import { AppRoutingModule } from './app-routing.module';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { AuthorsListComponent } from './authors/authors-list/authors-list.component';
+import { AddAuthorDialogComponent } from './dialogs/add-author/add-author.dialog.component';
+import { EditAuthorDialogComponent } from './dialogs/edit-author/edit-author.dialog.component';
+import { DeleteAuthorDialogComponent } from './dialogs/delete-author/delete-author.dialog.component';
+import { ManageBooksDialogComponent } from './dialogs/manage-books/manage-books.dialog.component';
 
 @NgModule({
   declarations: [
@@ -33,10 +40,15 @@ import { ReturnDialogComponent } from './dialogs/return/return.dialog.component'
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
+    AuthorsListComponent,
     BooksListComponent,
-    AddDialogComponent,
-    EditDialogComponent,
-    DeleteDialogComponent,
+    ManageBooksDialogComponent,
+    AddBookDialogComponent,
+    AddAuthorDialogComponent,
+    EditBookDialogComponent,
+    EditAuthorDialogComponent,
+    DeleteBookDialogComponent,
+    DeleteAuthorDialogComponent,
     BorrowDialogComponent,
     ReturnDialogComponent,
     FilterComponent,
@@ -54,13 +66,7 @@ import { ReturnDialogComponent } from './dialogs/return/return.dialog.component'
     BrowserAnimationsModule,
     ApiAuthorizationModule,
     HttpClientModule,
-    RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthorizeGuard] },
-      { path: 'books-list', component: BooksListComponent, canActivate: [AuthorizeGuard] },
-      { path: 'users-list', component: UsersListComponent, canActivate: [AuthorizeGuard] }
-    ]),
+    AppRoutingModule,
     NoopAnimationsModule
   ],
   providers: [

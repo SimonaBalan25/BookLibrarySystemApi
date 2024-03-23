@@ -1,0 +1,28 @@
+table {
+  width: 100%;
+}
+
+table tr{
+  min-width: 70% !important;
+}
+
+.purpleStyle{
+  color:purple;
+}
+
+.redStyle{
+  color: red;
+}
+
+.darkBlueStyle{
+  color:darkblue;
+}
+
+.brownStyle{
+  color:brown;
+}
+
+mat-paginator {
+  display: flex;
+  justify-content: center;
+}

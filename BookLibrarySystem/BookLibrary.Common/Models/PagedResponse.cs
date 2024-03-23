@@ -4,9 +4,9 @@ using BookLibrarySystem.Data.Models;
 
 namespace BookLibrarySystem.Common.Models
 {
-    public class PagedResponse
+    public class PagedResponse<T>
     {
-        public IOrderedQueryable<Book> Rows { get; set; }  
+        public IOrderedQueryable<T> Rows { get; set; }  
 
         public int TotalItems { get; set; }
     }

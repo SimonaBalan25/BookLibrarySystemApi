@@ -15,13 +15,22 @@ export class BookService {
 
    }
 
-   getBooks() :Observable<Book[]> {
+   getBooksAsync() :Observable<Book[]> {
     return this.http.get(environment.baseApiUrl + 'books/').pipe(
       map((response: any) => {
         console.log(response);
         return response;
 
       }));
+   }
+
+   getBooksForListingAsync() : Observable<any> {
+    return this.http.get(environment.baseApiUrl + 'books/getAllForListing').pipe(
+      map((response:any) => {
+        console.log(response);
+        return response;
+      })
+    )
    }
 
    getBooksBySearchCriteria(pageIndex: number, pageSize: number, sortColumn: string, sortDirection:string, filters: any): Observable<any>{
@@ -45,7 +54,7 @@ export class BookService {
     return this.dialogData;
    }
 
-   addBook(newBook: Book){
+   addBook(newBook: Book) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json', // Set the Content-Type to JSON
     });
@@ -69,7 +78,7 @@ export class BookService {
     return this.http.delete<boolean>(`${environment.serviceUrl}books/${id}`, {headers});
    }
 
-   borrowBook(bookId: number, userId: string){
+   borrowBook(bookId: number, userId: string) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
@@ -77,11 +86,15 @@ export class BookService {
     return this.http.post<number>(`${environment.serviceUrl}books/borrow?bookId=${bookId}&&appUserId=${userId}`, {headers});
    }
 
-   returnBook(bookId: number, userId: string){
+   returnBook(bookId: number, userId: string) {
       const headers = new HttpHeaders({
         'Content-Type': 'application/json'
       });
 
       return this.http.put<number>(`${environment.serviceUrl}books/return?bookId=${bookId}&&appUserId=${userId}`, {headers});
+   }
+
+   assignBooks(authorId:number) {
+
    }
 }

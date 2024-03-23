@@ -1,0 +1,43 @@
+<div class="container-edit">
+  <h3 mat-dialog-title>Author id: {{data.id}}</h3>
+
+  <form class="mat-dialog-content" (ngSubmit)="submit" #formControl="ngForm">
+
+    <div class="form">
+      <mat-form-field color="accent">
+        <input matInput #input class="form-control" placeholder="Id" [(ngModel)]="data.id" name="id" required>
+        <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form">
+      <mat-form-field color="accent">
+        <textarea matInput #input class="form-control" placeholder="Name" [(ngModel)]="data.name" name="name" required></textarea>
+        <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form">
+      <mat-form-field color="accent">
+        <input matInput #inputstate class="form-control" placeholder="Country" [(ngModel)]="data.country" name="country" maxlength="10" required>
+        <mat-error *ngIf="formControl.invalid">{{getErrorMessage()}}</mat-error>
+        <mat-hint align="end">{{inputstate.value.length || 0}}/10</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="form">
+      <mat-form-field>
+        <mat-select matInput name="booksSelect" [(ngModel)]="data.book">
+          <mat-option *ngFor="let book of allBooks" [value]="book.id">{{book.title}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div mat-dialog-actions>
+      <button mat-button type="submit" [disabled]="!formControl.valid" (click)="stopEdit()">Save</button>
+      <button mat-button tabindex="-1" mat-dialog-close>Cancel</button>
+    </div>
+  </form>
+
+</div>

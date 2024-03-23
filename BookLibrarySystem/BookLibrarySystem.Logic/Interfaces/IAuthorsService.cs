@@ -1,4 +1,5 @@
-﻿using BookLibrarySystem.Data.Models;
+﻿using BookLibrarySystem.Common.Models;
+using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.DTOs;
 
 namespace BookLibrarySystem.Logic.Interfaces
@@ -9,6 +10,8 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<IEnumerable<AuthorDto>> GetAuthorsAsync();
 
+        Task<PagedResponse<AuthorDto>> GetAuthorsBySortColumnAsync(string sortDirection, string sortColumn);
+
         Task<AuthorDto?> GetAuthorAsync(int id);
 
         Task<Author> AddAuthorAsync(AuthorDto author);
@@ -16,5 +19,7 @@ namespace BookLibrarySystem.Logic.Interfaces
         Task<bool> UpdateAuthorAsync(AuthorDto author);
 
         Task<bool> DeleteAuthorAsync(int id);
+
+        Task<bool> AssignBooksAsync(int id, string[] booksIds);
     }
 }

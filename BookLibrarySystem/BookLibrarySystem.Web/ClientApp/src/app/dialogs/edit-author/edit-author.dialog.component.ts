@@ -1,23 +1,25 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Author } from 'src/app/models/author';
 import { Book } from 'src/app/models/book';
+import { AuthorsService } from 'src/app/services/authors.service';
 import { BookService } from 'src/app/services/book.service';
 
 @Component({
-  selector: 'app-edit.dialog',
-  templateUrl: './edit.dialog.component.html',
-  styleUrls: ['./edit.dialog.component.css']
+  selector: 'app-edit-author.dialog',
+  templateUrl: './edit-author.dialog.component.html',
+  styleUrls: ['./edit-author.dialog.component.css']
 })
-export class EditDialogComponent {
-
+export class EditAuthorDialogComponent implements OnInit {
   dialogData: any;
   response: boolean;
+  allBooks: Book[];
 
-  constructor(public dialogRef: MatDialogRef<EditDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any, public bookService: BookService, private snackBar: MatSnackBar) {
+  constructor(public dialogRef: MatDialogRef<EditAuthorDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any, public authorsService: AuthorsService,
+    public booksService: BookService, private snackBar: MatSnackBar) {
         this.response= false;
      }
 
@@ -26,6 +28,12 @@ export class EditDialogComponent {
       // Validators.email,
   ]);
 
+  ngOnInit(){
+    this.booksService.getBooksAsync().subscribe(data => {
+      this.allBooks = data;
+  });
+  }
+
 
   submit() {
     // emppty stuff
@@ -33,7 +41,6 @@ export class EditDialogComponent {
 
   getErrorMessage() {
     return this.formControl.hasError('required') ? 'Required field' :
-      this.formControl.hasError('email') ? 'Not a valid email' :
         '';
   }
 
@@ -42,7 +49,7 @@ export class EditDialogComponent {
   }
 
   stopEdit(): void {
-    this.bookService.updateBook(<Book>this.data).subscribe({
+    this.authorsService.updateAuthor(<Author>this.data).subscribe({
       next: data => {
         this.response = data as boolean;
         this.snackBar.open('Successfully edited', "Okay!", {duration: 3000});

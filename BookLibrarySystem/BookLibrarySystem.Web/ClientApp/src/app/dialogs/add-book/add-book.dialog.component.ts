@@ -8,15 +8,15 @@ import { BookService } from 'src/app/services/book.service';
 
 @Component({
   selector: 'app-add.dialog',
-  templateUrl: './add.dialog.component.html',
-  styleUrls: ['./add.dialog.component.css']
+  templateUrl: './add-book.dialog.component.html',
+  styleUrls: ['./add-book.dialog.component.css']
 })
 
-export class AddDialogComponent {
+export class AddBookDialogComponent {
   newBook: Book;
   response: boolean;
 
-  constructor(public dialogRef: MatDialogRef<AddDialogComponent>,
+  constructor(public dialogRef: MatDialogRef<AddBookDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { version: Uint8Array },
     public bookService: BookService, private snackBar: MatSnackBar) {
 

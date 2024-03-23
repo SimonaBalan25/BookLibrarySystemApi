@@ -6,8 +6,10 @@ namespace BookLibrarySystem.Logic.DTOs
     {
         public string Title { get;set; }
 
-        public string Publisher { get;set; }
+        //public string Publisher { get;set; }
 
-        public int ReleaseYear { get;set; }
+        //public int ReleaseYear { get;set; }
+
+        public int Id { get; set; }
     }
 }

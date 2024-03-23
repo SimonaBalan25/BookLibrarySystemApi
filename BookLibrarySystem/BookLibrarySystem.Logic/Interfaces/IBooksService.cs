@@ -11,7 +11,7 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<BookDto?> GetBookAsync(int id);
 
-        Task<PagedResponse> GetBySearchFilters(string sortDirection, int pageIndex, int pageSize, string sortColumn, Dictionary<string,string> filters);
+        Task<PagedResponse<Book>> GetBySearchFilters(string sortDirection, int pageIndex, int pageSize, string sortColumn, Dictionary<string,string> filters);
 
         Task<IEnumerable<BookForListing>> GetBooksForListingAsync();
 

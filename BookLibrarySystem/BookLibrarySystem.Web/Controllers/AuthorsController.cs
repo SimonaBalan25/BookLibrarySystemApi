@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -34,6 +33,20 @@ namespace BookLibrarySystem.Web.Controllers
             return StatusCode(StatusCodes.Status200OK, authors);
         }
 
+        [HttpGet("getBySortCriteria")]
+        public async Task<IActionResult> GetBySortCriteria(string sortDirection, string sortColumn = "")
+        {
+            var pagedResponse = await _authorsService.GetAuthorsBySortColumnAsync(sortDirection, sortColumn);
+
+            //if (pagedResponse == null)
+            //{
+            //    return StatusCode(StatusCodes.Status500InternalServerError, "Problem in getting the authors from the database");
+            //}
+
+            return Ok(new { Authors = pagedResponse.Rows.ToList(), TotalItems = pagedResponse.TotalItems });
+        }
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAuthorAsync(int id)
         {
@@ -51,7 +64,7 @@ namespace BookLibrarySystem.Web.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> AddAuthorAsync(AuthorDto newAuthor)
         {
-            var author = await _authorsService.AddAuthorAsync(newAuthor);    
+            var author = await _authorsService.AddAuthorAsync(newAuthor);
 
             if (author == null)
             {
@@ -75,7 +88,7 @@ namespace BookLibrarySystem.Web.Controllers
                 return NotFound("Author was not found");
             }
 
-            var updated = await _authorsService.UpdateAuthorAsync(modifiedAuthor);    
+            var updated = await _authorsService.UpdateAuthorAsync(modifiedAuthor);
 
             if (!updated)
             {
@@ -102,6 +115,19 @@ namespace BookLibrarySystem.Web.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPut("assign")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> AssignBooksAsync(int id, string booksIds)
+        {
+            string[] books = booksIds.Split(',').ToArray();
+            if (await _authorsService.AssignBooksAsync(id, books))
+            {
+                return Ok();
+            }
+
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

@@ -65,8 +65,9 @@ namespace BookLibrarySystem.Logic.Services
             return await _dbContext.Books.Select(b => new BookForListing
             {
                 Title = b.Title,
-                Publisher = b.Publisher,
-                ReleaseYear = b.ReleaseYear
+                Id = b.Id
+                //Publisher = b.Publisher,
+                //ReleaseYear = b.ReleaseYear
             }).ToListAsync();
         }
 
@@ -81,7 +82,7 @@ namespace BookLibrarySystem.Logic.Services
             };
 
         
-        public async Task<PagedResponse> GetBySearchFilters(string sortDirection, int pageIndex=1, int pageSize=10,  string sortColumn="", Dictionary<string,string> filters=null)
+        public async Task<PagedResponse<Book>> GetBySearchFilters(string sortDirection, int pageIndex=1, int pageSize=10,  string sortColumn="", Dictionary<string,string> filters=null)
         {
             IQueryable<Book> filteredBooks = _dbContext.Books.AsQueryable();
             var totalCount = filteredBooks.Count();
@@ -128,7 +129,7 @@ namespace BookLibrarySystem.Logic.Services
 
             }
             var list = orderedBooks.ToList();
-            return new PagedResponse { Rows = orderedBooks, TotalItems = totalCount };
+            return new PagedResponse<Book> { Rows = orderedBooks, TotalItems = totalCount };
         }
 
         public async Task<BookDto?> GetBookAsync(int id)
@@ -395,7 +396,13 @@ namespace BookLibrarySystem.Logic.Services
             {
                 try
                 {
-                    var dbBook = await _dbContext.Books.FindAsync(bookId);                    
+                    var dbBook = await _dbContext.Books.FindAsync(bookId);
+
+                    if (!ByteArraysEqual(dbBook.Version, selectedBook.Version))
+                    {
+                        throw new DbUpdateConcurrencyException("User is trying to update a version that doesn't exist anymore");
+                    }
+
                     dbBook.Genre = selectedBook.Genre;
                     dbBook.ISBN = selectedBook.ISBN;
                     dbBook.LoanedQuantity = selectedBook.LoanedQuantity;
@@ -540,6 +547,21 @@ namespace BookLibrarySystem.Logic.Services
             return dbLoan.DueDate;
         }
 
-        
+        private bool ByteArraysEqual(byte[] a, byte[] b)
+        {
+            if (a == null && b == null)
+                return true;
+
+            if (a == null || b == null || a.Length != b.Length)
+                return false;
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i])
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

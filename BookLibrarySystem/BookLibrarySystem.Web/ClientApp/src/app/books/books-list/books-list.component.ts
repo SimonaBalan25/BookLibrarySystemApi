@@ -6,10 +6,10 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableDataSourcePaginator } from '@angular/material/table';
 import { Observable } from 'rxjs';
-import { AddDialogComponent } from 'src/app/dialogs/add/add.dialog.component';
+import { AddBookDialogComponent } from 'src/app/dialogs/add-book/add-book.dialog.component';
 import { BorrowDialogComponent } from 'src/app/dialogs/borrow/borrow.dialog.component';
-import { DeleteDialogComponent } from 'src/app/dialogs/delete/delete.dialog.component';
-import { EditDialogComponent } from 'src/app/dialogs/edit/edit.dialog.component';
+import { DeleteBookDialogComponent } from 'src/app/dialogs/delete-book/delete-book.dialog.component';
+import { EditBookDialogComponent } from 'src/app/dialogs/edit-book/edit-book.dialog.component';
 import { ReturnDialogComponent } from 'src/app/dialogs/return/return.dialog.component';
 import { Book } from 'src/app/models/book';
 import { BookService } from 'src/app/services/book.service';
@@ -88,7 +88,7 @@ export class BooksListComponent implements AfterViewInit {
     const version = new Uint16Array([Date.now()]);
     //newBook.version = version;
 
-    const dialogRef = this.dialog.open(AddDialogComponent, {
+    const dialogRef = this.dialog.open(AddBookDialogComponent, {
 
       data: { version: new Uint8Array(0) }
     });
@@ -108,7 +108,7 @@ export class BooksListComponent implements AfterViewInit {
     // index row is used just for debugging proposes and can be removed
     this.index = i;
     console.log(this.index);
-    const dialogRef = this.dialog.open(EditDialogComponent, {
+    const dialogRef = this.dialog.open(EditBookDialogComponent, {
       data: { id: id, title: title, releaseYear: releaseYear, status: status, numberOfPages: numberOfPages, genre: genre, isbn:isbn, publisher:publisher, version: version }
     });
 
@@ -159,7 +159,7 @@ export class BooksListComponent implements AfterViewInit {
   startDelete(i: number, id: number, title: string, url: string, publisher: string, genre: string) {
     this.index = i;
     this.id = id;
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    const dialogRef = this.dialog.open(DeleteBookDialogComponent, {
       data: {id: id, title: title, url: url, publisher: publisher, genre: genre}
     });
 

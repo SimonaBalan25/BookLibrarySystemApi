@@ -2,3 +2,24 @@
   /*text-align: center;*/
   justify-content: center;
 }
+
+.leftBooksSection {
+  max-height: 200px;
+  overflow-y: auto;
+  float:left;
+  width:350px;
+}
+
+.rightBooksSection {
+  max-height: 200px;
+  overflow-y: auto;
+  width:350px;
+}
+
+.divButtonsSection {
+  clear: both;
+  width:inherit;
+  height:auto;
+  align-items: center;
+  text-align: center;
+}

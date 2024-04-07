@@ -17,6 +17,8 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<bool> UpdateUserAsync(string id, UserDto modifiedUser);
 
+        Task<bool> CanBeDeletedAsync(string id);
+
         Task<bool> DeleteUserAsync(string id);
 
         Task<bool> BlockUserAsync(string userId);

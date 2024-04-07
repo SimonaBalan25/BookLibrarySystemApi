@@ -26,6 +26,8 @@
            (click)="addNew()">
           <mat-icon color="primary">add</mat-icon>
         </button>
+
+        <button mat-button type="submit" class="refreshBtnStyle" (click)="forceRefreshBooks()">Refresh Books</button>
       </th>
       <td mat-cell *matCellDef="let row; let i=index;">
         <button mat-icon-button matTooltip="Click to Edit" class="iconbutton"

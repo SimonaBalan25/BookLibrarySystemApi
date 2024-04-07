@@ -22,6 +22,11 @@ table tr{
   color:brown;
 }
 
+.refreshBtnStyle{
+  background-color: lightblue;
+  font-weight:bold;
+}
+
 mat-paginator {
   display: flex;
   justify-content: center;

@@ -12,6 +12,7 @@ import { Author } from 'src/app/models/author';
 import { Book } from 'src/app/models/book';
 import { BookBase } from 'src/app/models/book-base';
 import { AuthorsService } from 'src/app/services/authors.service';
+import { BookService } from 'src/app/services/book.service';
 
 @Component({
   selector: 'app-authors-list',
@@ -24,7 +25,7 @@ export class AuthorsListComponent {
   dataSource: any = [];
   authorsList: Author[] = [];
   exampleDatabase: AuthorsService | null;
-  books: Author[] = [];
+  books: BookBase[] = [];
   index: number=0;
   id: number=0;
   pageIndex: number=0;
@@ -35,7 +36,8 @@ export class AuthorsListComponent {
   @ViewChild('paginator', {static: true}) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: false }) sort: MatSort = {} as MatSort;
 
-  constructor(private authorsService: AuthorsService, public dialog: MatDialog, private httpClient: HttpClient) {
+  constructor(private authorsService: AuthorsService, public dialog: MatDialog, private httpClient: HttpClient,
+      private booksService: BookService) {
 
   }
 
@@ -46,6 +48,17 @@ export class AuthorsListComponent {
 
   ngOnInit(): void {
     this.loadAuthors();
+  }
+
+  forceRefreshBooks(){
+    this.booksService.getBooksForListingAsync(true)
+      .subscribe({
+        next: data => {
+          this.books = data;
+        },
+        error: () => {
+        }
+      });
   }
 
   loadAuthors() {

@@ -97,6 +97,7 @@ internal class Program
             app.UseRateLimiting();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            // Add this after static files but before MVC in order to provide ETags to MVC Views and Razor Pages.
             app.UseRouting();
             app.UseMiddleware(typeof(ExceptionHandlingMiddleware));
 

@@ -4,20 +4,20 @@
 <form (ngSubmit)="onSubmit()" #formControl="ngForm">
 
   <div style="">
-    <div style="max-height: 200px; overflow-y: auto;float:left;width:350px;">
+    <div class="leftBooksSection">
       <mat-selection-list #leftList [multiple]="true">
         <mat-list-option *ngFor="let book of leftBooks" [value]="book">{{ book.title }}</mat-list-option>
       </mat-selection-list>
     </div>
 
-    <div style="max-height: 200px; overflow-y: auto;width:350px;">
+    <div class="rightBooksSection">
       <mat-selection-list #rightList [multiple]="true">
         <mat-list-option *ngFor="let book of assignedBooks" [value]="book">{{ book.title }}</mat-list-option>
       </mat-selection-list>
     </div>
   </div>
 
-  <div style="clear: both;width:inherit;height:auto;align-items: center;text-align: center;">
+  <div class="divButtonsSection">
     <button mat-raised-button color="primary" (click)="moveToRight()">>></button>
     <button mat-raised-button color="primary" (click)="moveToLeft()"><<</button>
 

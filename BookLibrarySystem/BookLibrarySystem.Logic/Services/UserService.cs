@@ -49,6 +49,12 @@ namespace BookLibrarySystem.Logic.Services
             return await _dbContext.Users.Where(u => u.Id.Equals(id)).SingleOrDefaultAsync();
         }
 
+        public async Task<bool> CanBeDeletedAsync(string id)
+        {
+            return ((await _dbContext.Loans.Where(l => l.ApplicationUserId.Equals(id) && !l.Status.Equals(LoanStatus.Finalized)).ToListAsync()).Count() > 0) ||
+                ((await _dbContext.Reservations.Where(r=>r.ApplicationUserId.Equals(id) && r.Status.Equals(ReservationStatus.Active)).ToListAsync()).Count() > 0);
+        }
+
         public async Task<ApplicationUser?> AddUserAsync(UserDto newUser)
         {
             try

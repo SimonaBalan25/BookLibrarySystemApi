@@ -173,9 +173,10 @@ namespace BookLibrarySystem.Logic.Services
             {
                 try
                 {
-                    var author = await _dbContext.Authors.FindAsync(id);
-                    var existentAuthorBooks = author?.BookAuthors;
-                    _dbContext.BookAuthors.RemoveRange(existentAuthorBooks);    
+                    var author = _dbContext.Authors.Where(a => a.Id.Equals(id)).FirstOrDefault();
+                    var existentAuthorBooks = _dbContext.BookAuthors.Where(ba => ba.AuthorId.Equals(id)).AsEnumerable();
+                    _dbContext.BookAuthors.RemoveRange(existentAuthorBooks);
+                    await _dbContext.SaveChangesAsync();
 
                     foreach (var bookId in booksIds)
                     {

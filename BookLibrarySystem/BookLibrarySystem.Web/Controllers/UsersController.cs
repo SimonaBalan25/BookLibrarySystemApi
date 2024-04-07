@@ -67,9 +67,25 @@ namespace BookLibrarySystem.Web.Controllers
                 return BadRequest("Invalid user id");
             }
 
+            if (!await _userService.CanBeDeletedAsync(id))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "User has loan or reservation active");
+            }
+
             var result = await _userService.DeleteUserAsync(id);
 
             return StatusCode(StatusCodes.Status200OK, "User was deleted successfully");
+        }
+
+        public async Task<IActionResult> DeactivateUser(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Invalid user id");
+            }
+
+            var result = await _userService.BlockUserAsync(id);
+            return StatusCode(StatusCodes.Status200OK, result.ToString());
         }
 
         [HttpGet("user-roles")]

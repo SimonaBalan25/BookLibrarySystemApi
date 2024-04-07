@@ -25,15 +25,6 @@
       </mat-form-field>
     </div>
 
-    <div class="form">
-      <mat-form-field>
-        <mat-select matInput name="booksSelect" [(ngModel)]="data.book">
-          <mat-option *ngFor="let book of allBooks" [value]="book.id">{{book.title}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
     <div mat-dialog-actions>
       <button mat-button type="submit" [disabled]="!formControl.valid" (click)="stopEdit()">Save</button>
       <button mat-button tabindex="-1" mat-dialog-close>Cancel</button>

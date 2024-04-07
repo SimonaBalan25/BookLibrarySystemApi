@@ -6,6 +6,7 @@ import { AuthorsService } from 'src/app/services/authors.service';
 import { MatSelectionList } from '@angular/material/list';
 import { Book } from 'src/app/models/book';
 import { BookService } from 'src/app/services/book.service';
+import { BookBase } from 'src/app/models/book-base';
 
 @Component({
   selector: 'app-manage-books.dialog',
@@ -17,30 +18,30 @@ export class ManageBooksDialogComponent implements OnInit {
   @ViewChild('leftList') leftList!: MatSelectionList;
   @ViewChild('rightList') rightList!: MatSelectionList;
 
-  allBooks: Book[] = []; // Populate this with all books
-  leftBooks: Book[] = [];
-  assignedBooks: Book[] = []; // Initially empty
+  allBooks: BookBase[] = []; // Populate this with all books
+  leftBooks: BookBase[] = [];
+  assignedBooks: BookBase[] = []; // Initially empty
   response:boolean;
 
   constructor(public dialogRef: MatDialogRef<ManageBooksDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Author,
-    public authorsService: AuthorsService, private bookService:BookService,private snackBar: MatSnackBar) {
+    public authorsService: AuthorsService, private bookService: BookService, private snackBar: MatSnackBar) {
 
   }
 
   ngOnInit() {
     this.bookService.getBooksForListingAsync().subscribe(result => {
-      this.allBooks = result;//.sort((a:Book,b:Book) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
-      this.assignedBooks = this.allBooks.filter(x=> this.data.books.indexOf(x.id) != -1);
-      //let difference = arr1.filter(x => !arr2.includes(x));
-      this.leftBooks = this.allBooks.filter(x=> !this.assignedBooks.includes(x)).sort((a:Book,b:Book) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+      this.allBooks = result;
+      this.assignedBooks = this.allBooks.filter(x => this.data.books.indexOf(x.id) != -1);
+
+      this.leftBooks = this.allBooks.filter(x => !this.assignedBooks.includes(x)).sort((a:BookBase, b:BookBase) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
     });
   }
 
   moveToRight() {
     const selectedBooks = this.leftList.selectedOptions.selected.map(option => option.value);
     this.assignedBooks.push(...selectedBooks);
-    this.assignedBooks.sort((a:Book,b:Book) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+    this.assignedBooks.sort((a:BookBase,b:BookBase) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
 
     selectedBooks.forEach(book => {
       const index = this.leftBooks.indexOf(book);
@@ -54,7 +55,7 @@ export class ManageBooksDialogComponent implements OnInit {
   moveToLeft() {
     const selectedBooks = this.rightList.selectedOptions.selected.map(option => option.value);
     this.leftBooks.push(...selectedBooks);
-    this.leftBooks.sort((a:Book,b:Book) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+    this.leftBooks.sort((a:BookBase,b:BookBase) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
 
     selectedBooks.forEach(book => {
       const index = this.assignedBooks.indexOf(book);

@@ -15,7 +15,6 @@ import { BookService } from 'src/app/services/book.service';
 export class EditAuthorDialogComponent implements OnInit {
   dialogData: any;
   response: boolean;
-  allBooks: Book[];
 
   constructor(public dialogRef: MatDialogRef<EditAuthorDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any, public authorsService: AuthorsService,
@@ -25,13 +24,10 @@ export class EditAuthorDialogComponent implements OnInit {
 
   formControl = new FormControl('', [
       Validators.required
-      // Validators.email,
   ]);
 
   ngOnInit(){
-    this.booksService.getBooksAsync().subscribe(data => {
-      this.allBooks = data;
-  });
+
   }
 
 

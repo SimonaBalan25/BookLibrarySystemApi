@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
+using BookLibrarySystem.Web.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpGet()]
+        [ETag]
         public async Task<IActionResult> GetAllAsync()
         {
             var authors = await _authorsService.GetAuthorsAsync();
@@ -34,6 +36,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpGet("getBySortCriteria")]
+        [ETag]
         public async Task<IActionResult> GetBySortCriteria(string sortDirection, string sortColumn = "")
         {
             var pagedResponse = await _authorsService.GetAuthorsBySortColumnAsync(sortDirection, sortColumn);
@@ -48,6 +51,7 @@ namespace BookLibrarySystem.Web.Controllers
 
 
         [HttpGet("{id}")]
+        [ETag]
         public async Task<IActionResult> GetAuthorAsync(int id)
         {
             var author = await _authorsService.GetAuthorAsync(id);
@@ -62,6 +66,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrator")]
+        [ETag]
         public async Task<IActionResult> AddAuthorAsync(AuthorDto newAuthor)
         {
             var author = await _authorsService.AddAuthorAsync(newAuthor);
@@ -76,6 +81,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator")]
+        [ETag]
         public async Task<IActionResult> UpdateAuthorAsync(int id, [FromBody] AuthorDto modifiedAuthor)
         {
             if (id != modifiedAuthor.Id)
@@ -100,6 +106,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
+        [ETag]
         public async Task<IActionResult> DeleteAuthorAsync(int id)
         {
             if (!await _authorsService.CheckExistsAsync(id))

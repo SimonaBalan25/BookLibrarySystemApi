@@ -1,6 +1,7 @@
 ﻿using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
+using BookLibrarySystem.Web.Filters;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace BookLibrarySystem.Web.Controllers
 {
     [Route("[controller]")]
     [Authorize]
-    [ApiController]
+    [ApiController]    
     public class BooksController : ControllerBase
     {
         private readonly IBooksService _booksService;
@@ -25,6 +26,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpGet]
+        [ETag]
         public async Task<IActionResult> GetAllAsync()
         {
             _logger.TrackTrace("Start:BooksController-GetAllAsync", Microsoft.ApplicationInsights.DataContracts.SeverityLevel.Information, new Dictionary<string, string> { { "source", "BooksController" } });
@@ -34,6 +36,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpGet("getBySearchCriteria")]
+        [ETag]
         public async Task<IActionResult> GetBySearchCriteria(string sortDirection, int pageIndex=1, int pageSize=10, string sortColumn="",  [FromQuery]Dictionary<string,string> filters=null)
         {
             var pagedResponseBooks = await _booksService.GetBySearchFilters(sortDirection, pageIndex, pageSize, sortColumn,  filters);
@@ -42,6 +45,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpGet("GetAllForListing")]
+        [ETag]
         public async Task<IActionResult> GetAllForListingAsync()
         {
             _logger.TrackTrace("Start:BooksController-GetAllAsync", Microsoft.ApplicationInsights.DataContracts.SeverityLevel.Information, new Dictionary<string, string> { { "source", "BooksController" } });
@@ -57,6 +61,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [ETag]
         public async Task<IActionResult> GetBook(int id)
         {
             _logger.TrackTrace("Start: BooksController - GetBookById");
@@ -67,6 +72,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrator")]
+        [ETag]
         public async Task<IActionResult> AddBook(BookDto bookDto)
         {
             var dbBook = await _booksService.AddBookAsync(bookDto, bookDto.Authors);
@@ -121,6 +127,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator")]
+        [ETag]
         public async Task<IActionResult> UpdateBookAsync(int id, [FromBody] BookDto updatedBook)
         {
             if (id == 0 || id != updatedBook.Id)
@@ -151,6 +158,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
+        [ETag]
         public async Task<IActionResult> DeleteBookAsync(int id)
         {
             if (id == 0)

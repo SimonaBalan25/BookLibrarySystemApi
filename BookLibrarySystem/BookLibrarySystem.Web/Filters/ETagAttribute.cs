@@ -18,7 +18,7 @@ namespace BookLibrarySystem.Web.Filters
             
         }
 
-        public void OnActionExecuted(ActionExecutedContext context)
+        public async void OnActionExecuted(ActionExecutedContext context)
         {
             // No action needed after the action execution
             // Retrieve client's ETag from request headers
@@ -35,6 +35,9 @@ namespace BookLibrarySystem.Web.Filters
             if (!isModified)
             {
                 context.Result = new StatusCodeResult(304);
+                context.HttpContext.Response.ContentLength = 0;
+                context.HttpContext.Response.Body = Stream.Null;
+                return;
             }
 
             // Set the ETag header in the response

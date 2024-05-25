@@ -1,5 +1,6 @@
 ﻿
 
+using BookLibrarySystem.Data.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace BookLibrarySystem.Logic.DTOs
@@ -18,14 +19,14 @@ namespace BookLibrarySystem.Logic.DTOs
 
         public string Genre { get; set; }
 
-        public int Status { get; set; }
+        public BookStatus Status { get; set; }
 
         public int NumberOfCopies { get; set; }
 
         public int LoanedQuantity { get; set; }
 
         public int NumberOfPages { get; set; }
-
+        
         [Timestamp]
         public byte[] Version { get; set; }
 

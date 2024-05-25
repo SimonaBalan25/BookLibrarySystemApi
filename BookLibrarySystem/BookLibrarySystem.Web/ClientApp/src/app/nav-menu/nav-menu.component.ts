@@ -14,10 +14,10 @@ import { MatIconRegistry } from '@angular/material/icon';
 
 export class NavMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   isExpanded = false;
-  userRoles:string[] = [];//this.authorizeService.getUserRoles();//
+  userRoles:string[] = [];
   userToken:string|null='';
   subscriptions$: Subscription[]=[];
-
+  isAuthenticated : boolean=false;
   constructor(private userService:UserService,private authorizeService: AuthorizeService)
   {
 
@@ -28,6 +28,7 @@ export class NavMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.subscriptions$.push(
     this.authorizeService.isAuthenticated().pipe(switchMap(loggedIn => {
+      this.isAuthenticated = loggedIn;
       if(loggedIn) {
         return this.authorizeService.getUserRoles().pipe(
           catchError(error => {

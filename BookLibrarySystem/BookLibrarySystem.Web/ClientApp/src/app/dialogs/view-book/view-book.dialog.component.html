@@ -1,0 +1,26 @@
+<div class="container">
+  <h3 mat-dialog-title>View book title {{data.title}}</h3>
+  <div mat-dialog-content>
+    Id: <b>{{data.id}}</b>
+    <p></p>
+    Title: <b>{{data.title}}</b>
+    <p></p>
+    ReleaseYear: <b>{{data.releaseYear}}</b>
+    <p></p>
+    Publisher: <b>{{data.publisher}}</b>
+    <p></p>
+    Genre: <b>{{data.genre}}</b>
+    <p></p>
+    NumberOfPages: <b>{{data.numberOfPages}}</b>
+    <p></p>
+    ISBN: <b>{{data.ISBN}}</b>
+    <p></p>
+    Publisher: <b>{{data.publisher}}</b>
+    <p></p>
+    Status: <b>{{data.status}}</b>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onOkClick()" tabindex="-1">OK</button>
+  </div>
+</div>

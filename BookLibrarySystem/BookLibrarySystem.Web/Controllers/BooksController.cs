@@ -3,6 +3,7 @@ using BookLibrarySystem.Logic.DTOs;
 using BookLibrarySystem.Logic.Interfaces;
 using BookLibrarySystem.Web.Filters;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +53,15 @@ namespace BookLibrarySystem.Web.Controllers
             var books = await _booksService.GetBooksForListingAsync();
             _logger.TrackTrace("End BooksController-GetAllAsync");
             return StatusCode(StatusCodes.Status200OK, books);
+        }
+
+        [HttpGet("GetAllWithRelatedInfo/{userId}")]
+        public async Task<IActionResult> GetAllWithRelatedInfo(string userId)
+        {
+            _logger.TrackTrace("Start:BooksController-GetAllWithRelatedInfo", SeverityLevel.Information, new Dictionary<string, string> { { "source", "BooksController" } });
+            var booksWithRelatedInfo = await _booksService.GetBooksWithRelatedInfo(userId);
+            _logger.TrackTrace("End BooksController-GetAllWithRelatedInfo");
+            return StatusCode(StatusCodes.Status200OK, booksWithRelatedInfo);
         }
 
         [HttpGet("search")]
@@ -168,6 +178,12 @@ namespace BookLibrarySystem.Web.Controllers
             if (!exists)
             {
                 return NotFound();
+            }
+
+            var response = await _booksService.CanDeleteAsync(id);
+            if (!response.Allowed)
+            {
+                return BadRequest(response.Reason);
             }
             
             var result = await _booksService.DeleteBookAsync(id);

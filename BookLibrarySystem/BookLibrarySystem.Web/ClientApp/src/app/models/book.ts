@@ -5,7 +5,7 @@ export interface Book {
   publisher?: string;
   releaseYear: number;
   genre: string;
-  status: number;
+  status: string;
   numberOfCopies: number;
   loanedQuantity: number;
   numberOfPages: number;

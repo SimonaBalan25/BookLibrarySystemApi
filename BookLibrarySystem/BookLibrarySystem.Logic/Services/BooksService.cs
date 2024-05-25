@@ -71,6 +71,39 @@ namespace BookLibrarySystem.Logic.Services
             }).ToListAsync();
         }
 
+        public async Task<IEnumerable<BookWithRelatedInfo>> GetBooksWithRelatedInfo(string userId)
+        {
+            IList<BookWithRelatedInfo> result = null;
+
+            try
+            {
+                result = await _dbContext.Books.GroupJoin(_dbContext.Reservations,
+                    b => b.Id,
+                    reservation => reservation.BookId,
+                    (book, reservationGroup) => new BookWithRelatedInfo
+                    {
+                        Id = book.Id,
+                        Title = book.Title,
+                        Genre = book.Genre,
+                        ISBN = book.ISBN,
+                        ReleaseYear = book.ReleaseYear,
+                        Publisher = book.Publisher,
+                        Status = book.Status,
+                        LoanedQuantity = book.LoanedQuantity,
+                        NumberOfCopies = book.NumberOfCopies,
+                        NumberOfPages = book.NumberOfPages,
+                        Authors = book.Authors.Select(a => a.Id),
+                        User = userId,
+                        IsReservedByUser = reservationGroup.Any(r => r.ApplicationUserId == userId && r.Status.Equals(ReservationStatus.Active))
+                    }).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Exception when trying to get the books for a user");
+            }
+            return result;
+        }
+
         private static readonly Dictionary<string, IFilterBy> FilterFunctions =
             new Dictionary<string, IFilterBy>
             {
@@ -82,9 +115,9 @@ namespace BookLibrarySystem.Logic.Services
             };
 
         
-        public async Task<PagedResponse<Book>> GetBySearchFilters(string sortDirection, int pageIndex=1, int pageSize=10,  string sortColumn="", Dictionary<string,string> filters=null)
+        public async Task<PagedResponse<BookDto>> GetBySearchFilters(string sortDirection, int pageIndex=1, int pageSize=10,  string sortColumn="", Dictionary<string,string> filters=null)
         {
-            IQueryable<Book> filteredBooks = _dbContext.Books.AsQueryable();
+            IQueryable<BookDto> filteredBooks = _dbContext.Books.Select(_mapper.Map<Book, BookDto>).AsQueryable();
             var totalCount = filteredBooks.Count();
             if (pageIndex >= 0 && pageSize > 0)
             {
@@ -118,7 +151,7 @@ namespace BookLibrarySystem.Logic.Services
                 }
             }
 
-            IOrderedQueryable<Book> orderedBooks = filteredBooks as IOrderedQueryable<Book>;
+            IOrderedQueryable<BookDto> orderedBooks = filteredBooks as IOrderedQueryable<BookDto>;
             if (!string.IsNullOrEmpty(sortColumn))
             {
                 // Build the dynamic sorting expression
@@ -128,8 +161,8 @@ namespace BookLibrarySystem.Logic.Services
                 orderedBooks = filteredBooks.OrderBy(orderByExpression);
 
             }
-            var list = orderedBooks.ToList();
-            return new PagedResponse<Book> { Rows = orderedBooks, TotalItems = totalCount };
+            
+            return new PagedResponse<BookDto> { Rows = orderedBooks, TotalItems = totalCount };
         }
 
         public async Task<BookDto?> GetBookAsync(int id)
@@ -147,7 +180,7 @@ namespace BookLibrarySystem.Logic.Services
                     NumberOfPages = b.NumberOfPages,
                     Publisher = b.Publisher,    
                     ReleaseYear = b.ReleaseYear,
-                    Status = (int)b.Status,
+                    Status = b.Status,
                     Version = b.Version,
                     Authors = b.Authors.Select(a=>a.Id)
                 }).FirstOrDefaultAsync(b => b.Id.Equals(id));
@@ -432,6 +465,16 @@ namespace BookLibrarySystem.Logic.Services
             }
         }
 
+        public async Task<CanProcessBookResponse> CanDeleteAsync(int bookId)
+        {
+            if (_dbContext.Loans.Any(l => l.BookId.Equals(bookId)))
+            {
+                return new CanProcessBookResponse { Allowed = false, Reason = "There are loans with this book" };
+            }
+
+            return new CanProcessBookResponse { Allowed = false };
+        }
+
         public async Task<bool> DeleteBookAsync(int bookId)
         {
             using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
@@ -445,7 +488,7 @@ namespace BookLibrarySystem.Logic.Services
                     var selectedBookAuthors = await _dbContext.BookAuthors.Where(a => a.BookId == bookId).ToListAsync();
                     foreach (var bookAuthor in selectedBookAuthors)
                     {
-                        if (!_dbContext.BookAuthors.Any(ba => !ba.BookId.Equals(bookId) && ba.AuthorId.Equals(bookAuthor.AuthorId)))
+                        if (_dbContext.BookAuthors.Any(ba => ba.BookId.Equals(bookId) && ba.AuthorId.Equals(bookAuthor.AuthorId)))
                         {
                             var selectedAuthor = await _dbContext.Authors.FindAsync(bookAuthor.AuthorId);
                             _dbContext.Authors.Remove(selectedAuthor);

@@ -32,6 +32,7 @@ export enum AuthenticationResultStatus {
 
 export interface IUser {
   name?: string;
+  id?: string;
 }
 
 @Injectable({
@@ -45,8 +46,17 @@ export class AuthorizeService {
   private userManager?: UserManager;
   private userSubject: BehaviorSubject<IUser | null> = new BehaviorSubject<IUser | null>(null);
 
-  constructor(private userService: UserService){
+  constructor(private userService: UserService) {
 
+  }
+
+  public async getUserId(): Promise<string> {
+    const user = await this.userManager!.getUser();
+    if (user) {
+      return user.profile.sub;
+    }
+
+    return 'Error in getting user id';
   }
 
   public isAuthenticated(): Observable<boolean> {

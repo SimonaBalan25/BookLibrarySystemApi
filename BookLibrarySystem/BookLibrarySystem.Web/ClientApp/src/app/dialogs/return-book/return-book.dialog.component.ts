@@ -8,15 +8,15 @@ import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-return.dialog',
-  templateUrl: './return.dialog.component.html',
-  styleUrls: ['./return.dialog.component.css']
+  templateUrl: './return-book.dialog.component.html',
+  styleUrls: ['./return-book.dialog.component.css']
 })
 
-export class ReturnDialogComponent implements OnInit {
+export class ReturnBookDialogComponent implements OnInit {
   selectedUsers: User[];
   selectedUser:string;
 
-  constructor(public dialogRef: MatDialogRef<ReturnDialogComponent>,
+  constructor(public dialogRef: MatDialogRef<ReturnBookDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Book,
     public bookService: BookService, public userService:UserService, private snackBar: MatSnackBar) { }
 

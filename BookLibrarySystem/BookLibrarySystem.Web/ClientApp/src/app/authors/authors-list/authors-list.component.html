@@ -23,7 +23,7 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>
         <button mat-icon-button matTooltip="Add New" class="iconbutton"
-           (click)="addNew()">
+           (click)="addNew()" *ngIf="userRoles.includes('Administrator')">
           <mat-icon color="primary">add</mat-icon>
         </button>
 
@@ -31,17 +31,20 @@
       </th>
       <td mat-cell *matCellDef="let row; let i=index;">
         <button mat-icon-button matTooltip="Click to Edit" class="iconbutton"
-           (click)="startEdit(i, row.id, row.name, row.country, row.books[0])">
+           (click)="startEdit(i, row.id, row.name, row.country, row.books[0])"
+           *ngIf="userRoles.includes('Administrator')">
           <mat-icon matTooltip="Edit" class="purpleStyle">edit</mat-icon>
         </button>
 
         <button mat-icon-button matTooltip="Click to Delete" class="iconbutton"
-          (click)="startDelete(i, row.id, row.name, row.country, row.books[0])">
+          (click)="startDelete(i, row.id, row.name, row.country, row.books[0])"
+          *ngIf="userRoles.includes('Administrator')">
           <mat-icon matTooltip="Delete" class="redStyle">delete</mat-icon>
         </button>
 
         <button mat-icon-button matTooltip="Click to Manage" class="iconbutton"
-          (click)="startManage(i, row.id, row.name, row.books)">
+          (click)="startManage(i, row.id, row.name, row.books)"
+          *ngIf="userRoles.includes('Administrator')">
           <mat-icon matTooltip="Manage" class="brownStyle">sync_alt</mat-icon>
         </button>
       </td>

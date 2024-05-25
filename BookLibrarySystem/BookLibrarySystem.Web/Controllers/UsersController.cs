@@ -32,6 +32,15 @@ namespace BookLibrarySystem.Web.Controllers
             return Ok(allUsers);
         }
 
+        [HttpGet("getUsersWithInfoAsync")]
+        [Authorize(Roles ="Administrator")]
+        public async Task<IActionResult> GetUsersWithInfoAsync()
+        {
+            var usersWithInfo = await _userService.GetUsersWithInfoAsync();
+
+            return Ok(new { Users = usersWithInfo, TotalItems = usersWithInfo.Count() });
+        }
+
         [HttpPost("addUser")]
         public async Task<IActionResult> AddUserAsync(UserDto newUser)
         {
@@ -69,7 +78,7 @@ namespace BookLibrarySystem.Web.Controllers
 
             if (!await _userService.CanBeDeletedAsync(id))
             {
-                return StatusCode(StatusCodes.Status400BadRequest, "User has loan or reservation active");
+                return StatusCode(StatusCodes.Status400BadRequest, "User has loan or reservation active. Delete those first.");
             }
 
             var result = await _userService.DeleteUserAsync(id);
@@ -77,6 +86,7 @@ namespace BookLibrarySystem.Web.Controllers
             return StatusCode(StatusCodes.Status200OK, "User was deleted successfully");
         }
 
+        [HttpPatch]
         public async Task<IActionResult> DeactivateUser(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -85,11 +95,11 @@ namespace BookLibrarySystem.Web.Controllers
             }
 
             var result = await _userService.BlockUserAsync(id);
-            return StatusCode(StatusCodes.Status200OK, result.ToString());
+            return StatusCode(StatusCodes.Status200OK, "User is deactivated. He is not able anymore to do loans or reservations.");
         }
 
         [HttpGet("user-roles")]
-        [Authorize(Roles ="Administrator")]
+        [Authorize(Roles ="Administrator,NormalUser")]
         public async Task<IActionResult> GetUserRoles()
         {
             var nameIdValue = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;

@@ -31,4 +31,21 @@ export class UserService {
 
       }));
   }
+
+  loadUsersWithAdditionalInfo(){
+    return this.http.get(`${environment.baseApiUrl}Users/getUsersWithInfoAsync`).pipe(
+      map((response:any) => {
+        console.log(response);
+        return response;
+      }));
+  }
+
+  deactivateUser(id:string):Observable<boolean> {
+      return this.http.patch(`${environment.baseApiUrl}Users/deactivateUser/${id}`, null).pipe(
+        map((response:any) => {
+          console.log(response);
+          return response;
+        })
+      );
+  }
 }

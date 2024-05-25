@@ -24,7 +24,7 @@ import { EditBookDialogComponent } from './dialogs/edit-book/edit-book.dialog.co
 import { AddBookDialogComponent } from './dialogs/add-book/add-book.dialog.component';
 import { DeleteBookDialogComponent } from './dialogs/delete-book/delete-book.dialog.component';
 import { BorrowDialogComponent } from './dialogs/borrow/borrow.dialog.component';
-import { ReturnDialogComponent } from './dialogs/return/return.dialog.component';
+import { ReturnBookDialogComponent } from './dialogs/return-book/return-book.dialog.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { AuthorsListComponent } from './authors/authors-list/authors-list.component';
@@ -32,6 +32,10 @@ import { AddAuthorDialogComponent } from './dialogs/add-author/add-author.dialog
 import { EditAuthorDialogComponent } from './dialogs/edit-author/edit-author.dialog.component';
 import { DeleteAuthorDialogComponent } from './dialogs/delete-author/delete-author.dialog.component';
 import { ManageBooksDialogComponent } from './dialogs/manage-books/manage-books.dialog.component';
+import { AddUserDialogComponent } from './dialogs/add-user/add-user.dialog.component';
+import { EditUserDialogComponent } from './dialogs/edit-user/edit-user.dialog.component';
+import { DeleteUserDialogComponent } from './dialogs/delete-user/delete-user.dialog.component';
+import { ViewBookDialogComponent } from './dialogs/view-book/view-book.dialog.component';
 
 @NgModule({
   declarations: [
@@ -45,15 +49,19 @@ import { ManageBooksDialogComponent } from './dialogs/manage-books/manage-books.
     ManageBooksDialogComponent,
     AddBookDialogComponent,
     AddAuthorDialogComponent,
+    AddUserDialogComponent,
     EditBookDialogComponent,
     EditAuthorDialogComponent,
+    EditUserDialogComponent,
     DeleteBookDialogComponent,
     DeleteAuthorDialogComponent,
+    DeleteUserDialogComponent,
     BorrowDialogComponent,
-    ReturnDialogComponent,
+    ReturnBookDialogComponent,
     FilterComponent,
     UsersListComponent,
-    RoleExistsPipe
+    RoleExistsPipe,
+    ViewBookDialogComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

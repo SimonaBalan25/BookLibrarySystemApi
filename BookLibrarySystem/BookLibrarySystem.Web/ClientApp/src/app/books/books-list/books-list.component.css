@@ -18,6 +18,10 @@ table tr{
   color:darkblue;
 }
 
+.disabled-button{
+  color:lightblue;
+}
+
 mat-paginator {
   display: flex;
   justify-content: center;
@@ -126,4 +130,17 @@ position: relative;
 .mat-header-cell:nth-child(7){
   flex: 0 0 7%;
 }
+
+tr.mat-mdc-row:hover {
+  background-color: lightcyan;
+
+
+
+}
+
+tr > td > #title-cell:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 

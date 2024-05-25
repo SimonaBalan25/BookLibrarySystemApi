@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, map, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Book } from '../models/book';
 import { BookBase } from '../models/book-base';
+import { BookWithRelatedInfo } from '../models/book-related-info';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,15 @@ export class BookService {
       }));
    }
 
+   getBooksWithRelatedInfoAsync(userId: string):Observable<BookWithRelatedInfo[]>{
+    return this.http.get(environment.baseApiUrl + `books/getAllWithRelatedInfo/${userId}`).pipe(
+      map((response:any) => {
+        console.log(response);
+        return response;
+      })
+    );
+   }
+
    getBooksForListingAsync(forceRefresh: boolean = false) : Observable<BookBase[]> {
     if (this.booksCache && !forceRefresh ) { //&& (this.lastTimeChecked - Date.now > 15)
       // Return a cached version if available
@@ -38,7 +48,7 @@ export class BookService {
         console.log(response);
         return response;
       })
-    )
+    );
    }
 
    getBooksBySearchCriteria(pageIndex: number, pageSize: number, sortColumn: string, sortDirection:string, filters: any): Observable<any>{
@@ -100,6 +110,22 @@ export class BookService {
       });
 
       return this.http.put<number>(`${environment.serviceUrl}books/return?bookId=${bookId}&&appUserId=${userId}`, {headers});
+   }
+
+   reserveBook(bookId: number, userId: string){
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.post<boolean>(`${environment.serviceUrl}books/reserve?bookId=${bookId}&&appUserId=${userId}`, {headers});
+   }
+
+   cancelReserveBook(bookId: number, userId: string){
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.put<boolean>(`${environment.serviceUrl}books/cancelReservation?bookId=${bookId}&&appUserId=${userId}`, {headers});
    }
 
    assignBooks(authorId:number) {

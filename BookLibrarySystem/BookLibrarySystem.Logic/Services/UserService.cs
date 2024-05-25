@@ -39,6 +39,34 @@ namespace BookLibrarySystem.Logic.Services
                         }).ToListAsync();
         }
 
+        public async Task<IEnumerable<UserAdditionalInfo>> GetUsersWithInfoAsync()
+        {
+            var usersResponse = new List<UserAdditionalInfo>();
+            
+            foreach (var user in _dbContext.Users) 
+            {
+                var selectedUser = await _dbContext.Users.FindAsync(user.Id);
+                var selectedUserRoles = await _dbContext.UserRoles.Where(ur => ur.UserId.Equals(user.Id)).Select(r => r.RoleId).ToListAsync();
+                var roles = await _dbContext.Roles.Where(r => selectedUserRoles.Contains(r.Id)).Select(rl => rl.Name).ToListAsync();
+
+                var numberOfLoans = _dbContext.Loans.Where(l => l.ApplicationUserId.Equals(user.Id)).Count();
+                var numberOfReservations = _dbContext.Reservations.Where(r => r.ApplicationUserId.Equals(user.Id)).Count();
+
+                usersResponse.Add(new UserAdditionalInfo()
+                {
+                    Id = user.Id,
+                    Name = selectedUser.Name,
+                    Email = selectedUser.Email,
+                    Roles = string.Join(",", roles),
+                    LoansNumber = numberOfLoans,
+                    ReservationsNumber = numberOfReservations,
+                    Status = ((UserStatus)selectedUser.Status).ToString()
+                });
+            }
+
+            return usersResponse;
+        }
+
         public async Task<ApplicationUser> GetByUsernameAsync(string username)
         {
             return await _dbContext.Users.Where(u => u.Email.Equals(username)).FirstOrDefaultAsync();

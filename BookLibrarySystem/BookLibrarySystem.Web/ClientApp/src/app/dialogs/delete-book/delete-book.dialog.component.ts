@@ -27,7 +27,7 @@ export class DeleteBookDialogComponent {
         this.dialogRef.close(1);
       },
       error: err => {
-        this.snackBar.open('Error occurred. Details: ' + err.name + ' ' + err.message, "Okay!", {duration: 8000});
+        this.snackBar.open('Error occurred. Details: ' + err.name + ' ' + err.error.toString(), "Okay!", {duration: 8000});
         this.dialogRef.close(0);
       }
     });

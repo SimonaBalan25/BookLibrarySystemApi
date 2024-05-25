@@ -30,7 +30,7 @@ export class AddBookDialogComponent {
         numberOfCopies:0,
         numberOfPages:0,
         releaseYear:0,
-        status:0,
+        status:'',
         ISBN:'000-000-000-0',
         publisher:'',
         version: this.uint8ArrayToBase64(this.data.version)

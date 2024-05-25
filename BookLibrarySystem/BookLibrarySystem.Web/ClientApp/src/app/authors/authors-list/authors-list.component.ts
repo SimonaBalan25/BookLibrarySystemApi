@@ -4,6 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { catchError, of, switchMap } from 'rxjs';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import { AddAuthorDialogComponent } from 'src/app/dialogs/add-author/add-author.dialog.component';
 import { DeleteAuthorDialogComponent } from 'src/app/dialogs/delete-author/delete-author.dialog.component';
 import { EditAuthorDialogComponent } from 'src/app/dialogs/edit-author/edit-author.dialog.component';
@@ -33,11 +35,12 @@ export class AuthorsListComponent {
   totalItems:number=0;
   sortColumn: string='name';
   sortDirection:string='asc';
+  userRoles:string[] = [];
   @ViewChild('paginator', {static: true}) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: false }) sort: MatSort = {} as MatSort;
 
   constructor(private authorsService: AuthorsService, public dialog: MatDialog, private httpClient: HttpClient,
-      private booksService: BookService) {
+      private booksService: BookService, private authorizeService: AuthorizeService) {
 
   }
 
@@ -47,6 +50,22 @@ export class AuthorsListComponent {
   }
 
   ngOnInit(): void {
+    this.authorizeService.isAuthenticated().pipe(switchMap(loggedIn => {
+      if(loggedIn) {
+        return this.authorizeService.getUserRoles().pipe(
+          catchError(error => {
+            console.error('Error in getUserRoles:', error);
+            return of([]); // Return an empty array or handle the error as needed
+          })
+        );
+      }
+      return of([]);
+    })).subscribe((roles)=>{
+      console.log('Roles received:', roles);
+      this.userRoles = roles;
+    }
+    );
+
     this.loadAuthors();
   }
 

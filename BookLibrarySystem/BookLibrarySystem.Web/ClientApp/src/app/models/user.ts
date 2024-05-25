@@ -3,10 +3,10 @@ export interface User {
   userName: string;
   address: string;
   birthDate: Date;
-  email:string,
-  emailConfirmed: string,
-  phoneNumber:string,
-  phoneNumberConfirmed:string,
-  status:number,
-  name:string
+  email:string;
+  emailConfirmed: string;
+  phoneNumber:string;
+  phoneNumberConfirmed:string;
+  status:number;
+  name:string;
 }

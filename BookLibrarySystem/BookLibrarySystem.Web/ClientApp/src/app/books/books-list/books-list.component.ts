@@ -5,13 +5,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableDataSourcePaginator } from '@angular/material/table';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, catchError, of, switchMap } from 'rxjs';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import { AddBookDialogComponent } from 'src/app/dialogs/add-book/add-book.dialog.component';
 import { BorrowDialogComponent } from 'src/app/dialogs/borrow/borrow.dialog.component';
 import { DeleteBookDialogComponent } from 'src/app/dialogs/delete-book/delete-book.dialog.component';
 import { EditBookDialogComponent } from 'src/app/dialogs/edit-book/edit-book.dialog.component';
-import { ReturnDialogComponent } from 'src/app/dialogs/return/return.dialog.component';
+import { ReserveBookDialogComponent } from 'src/app/dialogs/reserve-book/reserve-book.dialog.component';
+import { ReturnBookDialogComponent } from 'src/app/dialogs/return-book/return-book.dialog.component';
+import { ViewBookDialogComponent } from 'src/app/dialogs/view-book/view-book.dialog.component';
 import { Book } from 'src/app/models/book';
+import { BookWithRelatedInfo } from 'src/app/models/book-related-info';
 import { BookService } from 'src/app/services/book.service';
 
 @Component({
@@ -39,10 +43,14 @@ export class BooksListComponent implements AfterViewInit {
   };
   totalItems:number=0;
 
+  userRoles:string[] = [];
+  userId: string;
+
   @ViewChild('paginator', {static: true}) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: false }) sort: MatSort = {} as MatSort;
 
-  constructor(private bookService: BookService, public dialog: MatDialog, private httpClient: HttpClient) {
+  constructor(private bookService: BookService, private authorizeService:AuthorizeService,
+     public dialog: MatDialog, private httpClient: HttpClient) {
 
   }
 
@@ -52,7 +60,28 @@ export class BooksListComponent implements AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadBooks();
+    this.authorizeService.isAuthenticated().pipe(switchMap(loggedIn => {
+      if(loggedIn) {
+        return this.authorizeService.getUserRoles().pipe(
+          catchError(error => {
+            console.error('Error in getUserRoles:', error);
+            return of([]); // Return an empty array or handle the error as needed
+          })
+        );
+      }
+      return of([]);
+    })).subscribe((roles)=>{
+      console.log('Roles received:', roles);
+      this.userRoles = roles;
+    }
+    );
+
+    if (this.userRoles.includes('Administrator')){
+      this.loadBooks();
+    }
+    else{
+      this.loadBooksForUser();
+    }
   }
 
   loadBooks() {
@@ -65,6 +94,15 @@ export class BooksListComponent implements AfterViewInit {
       this.totalItems = data['totalItems'];
 
     }, error => console.error(error));
+  }
+
+  async loadBooksForUser() {
+    this.userId = await this.authorizeService.getUserId();
+
+    this.bookService.getBooksWithRelatedInfoAsync(this.userId).subscribe((data) => {
+        this.dataSource = new MatTableDataSource<BookWithRelatedInfo>(data);
+        this.dataSource.sort = this.sort;
+    });
   }
 
 
@@ -84,12 +122,9 @@ export class BooksListComponent implements AfterViewInit {
   }
 
   addNew() {
-    //let newBook = {id: 0, title: '', ISBN: '000-000-000-0', publisher: '', genre: '', loanedQuantity:0, numberOfCopies: 0, numberOfPages:0,releaseYear:0,status:0} as Book;
     const version = new Uint16Array([Date.now()]);
-    //newBook.version = version;
 
     const dialogRef = this.dialog.open(AddBookDialogComponent, {
-
       data: { version: new Uint8Array(0) }
     });
 
@@ -123,6 +158,12 @@ export class BooksListComponent implements AfterViewInit {
         // And lastly refresh table
         this.refreshTable();
       }
+    });
+  }
+
+  viewDetails(id: number, title: string, releaseYear: number, genre: string, numberOfPages:number, isbn:string, publisher:string, status: string) {
+    const dialogRef = this.dialog.open(ViewBookDialogComponent, {
+      data: { id: id, title: title, releaseYear:releaseYear, genre:genre, numberOfPages:numberOfPages, isbn:isbn, publisher:publisher,status:status }
     });
   }
 
@@ -186,8 +227,32 @@ export class BooksListComponent implements AfterViewInit {
   startReturn(i:number, id:number, title:string){
     this.index=i;
     this.id=id;
-    const dialogRef=this.dialog.open(ReturnDialogComponent, {
+    const dialogRef=this.dialog.open(ReturnBookDialogComponent, {
       data:{id:id, title: title }
+    });
+  }
+
+  startReserve(i:number, id:number, title:string, genre: string){
+    const dialogRef=this.dialog.open(ReserveBookDialogComponent, {
+      data:{id:id, title: title, genre: genre, user: this.userId, isReserve: true }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 1) {
+        this.loadBooksForUser();
+      }
+    });
+  }
+
+  startCancelReserve(i:number, id:number, title:string, genre:string){
+    const dialogRef=this.dialog.open(ReserveBookDialogComponent, {
+      data:{id:id, title: title, genre: genre, user: this.userId, isReserve: false }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 1) {
+          this.loadBooksForUser();
+      }
     });
   }
 

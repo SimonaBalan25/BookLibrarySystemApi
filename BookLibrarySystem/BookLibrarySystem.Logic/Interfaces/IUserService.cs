@@ -9,6 +9,8 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<ApplicationUser> GetByIdAsync(string Id);
 
+        Task<IEnumerable<UserAdditionalInfo>> GetUsersWithInfoAsync();
+
         Task<IEnumerable<UserDto>> GetUsersAsync();
 
         Task<bool> CheckUserExistsAsync(string id);

@@ -11,9 +11,11 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<BookDto?> GetBookAsync(int id);
 
-        Task<PagedResponse<Book>> GetBySearchFilters(string sortDirection, int pageIndex, int pageSize, string sortColumn, Dictionary<string,string> filters);
+        Task<PagedResponse<BookDto>> GetBySearchFilters(string sortDirection, int pageIndex, int pageSize, string sortColumn, Dictionary<string,string> filters);
 
         Task<IEnumerable<BookForListing>> GetBooksForListingAsync();
+
+        Task<IEnumerable<BookWithRelatedInfo>> GetBooksWithRelatedInfo(string userId);
 
         Task<IEnumerable<Book>> SearchBooksAsync(string keyword);
 
@@ -22,6 +24,8 @@ namespace BookLibrarySystem.Logic.Interfaces
         Task<CanProcessBookResponse> CanBorrowAsync(int selectedBook, string appUserId);
 
         Task<CanProcessBookResponse> CanReturnAsync(int selectedBook, string appUserId);
+
+        Task<CanProcessBookResponse> CanDeleteAsync(int bookId);
 
         Task<CanProcessBookResponse> CanReserveAsync(int bookId, string appUserId);
 

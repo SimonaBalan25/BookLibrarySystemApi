@@ -60,6 +60,7 @@ namespace BookLibrarySystem.Logic.Profiles
                 dest => dest.Id,
                 opt => opt.MapFrom(src => src.Id)
             ).ReverseMap();
+
             //.AfterMap((src, dest) =>
             //{
             //    // Manually map the many-to-many relationship

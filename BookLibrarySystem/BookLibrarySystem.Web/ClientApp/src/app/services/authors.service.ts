@@ -27,7 +27,7 @@ export class AuthorsService {
       .set('sortColumn', sortColumn)
       .set('sortDirection', sortDirection);
 
-      return this.http.get(environment.serviceUrl + 'authors/getBySortCriteria', { params });
+      return this.http.get(environment.serviceUrl + 'authors/getBySortCriteriaAsync', { params });
    }
 
    addAuthor(newAuthor: Author) {
@@ -63,6 +63,6 @@ export class AuthorsService {
       'Content-Type': 'application/json', // Set the Content-Type to JSON
     });
 
-    return this.http.put(`${environment.serviceUrl}authors/assign?id=${id}&&booksIds=${bookIds.join(',')}`, {headers});
+    return this.http.put(`${environment.serviceUrl}authors/assignAsync?id=${id}&&booksIds=${bookIds.join(',')}`, {headers});
    }
 }

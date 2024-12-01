@@ -42,6 +42,8 @@ namespace BookLibrarySystem.Data.Models
         public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
         public virtual ICollection<WaitingList> WaitingList { get; set; } = new List<WaitingList>();
+
+        public Book() { }
     }
 
     public enum BookStatus

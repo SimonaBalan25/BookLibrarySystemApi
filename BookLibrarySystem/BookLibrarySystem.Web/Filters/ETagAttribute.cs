@@ -23,25 +23,28 @@ namespace BookLibrarySystem.Web.Filters
             // No action needed after the action execution
             // Retrieve client's ETag from request headers
             var clientETag = context.HttpContext.Request.Headers["If-None-Match"];
-            var responseObj = ((ObjectResult)context.Result).Value;
-            // Generate or retrieve the current ETag for the resource
-            string currentETag = GenerateETag(responseObj);
 
-
-            // Check if the resource is modified
-            bool isModified = CheckIfResourceIsModified(clientETag, currentETag);
-
-            // If the resource is not modified, return 304
-            if (!isModified)
+            if (context.Result is ObjectResult result)
             {
-                context.Result = new StatusCodeResult(304);
-                context.HttpContext.Response.ContentLength = 0;
-                context.HttpContext.Response.Body = Stream.Null;
-                return;
-            }
+                var responseObj = result.Value;
+                // Generate or retrieve the current ETag for the resource
+                currentETag = GenerateETag(responseObj);
 
-            // Set the ETag header in the response
-            context.HttpContext.Response.Headers.Add("ETag", currentETag);
+                // Check if the resource is modified
+                bool isModified = CheckIfResourceIsModified(clientETag, currentETag);
+
+                // If the resource is not modified, return 304
+                if (!isModified)
+                {
+                    context.Result = new StatusCodeResult(304);
+                    context.HttpContext.Response.ContentLength = 0;
+                    context.HttpContext.Response.Body = Stream.Null;
+                    return;
+                }
+
+                // Set the ETag header in the response
+                context.HttpContext.Response.Headers.Add("ETag", currentETag);
+            }
         }
 
         private bool CheckIfResourceIsModified(string clientETag, string currentETag)

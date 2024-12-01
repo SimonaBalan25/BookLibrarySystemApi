@@ -35,9 +35,9 @@ namespace BookLibrarySystem.Web.Controllers
             return StatusCode(StatusCodes.Status200OK, authors);
         }
 
-        [HttpGet("getBySortCriteria")]
+        [HttpGet("getBySortCriteriaAsync")]
         [ETag]
-        public async Task<IActionResult> GetBySortCriteria(string sortDirection, string sortColumn = "")
+        public async Task<IActionResult> GetBySortCriteriaAsync(string sortDirection, string sortColumn = "")
         {
             var pagedResponse = await _authorsService.GetAuthorsBySortColumnAsync(sortDirection, sortColumn);
 
@@ -45,6 +45,12 @@ namespace BookLibrarySystem.Web.Controllers
             //{
             //    return StatusCode(StatusCodes.Status500InternalServerError, "Problem in getting the authors from the database");
             //}
+
+            var currentETag = "\"12345\"";
+            if (Request.Headers.IfNoneMatch.Count >= 1 || Request.Headers.ETag.Count>=1)
+            {
+                return NoContent();
+            }
 
             return Ok(new { Authors = pagedResponse.Rows.ToList(), TotalItems = pagedResponse.TotalItems });
         }
@@ -76,7 +82,7 @@ namespace BookLibrarySystem.Web.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-            return CreatedAtAction("AddAuthor", new { id = newAuthor.Id }, newAuthor);
+            return CreatedAtAction("AddAuthorAsync", new { id = newAuthor.Id }, newAuthor);
         }
 
         [HttpPut("{id}")]
@@ -124,7 +130,7 @@ namespace BookLibrarySystem.Web.Controllers
             return Ok();
         }
 
-        [HttpPut("assign")]
+        [HttpPut("assignAsync")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> AssignBooksAsync(int id, string booksIds)
         {

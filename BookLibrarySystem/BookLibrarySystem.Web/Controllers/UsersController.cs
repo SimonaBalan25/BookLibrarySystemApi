@@ -24,7 +24,7 @@ namespace BookLibrarySystem.Web.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet("getUsers")]
+        [HttpGet("getUsersAsync")]
         [Authorize(Roles ="Administrator")]
         public async Task<IActionResult> GetUsersAsync()
         {
@@ -41,14 +41,14 @@ namespace BookLibrarySystem.Web.Controllers
             return Ok(new { Users = usersWithInfo, TotalItems = usersWithInfo.Count() });
         }
 
-        [HttpPost("addUser")]
+        [HttpPost("addUserAsync")]
         public async Task<IActionResult> AddUserAsync(UserDto newUser)
         {
             var dbUser = await _userService.AddUserAsync(newUser);
             return CreatedAtAction("AddUser", new { id = newUser.Id }, dbUser);
         }
 
-        [HttpPut("updateUser")]
+        [HttpPut("{id}")]
         [Authorize(Roles ="Administrator")]
         public async Task<IActionResult> UpdateUserAsync(string userId, [FromBody]UserDto updatedUser)
         {
@@ -87,7 +87,7 @@ namespace BookLibrarySystem.Web.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> DeactivateUser(string id)
+        public async Task<IActionResult> DeactivateUserAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -100,7 +100,7 @@ namespace BookLibrarySystem.Web.Controllers
 
         [HttpGet("user-roles")]
         [Authorize(Roles ="Administrator,NormalUser")]
-        public async Task<IActionResult> GetUserRoles()
+        public async Task<IActionResult> GetUserRolesAsync()
         {
             var nameIdValue = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
             var user = await _userService.GetByIdAsync(nameIdValue);

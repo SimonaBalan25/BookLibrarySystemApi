@@ -73,15 +73,14 @@ export class BooksListComponent implements AfterViewInit {
     })).subscribe((roles)=>{
       console.log('Roles received:', roles);
       this.userRoles = roles;
+      if (this.userRoles.includes('Administrator')){
+        this.loadBooks();
+      }
+      else{
+        this.loadBooksForUser();
+      }
     }
     );
-
-    if (this.userRoles.includes('Administrator')){
-      this.loadBooks();
-    }
-    else{
-      this.loadBooksForUser();
-    }
   }
 
   loadBooks() {

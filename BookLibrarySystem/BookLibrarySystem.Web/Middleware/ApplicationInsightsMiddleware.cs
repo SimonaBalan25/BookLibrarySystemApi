@@ -6,7 +6,7 @@ namespace BookLibrarySystem.Web.Middleware
 {
     public static class ApplicationInsightsMiddleware
     {
-        public static IServiceCollection AddApplicationInsightsLogging(this IServiceCollection services, ConfigurationManager configuration)
+        public static IServiceCollection AddApplicationInsightsLogging(this IServiceCollection services, IConfiguration configuration)
         {
             ApplicationInsightsServiceOptions telemetryOptions = new();
             telemetryOptions.ConnectionString = configuration["ApplicationInsights:ConnectionString"];

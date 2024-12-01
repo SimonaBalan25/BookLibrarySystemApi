@@ -11,11 +11,11 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         Task<BookDto?> GetBookAsync(int id);
 
-        Task<PagedResponse<BookDto>> GetBySearchFilters(string sortDirection, int pageIndex, int pageSize, string sortColumn, Dictionary<string,string> filters);
+        Task<PagedResponse<BookDto>> GetBySearchFiltersAsync(string sortDirection, int pageIndex, int pageSize, string sortColumn, Dictionary<string,string> filters);
 
         Task<IEnumerable<BookForListing>> GetBooksForListingAsync();
 
-        Task<IEnumerable<BookWithRelatedInfo>> GetBooksWithRelatedInfo(string userId);
+        Task<IEnumerable<BookWithRelatedInfo>> GetBooksWithRelatedInfoAsync(string userId);
 
         Task<IEnumerable<Book>> SearchBooksAsync(string keyword);
 

@@ -24,19 +24,19 @@ namespace LibraryWorkerService.Services
         public async Task SendRenewalPeriodEmail(string emailTo, string userName, string book, DateTime renewDate)
         {
             var emailBody = string.Format(RenewalBody, userName, book, renewDate);
-            await _sendEmail.SendMailMessage(emailTo, RenewalSubject, emailBody);
+            await _sendEmail.SendMailMessageAsync(emailTo, RenewalSubject, emailBody);
         }
 
         public async Task SendBlockUserEmail(string emailTo, string userName, string book)
         {
             var emailBody = string.Format(BlockBody, userName, book);
-            await _sendEmail.SendMailMessage(emailTo, BlockSubject, emailBody);
+            await _sendEmail.SendMailMessageAsync(emailTo, BlockSubject, emailBody);
         }
 
         public async Task SendReservationExpiredEmail(string emailTo, string userName, string book)
         {
             var emailBody = string.Format(ReservationExpiredBody, userName, book);
-            await _sendEmail.SendMailMessage(emailTo, ReservationExpiredSubject, emailBody);
+            await _sendEmail.SendMailMessageAsync(emailTo, ReservationExpiredSubject, emailBody);
         }
     }
 }

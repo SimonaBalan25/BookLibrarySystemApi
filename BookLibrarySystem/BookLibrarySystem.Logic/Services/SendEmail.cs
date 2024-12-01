@@ -39,7 +39,7 @@ namespace BookLibrarySystem.Logic.Services
         //    await SendMailMessage(emailTo, ReservationExpiredSubject, emailBody);
         //}
 
-        public async Task SendMailMessage(string emailTo, string subject, string body)
+        public async Task SendMailMessageAsync(string emailTo, string subject, string body)
         {
             using (MailMessage mail = new MailMessage())
             {

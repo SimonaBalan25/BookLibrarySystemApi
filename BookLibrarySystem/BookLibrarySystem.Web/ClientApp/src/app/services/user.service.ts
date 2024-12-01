@@ -24,7 +24,7 @@ export class UserService {
 
   getUsersAsync():Observable<User[]> {
 
-    return this.http.get(`${environment.baseApiUrl}Users/getUsers`).pipe(
+    return this.http.get(`${environment.baseApiUrl}Users/getUsersAsync`).pipe(
       map((response: any) => {
         console.log(response);
         return response;
@@ -41,7 +41,7 @@ export class UserService {
   }
 
   deactivateUser(id:string):Observable<boolean> {
-      return this.http.patch(`${environment.baseApiUrl}Users/deactivateUser/${id}`, null).pipe(
+      return this.http.patch(`${environment.baseApiUrl}Users/deactivateUserAsync/${id}`, null).pipe(
         map((response:any) => {
           console.log(response);
           return response;

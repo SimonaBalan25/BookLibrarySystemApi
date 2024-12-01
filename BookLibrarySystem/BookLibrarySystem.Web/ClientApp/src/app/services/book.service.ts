@@ -28,7 +28,7 @@ export class BookService {
    }
 
    getBooksWithRelatedInfoAsync(userId: string):Observable<BookWithRelatedInfo[]>{
-    return this.http.get(environment.baseApiUrl + `books/getAllWithRelatedInfo/${userId}`).pipe(
+    return this.http.get(environment.baseApiUrl + `books/getAllWithRelatedInfoAsync/${userId}`).pipe(
       map((response:any) => {
         console.log(response);
         return response;
@@ -42,7 +42,7 @@ export class BookService {
       return of(this.booksCache);
     }
 
-    return this.http.get(environment.baseApiUrl + 'books/getAllForListing').pipe(
+    return this.http.get(environment.baseApiUrl + 'books/getAllForListingAsync').pipe(
       tap(books => this.booksCache = books as any),
       map((response:any) => {
         console.log(response);
@@ -65,7 +65,7 @@ export class BookService {
         }
       }
 
-      return this.http.get(environment.serviceUrl + 'books/getBySearchCriteria', { params });
+      return this.http.get(environment.serviceUrl + 'books/getBySearchCriteriaAsync', { params });
    }
 
    getDialogData(){
@@ -101,7 +101,7 @@ export class BookService {
       'Content-Type': 'application/json'
     });
 
-    return this.http.post<number>(`${environment.serviceUrl}books/borrow?bookId=${bookId}&&appUserId=${userId}`, {headers});
+    return this.http.post<number>(`${environment.serviceUrl}books/borrowAsync?bookId=${bookId}&&appUserId=${userId}`, {headers});
    }
 
    returnBook(bookId: number, userId: string) {
@@ -109,7 +109,7 @@ export class BookService {
         'Content-Type': 'application/json'
       });
 
-      return this.http.put<number>(`${environment.serviceUrl}books/return?bookId=${bookId}&&appUserId=${userId}`, {headers});
+      return this.http.put<number>(`${environment.serviceUrl}books/returnAsync?bookId=${bookId}&&appUserId=${userId}`, {headers});
    }
 
    reserveBook(bookId: number, userId: string){
@@ -117,7 +117,7 @@ export class BookService {
       'Content-Type': 'application/json'
     });
 
-    return this.http.post<boolean>(`${environment.serviceUrl}books/reserve?bookId=${bookId}&&appUserId=${userId}`, {headers});
+    return this.http.post<boolean>(`${environment.serviceUrl}books/reserveAsync?bookId=${bookId}&&appUserId=${userId}`, {headers});
    }
 
    cancelReserveBook(bookId: number, userId: string){
@@ -125,7 +125,7 @@ export class BookService {
       'Content-Type': 'application/json'
     });
 
-    return this.http.put<boolean>(`${environment.serviceUrl}books/cancelReservation?bookId=${bookId}&&appUserId=${userId}`, {headers});
+    return this.http.put<boolean>(`${environment.serviceUrl}books/cancelReservationAsync?bookId=${bookId}&&appUserId=${userId}`, {headers});
    }
 
    assignBooks(authorId:number) {

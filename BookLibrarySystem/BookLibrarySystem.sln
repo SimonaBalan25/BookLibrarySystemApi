@@ -13,7 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryWorkerService", "Lib
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibrarySystem.Common", "BookLibrary.Common\BookLibrarySystem.Common.csproj", "{141433CD-9159-4B95-A6E5-E7245FB9C828}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookLibrarySystem.Web.Tests", "BookLibrarySystem.Web.Tests\BookLibrarySystem.Web.Tests.csproj", "{E31E6275-DA4A-42C2-A2F3-C958212D8D73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibrarySystem.Web.Tests", "BookLibrarySystem.Web.Tests\BookLibrarySystem.Web.Tests.csproj", "{E31E6275-DA4A-42C2-A2F3-C958212D8D73}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibrarySystem.Logic.Tests", "BookLibrarySystem.Logic.Tests\BookLibrarySystem.Logic.Tests.csproj", "{E807D820-07A6-4B93-A794-9534F5BC933E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B951CE95-5F5E-4BD7-8C4A-E3EC6EA7842B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookLibrarySystem.IntegrationTests", "BookLibrarySystem.IntegrationTests\BookLibrarySystem.IntegrationTests.csproj", "{F71305CF-EE3D-404C-9ABA-46ABB6F0FDE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,9 +51,22 @@ Global
 		{E31E6275-DA4A-42C2-A2F3-C958212D8D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E31E6275-DA4A-42C2-A2F3-C958212D8D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E31E6275-DA4A-42C2-A2F3-C958212D8D73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E807D820-07A6-4B93-A794-9534F5BC933E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E807D820-07A6-4B93-A794-9534F5BC933E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E807D820-07A6-4B93-A794-9534F5BC933E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E807D820-07A6-4B93-A794-9534F5BC933E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F71305CF-EE3D-404C-9ABA-46ABB6F0FDE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F71305CF-EE3D-404C-9ABA-46ABB6F0FDE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F71305CF-EE3D-404C-9ABA-46ABB6F0FDE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F71305CF-EE3D-404C-9ABA-46ABB6F0FDE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E31E6275-DA4A-42C2-A2F3-C958212D8D73} = {B951CE95-5F5E-4BD7-8C4A-E3EC6EA7842B}
+		{E807D820-07A6-4B93-A794-9534F5BC933E} = {B951CE95-5F5E-4BD7-8C4A-E3EC6EA7842B}
+		{F71305CF-EE3D-404C-9ABA-46ABB6F0FDE1} = {B951CE95-5F5E-4BD7-8C4A-E3EC6EA7842B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2B4F067F-3079-4E16-A296-002E21EBA513}

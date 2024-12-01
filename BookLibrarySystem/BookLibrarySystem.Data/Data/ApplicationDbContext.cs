@@ -10,7 +10,7 @@ namespace BookLibrarySystem.Data
 {
     public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
-        public DbSet<Book> Books { get; set; }  
+        public virtual DbSet<Book> Books { get; set; }  
 
         public DbSet<Author> Authors { get; set; }
 
@@ -21,6 +21,8 @@ namespace BookLibrarySystem.Data
         public DbSet<Reservation> Reservations { get; set; }
 
         public DbSet<WaitingList> WaitingList { get; set; }
+        
+        //public ApplicationDbContext() { }
 
         public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions)
             : base(options, operationalStoreOptions)
@@ -52,7 +54,9 @@ namespace BookLibrarySystem.Data
                 .HasMany(b => b.WaitingList);
 
             modelBuilder.Entity<Book>()
-                .Property(p => p.Version).IsConcurrencyToken();
+                .Property(p => p.Version)
+                .IsRowVersion()
+                .IsRequired(false);
 
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(a => a.Loans);

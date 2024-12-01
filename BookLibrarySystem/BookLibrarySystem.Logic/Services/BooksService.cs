@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BookLibrarySystem.Common;
 using BookLibrarySystem.Common.Models;
 using BookLibrarySystem.Data;
 using BookLibrarySystem.Data.Models;
@@ -71,7 +70,7 @@ namespace BookLibrarySystem.Logic.Services
             }).ToListAsync();
         }
 
-        public async Task<IEnumerable<BookWithRelatedInfo>> GetBooksWithRelatedInfo(string userId)
+        public async Task<IEnumerable<BookWithRelatedInfo>> GetBooksWithRelatedInfoAsync(string userId)
         {
             IList<BookWithRelatedInfo> result = null;
 
@@ -104,18 +103,7 @@ namespace BookLibrarySystem.Logic.Services
             return result;
         }
 
-        private static readonly Dictionary<string, IFilterBy> FilterFunctions =
-            new Dictionary<string, IFilterBy>
-            {
-                { "title", new FilterBy<Book, string>(v => s => s.Title == v) },
-                { "releaseYear", new FilterBy<Book, int>(v => s => s.ReleaseYear == v) },
-                { "genre", new FilterBy<Book, string>(v => s => s.Genre == v) },
-                { "numberOfPages", new FilterBy<Book, int>(v => s => s.NumberOfPages == v) },
-                { "status", new FilterBy<Book,int>(v => s => (int)s.Status == v) }
-            };
-
-        
-        public async Task<PagedResponse<BookDto>> GetBySearchFilters(string sortDirection, int pageIndex=1, int pageSize=10,  string sortColumn="", Dictionary<string,string> filters=null)
+        public async Task<PagedResponse<BookDto>> GetBySearchFiltersAsync(string sortDirection, int pageIndex=1, int pageSize=10,  string sortColumn="", Dictionary<string,string> filters=null)
         {
             IQueryable<BookDto> filteredBooks = _dbContext.Books.Select(_mapper.Map<Book, BookDto>).AsQueryable();
             var totalCount = filteredBooks.Count();
@@ -128,7 +116,7 @@ namespace BookLibrarySystem.Logic.Services
             if (filters != null)
             {
                 string filterExpression;
-                foreach(var filter in filters) 
+                foreach (var filter in filters) 
                 {
                     if (filter.Value != null)
                     {                       
@@ -506,7 +494,7 @@ namespace BookLibrarySystem.Logic.Services
 
                     foreach (var user in usersEmails)
                     {
-                        await _emailService.SendMailMessage(user, DeleteReservationEmailSubject, string.Format(DeleteReservationEmailBody, dbBook.Title));
+                        await _emailService.SendMailMessageAsync(user, DeleteReservationEmailSubject, string.Format(DeleteReservationEmailBody, dbBook.Title));
                     }
                     
                     var result = await _dbContext.SaveChangesAsync();

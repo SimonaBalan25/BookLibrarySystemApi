@@ -11,6 +11,6 @@ namespace BookLibrarySystem.Logic.Interfaces
 
         //SendReservationDeletedEmail - to user
 
-        Task SendMailMessage(string emailTo, string subject, string body);
+        Task SendMailMessageAsync(string emailTo, string subject, string body);
     }
 }

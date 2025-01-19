@@ -66,7 +66,7 @@ namespace BookLibrarySystem.Web.Controllers
                 };
                 header["kid"] = x509SecurityKey.KeyId;
                 header["typ"] = "at+jwt";
-                header["x5t"] = "TJjRIg36UQbyRW5w5Lunw_L0I3M";
+                header["x5t"] = Base64UrlEncoder.Encode(certificate.GetCertHash());// "TJjRIg36UQbyRW5w5Lunw_L0I3M";
 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -98,7 +98,7 @@ namespace BookLibrarySystem.Web.Controllers
                     { "exp", new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds().ToString() },
                     { "aud", "BookLibrarySystem.WebAPI" },
                     { "scope", new List<string>{"BookLibrarySystem.WebAPI", "openid", "profile" } },
-                    { "amr", new List<string>{"external" } },
+                    { "amr", new List<string>{"external"} },
                     { "client_id", "BookLibrarySystem" },
                     { "sub", "7b125073-72e7-4f69-8ad1-05eae69a899e" },
                     { "auth_time", new DateTimeOffset(DateTime.UtcNow.AddSeconds(-1)).ToUnixTimeSeconds().ToString() },

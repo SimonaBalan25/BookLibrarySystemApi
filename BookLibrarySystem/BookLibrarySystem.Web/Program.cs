@@ -3,12 +3,17 @@ using BookLibrarySystem.Data.Models;
 using BookLibrarySystem.Logic.Interfaces;
 using BookLibrarySystem.Logic.Services;
 using BookLibrarySystem.Web.Middleware;
+using BookLibrarySystem.Web.Providers;
 using BookLibrarySystem.Web.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
+using System.Configuration;
+using System.Security.Claims;
 
 namespace BookLibrarySystem.Web
 {
@@ -21,14 +26,23 @@ namespace BookLibrarySystem.Web
             logger.Debug("init main");
 
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.Configure<AuthenticationSettings>(builder.Configuration.GetSection("Authentication"));
 
             try
             {
+                var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+                builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                     .AddEnvironmentVariables();
                 // Add services to the container.
+                // Read the AuthMode from configuration
+                var authMode = builder.Configuration["Authentication:AuthMode"];
+
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
                 builder.Services.AddEndpointsApiExplorer();
 
                 builder.Services.AddSwaggerGen();
+
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 {
                     options.UseSqlServer(connectionString);
@@ -51,14 +65,43 @@ namespace BookLibrarySystem.Web
                 builder.Services.AddIdentityServer()
                     .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
-                builder.Services.AddAuthentication()
+                builder.Services
+                    .AddAuthentication(options =>
+                    {
+                        //options.DefaultScheme = authMode == "Google" ? "Google" : "GuidKeyScheme";
+                        //options.DefaultScheme = "DynamicScheme";
+                        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+                    })
+                    .AddCookie()
+                    .AddScheme<AuthenticationSchemeOptions, DynamicAuthenticationHandler>("DynamicScheme", options => { })
+                    .AddScheme<AuthenticationSchemeOptions, CustomGoogleAuthenticationHandler>("GoogleCustom", options => { }) // Custom Google handler
                     .AddIdentityServerJwt()
-                    .AddGoogle(options =>
+                    .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
                     {
                         options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
                         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
                         options.SignInScheme = IdentityConstants.ExternalScheme;
-                    });
+                        options.Events.OnCreatingTicket = ctx =>
+                        {
+                            // Retrieve user data from ctx
+                            var userEmail = ctx.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+                            // Assume you fetch roles from your database based on the userEmail
+                            //var roles = GetUserRolesFromDB(userEmail); // Implement this method
+                            var roles = new List<string> { "Administrator", "NormalUser" };
+                            foreach (var role in roles)
+                            {
+                                ctx.Identity.AddClaim(new Claim(ClaimTypes.Role, role));
+                            }
+
+                            return Task.CompletedTask;
+                        };
+                    })
+                    .AddScheme<AuthenticationSchemeOptions, GuidKeyAuthenticationHandler>("GuidKeyScheme", null);
+
+                // Authorization
+                builder.Services.AddAuthorization();
 
                 //configure ApplicationInsights
                 builder.Services.AddApplicationInsightsLogging(builder.Configuration);
@@ -112,7 +155,7 @@ namespace BookLibrarySystem.Web
 
                 //app.UseClaimsTransformation();
                 app.UseApplicationInsightsLogging();
-
+                
                 app.UseAuthentication();
                 app.UseIdentityServer();
 

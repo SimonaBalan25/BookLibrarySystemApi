@@ -10,7 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace BookLibrarySystem.Web.Controllers
 {
     [Route("[controller]")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes ="DynamicScheme")]
+    //[Authorize(Roles ="Administrator,NormalUser")]
     [ApiController]    
     public class BooksController : ControllerBase
     {

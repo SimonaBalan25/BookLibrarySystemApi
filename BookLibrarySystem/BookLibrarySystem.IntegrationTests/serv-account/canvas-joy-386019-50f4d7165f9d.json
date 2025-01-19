@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "canvas-joy-386019",
+  "private_key_id": "50f4d7165f9d617aca59e4ec902ef4ca6445af17",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC0VoQXLd/w1sDw\neO8gSggmZaqUUjwQVB0mFUzp8xjRve/LP2DXhByeuVrH1WOrZlAuW1NojLGWEswY\nsED1BXxbxvBdXav9COy6Cn2pRCbNFnvBWQhdmwAuQVEkioSoBkD1gQBml2ZoHp+d\nSz4m2n5m4XZYgkmunN3YH/E2UhpLyCeYuDB1CUXLISlK/W+b08+qeym1vcJ7Yg31\nnboz78LL+jp6uo+FaRNHHjMlPf7YvmDnYw+mwUlEwD9zuov68+Vold+mEFPE0HCO\nZC11tSQKq50Ezi5VDXGCUgeEoHyk4ps4rEXL+53MNUxVJFZiybn6Lg9d2jMKy6H4\ndbgSlKxPAgMBAAECggEAAm0rlJ6pMoKUamfmJ8dEBs6iL4hPui4d8+MGruf2piCd\nHZBgi2XOqmAQfAg/mBD/WsnsL5SJ1/Z9L1Pa++QzNFtTGDgbb7ZZoQ/+rHL4GeHu\nKYxuIJXmUbkCEEpnPVXtAW1wuPCoKXx7MoQBqRPFiAYLY2au+rd60Ktu9NRaYDlv\nMdcSk7ZpEGug9v7w2LMcTH1CRJ+G0jO+MG7bndO9XtZKRhbrKCh+MTWhTY93GtSI\ntW6wv3zfv23riV4G1JYcvsrcamN4brBDcGHLpZqRdbDik7macW2xualqxp+687qH\nFuowOVtmOZyWyDjsjSME1kvdYRBbETmz7t5JLnJs2QKBgQDw6zjVpGet5UKnus+Z\nBsWFeHt4TZexy3J63c//DLxp3rKOe/XK3jI8vtwkjYKP76iuNAv5x9lAGl8IiyY8\n1W5cLHB+q8shiIZlWQSEGuM/I9pp7HwxMjersCcq647LNZUjY9ChzM66jbdTIJki\nxZ3sYE2RsRgdCWQERVrDTx9xiwKBgQC/oHjJ5NdAGP7o2af9lsCLOdl/+KtOmmem\nyIiuAZaiyjE6MpAmSv7hL6W39yOUVVxvw3thasYd3TG6kfW9WLEaa5TqZgKmX58v\nbThnDAYh6KIXOMiBOGUHGLsUU5hKTDWZUk9DDB3aw4KtqXOxl9aEHixModx3cNYf\nPyXbhoxAzQKBgDlvWnVUZINIjMN//c31l1Fij8z2cpuobPpttxCO8Lwso1TkqIxc\nvI1O0xzDv8Sg1g3xyokZ4+ksYEuhINSP7Wd8ELWiLyMncSLoPfNglZyP55opDtKL\nrkn4DN5mmfxIIe319d8c/IvtDS98LgXkJuoba2K4XY9OldGO1zyIuG5RAoGAQP8Y\nGTrCe94+kBJLdastccvUZyCcUlPy9lIscgDd7CdynQ/LbwGfBBhaOFTeP5DYgpwm\nfDtwKW7+UA7z8B5mK9TztLGXEoF6h+ae6+zbI6M5X3EGKTZMpiSQR+u2yvSgdXnC\norY4ZhxMdcT1Ffavby6gzflUwzqFliGgIJ65cb0CgYEAn+ycqDn9Pmyq3h598GFR\n5SHJRv5iTZ3IYc1Z79cqFDf6S/QaajJc/Aoi79uLvN7zVndtJpOS2WdLSoDLX++f\ngqXKz1MTC8tUflgVB/XcG8/xz7Sz1JUrbJTwmcyFBNPRsZe7q2JjAdFx+CWXcwYp\nls+rRFVvG1YC1zvqPJzXJog=\n-----END PRIVATE KEY-----\n",
+  "client_email": "booksystemservaccount@canvas-joy-386019.iam.gserviceaccount.com",
+  "client_id": "103234682102294993171",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/booksystemservaccount%40canvas-joy-386019.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

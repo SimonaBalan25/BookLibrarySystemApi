@@ -24,6 +24,7 @@ namespace BookLibrarySystem.Data
         
         //public ApplicationDbContext() { }
 
+
         public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions)
             : base(options, operationalStoreOptions)
         {

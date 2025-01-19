@@ -201,7 +201,7 @@ namespace BookLibrarySystem.Logic.Services
         public async Task<CanProcessBookResponse> CanReserveAsync(int bookId, string appUserId)
         {
             var dbUser = await _dbContext.Users.FindAsync(appUserId);
-            if (dbUser.Status.Equals(UserStatus.Blocked))
+            if (dbUser != null && dbUser.Status.Equals(UserStatus.Blocked))
             {
                 return new CanProcessBookResponse { Allowed = false, Reason = "User is blocked, cannot make reservations !" };
             }
@@ -460,7 +460,7 @@ namespace BookLibrarySystem.Logic.Services
                 return new CanProcessBookResponse { Allowed = false, Reason = "There are loans with this book" };
             }
 
-            return new CanProcessBookResponse { Allowed = false };
+            return new CanProcessBookResponse { Allowed = true };
         }
 
         public async Task<bool> DeleteBookAsync(int bookId)
@@ -489,8 +489,18 @@ namespace BookLibrarySystem.Logic.Services
                     var usersToBeEmailed = reservationsToDelete.Select(r => r.ApplicationUserId).ToList();
                     var usersEmails = new List<string>();
                     usersToBeEmailed.ForEach(usr => usersEmails.Add(_dbContext.Users.Find(usr)?.Email));
-                    await reservationsToDelete.ExecuteDeleteAsync();
-                    await _dbContext.WaitingList.Where(wl => wl.BookId.Equals(bookId)).ExecuteDeleteAsync();
+
+                    if (reservationsToDelete.Any())
+                    {
+                        await reservationsToDelete.ExecuteDeleteAsync();
+                    }
+
+                    var waitingList = _dbContext.WaitingList.Where(wl => wl.BookId.Equals(bookId));
+                    if (waitingList.Any())
+                    {
+                        await waitingList.ExecuteDeleteAsync();
+                    }
+                    
 
                     foreach (var user in usersEmails)
                     {
